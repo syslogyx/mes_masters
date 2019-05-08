@@ -20,7 +20,7 @@ public class UserDO {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "user_Sequence")
-	@SequenceGenerator(name = "user_Sequence", sequenceName = "USER_SEQ", allocationSize=1)
+	@SequenceGenerator(name = "user_Sequence", sequenceName = "USER_SEQ", allocationSize = 1)
 	@Column(name = "u_id")
 	private int id;
 

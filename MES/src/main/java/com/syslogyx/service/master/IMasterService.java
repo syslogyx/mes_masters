@@ -1,7 +1,6 @@
 package com.syslogyx.service.master;
 
-import java.util.List;
-
+import com.syslogyx.bo.RequestBO;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.masters.CodeGroupDO;
 
@@ -12,6 +11,7 @@ import com.syslogyx.model.masters.CodeGroupDO;
  *
  */
 public interface IMasterService {
+
 	/**
 	 * This Method is used to validation on CodeGroup and Save CodeGroup Data
 	 * 
@@ -21,8 +21,15 @@ public interface IMasterService {
 	 */
 	void createGroupCode(CodeGroupDO codeGroupDO) throws ApplicationException;
 
-	
-
-	
+	/**
+	 * This method used for retrieving list data of CodeGroup table from database
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 * @throws ApplicationException
+	 */
+	Object listCodeGroup(RequestBO requestFilter, int page, int limit) throws ApplicationException;
 
 }

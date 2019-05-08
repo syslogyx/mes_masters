@@ -33,7 +33,7 @@ public class CodeGroupDO {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "codeg_Sequence")
-	@SequenceGenerator(name = "codeg_Sequence", sequenceName = "CODE_SEQ", allocationSize=1)
+	@SequenceGenerator(name = "codeg_Sequence", sequenceName = "CODE_SEQ", allocationSize = 1)
 	@Column(name = "cg_id")
 	private int id;
 

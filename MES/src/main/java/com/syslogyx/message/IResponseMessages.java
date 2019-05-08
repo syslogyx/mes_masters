@@ -13,5 +13,7 @@ public interface IResponseMessages {
 	String SERVER_ERROR = "Server Error.";
 	String EXISTING_GROUP_CODE = "This Group Code already exists.";
 	String INVALID_GROUP_CODE = "Invalid Group Code Id.";
+	String INVALID_LIST_MESSAGE = "Data is not Present";
+	String DATA_NOT_FOUND = "Data not found.";
 
 }

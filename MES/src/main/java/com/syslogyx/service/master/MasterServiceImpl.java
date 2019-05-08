@@ -2,18 +2,14 @@ package com.syslogyx.service.master;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+import com.syslogyx.bo.RequestBO;
 import com.syslogyx.constants.IConstants;
 import com.syslogyx.dao.master.ICodeGroupDAO;
+import com.syslogyx.dao.master.IMasterDAO;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.message.IResponseCodes;
 import com.syslogyx.message.IResponseMessages;
@@ -33,9 +29,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 	@Autowired
 	private ICodeGroupDAO iCodeGroupDAO;
-	
+
 	@Autowired
-	private EntityManager em;
+	private IMasterDAO masterDAO;
 
 	@Override
 	public void createGroupCode(CodeGroupDO codeGroupDO) throws ApplicationException {
@@ -61,16 +57,22 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		iCodeGroupDAO.save(codeGroupDO);
 
 	}
-	
-	public List<CodeGroupDO> listCodeGroup()
-	{
-		CriteriaBuilder builder = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> createQuery = builder.createQuery(Object[].class);
-		Root<CodeGroupDO> codeGroupRoot = createQuery.from(CodeGroupDO.class);
-		createQuery.where(builder.equal(codeGroupRoot.get("group_code"), codeGroupRoot.get("group_desc")));
-		
+
+	@Override
+	public Object listCodeGroup(RequestBO requestFilter, int page, int limit) throws ApplicationException {
+
+		List<CodeGroupDO> codeGroups = masterDAO.getCodeGroupList(requestFilter, page, limit);
+
+		if (codeGroups != null && !codeGroups.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getCodeGroupListSize(requestFilter);
+
+				return generatePaginationResponse(codeGroups, listSize, page, limit);
+			}
+			return codeGroups;
+		}
+
 		return null;
-		
 	}
 
 }

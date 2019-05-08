@@ -24,6 +24,8 @@ public interface INetworkConstants {
 		public String SAVE = "/save";
 		public String GROUP_CODE = "/group_code";
 		public String UPDATE = "/update";
+		public String CODE_GROUP = "/code_group";
+		public String LIST = "/list";
 	}
 
 	/**
@@ -45,6 +47,9 @@ public interface INetworkConstants {
 	 *
 	 */
 	public interface IRequestParamConstants {
+
+		String PAGE = "page";
+		String LIMIT ="limit";
 
 	}
 

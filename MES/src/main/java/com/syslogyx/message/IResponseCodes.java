@@ -13,5 +13,7 @@ public interface IResponseCodes {
 	int SERVER_ERROR = 501;
 	int EXISTING_ENTITY = 1001;
 	int INVALID_ENTITY = 1002;
+	int INVALID_LIST_CODE = 1003;
+	int DATA_NOT_FOUND = 204;
 
 }
