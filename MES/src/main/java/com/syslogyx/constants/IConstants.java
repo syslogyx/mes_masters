@@ -14,6 +14,7 @@ public interface IConstants {
 	public String HEADER_STRING = "Authorization";
 	public String AUTHORITIES_KEY = "scopes";
 	public int STATUS_ACTIVE = 1;
+	public int STATUS_INACTIVE = 0;
 	public int DEFAULT = -1;
 	public int VALUE_ZERO = 0;
 }

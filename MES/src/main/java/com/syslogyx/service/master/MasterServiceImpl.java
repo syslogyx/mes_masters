@@ -58,9 +58,6 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 	}
 
-	/**
-	 * 
-	 */
 	@Override
 	public Object listCodeGroup(RequestBO requestFilter, int page, int limit) throws ApplicationException {
 
@@ -78,24 +75,19 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		return null;
 	}
 
-	/**
-	 * This method is used for update CodeGroup table Status
-	 */
 	@Override
-	public void changeStatus(int code_group_id, int status) throws ApplicationException {
+	public void updateStatus(int code_group_id, int status) throws ApplicationException {
 
 		CodeGroupDO codeGroupDO = iCodeGroupDAO.findById(code_group_id);
 		if (codeGroupDO == null)
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_GROUP_CODE);
 
-		if (status == IConstants.VALUE_ZERO || status == IConstants.STATUS_ACTIVE) {
+		if (status == IConstants.STATUS_INACTIVE || status == IConstants.STATUS_ACTIVE) {
 			codeGroupDO.setStatus(status);
 			iCodeGroupDAO.save(codeGroupDO);
 		} else {
-			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_STATUS);
-
+			throw new ApplicationException(IResponseCodes.INVALID_STATUS, IResponseMessages.INVALID_STATUS);
 		}
-
 	}
 
 }

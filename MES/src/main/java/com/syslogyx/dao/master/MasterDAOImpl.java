@@ -1,5 +1,6 @@
 package com.syslogyx.dao.master;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -10,6 +11,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
@@ -37,7 +39,7 @@ public class MasterDAOImpl implements IMasterDAO {
 	private EntityManager entityManager;
 
 	/**
-	 * This method is used for pagination 
+	 * This method is used for pagination
 	 */
 	@Override
 	public List<CodeGroupDO> getCodeGroupList(RequestBO requestFilter, int page, int limit) {
@@ -70,12 +72,23 @@ public class MasterDAOImpl implements IMasterDAO {
 		Root<CodeGroupDO> codeGroupRoot = createQuery.from(CodeGroupDO.class);
 		Join<CodeGroupDO, UserDO> fetch = codeGroupRoot.join("created_by");
 
-		if (requestFilter != null && requestFilter.getQuick_finder() != null
-				&& !requestFilter.getQuick_finder().isEmpty()) {
+		if (requestFilter != null) {
+			List<Predicate> conditions = new ArrayList<>();
 
-			createQuery.where(builder.or(
-					builder.like(codeGroupRoot.get("group_code"), "%" + requestFilter.getQuick_finder() + "%"),
-					builder.like(codeGroupRoot.get("group_desc"), "%" + requestFilter.getQuick_finder() + "%")));
+			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
+				conditions.add(builder.or(
+						builder.like(codeGroupRoot.get("group_code"), "%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(codeGroupRoot.get("group_desc"), "%" + requestFilter.getQuick_finder() + "%")));
+			}
+
+			// add condition to restrict rows whose status is inactive
+			if (!requestFilter.isInclude_inactive_data()) {
+				conditions.add(builder.notEqual(codeGroupRoot.get("status"), IConstants.STATUS_INACTIVE));
+			}
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
 		}
 
 		CompoundSelection<CodeGroupDO> construct = builder.construct(CodeGroupDO.class, codeGroupRoot.get("id"),

@@ -89,18 +89,18 @@ public class MasterController extends BaseController {
 	/**
 	 * this method is used for update status in CodeGroup table
 	 * 
-	 * @param id
+	 * @param code_group_id
 	 * @param status
 	 * @return
 	 */
 	@GetMapping(value = INetworkConstants.IURLConstants.CODE_GROUP + INetworkConstants.IURLConstants.STATUS + "/{"
 			+ INetworkConstants.IPathVariableConstants.CODE_GROUP_ID + "}")
 	public ResponseEntity<BaseResponseBO> updateStatus(
-			@PathVariable(name = INetworkConstants.IPathVariableConstants.CODE_GROUP_ID) int id,
+			@PathVariable(name = INetworkConstants.IPathVariableConstants.CODE_GROUP_ID) int code_group_id,
 			@RequestParam(name = INetworkConstants.IRequestParamConstants.STATUS) int status) {
 		try {
 
-			iMasterService.changeStatus(id, status);
+			iMasterService.updateStatus(code_group_id, status);
 
 			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
 		} catch (ApplicationException e) {

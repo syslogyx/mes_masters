@@ -8,12 +8,19 @@ package com.syslogyx.message;
  */
 public interface IResponseCodes {
 
+	/**
+	 * HTTP Status Codes
+	 */
 	int SUCCESS = 200;
+	int DATA_NOT_FOUND = 204;
 	int UNAUTHORIZED = 401;
 	int SERVER_ERROR = 501;
+
+	/**
+	 * Custom Status Codes
+	 */
 	int EXISTING_ENTITY = 1001;
 	int INVALID_ENTITY = 1002;
-	int INVALID_LIST_CODE = 1003;
-	int DATA_NOT_FOUND = 204;
+	int INVALID_STATUS = 1003;
 
 }
