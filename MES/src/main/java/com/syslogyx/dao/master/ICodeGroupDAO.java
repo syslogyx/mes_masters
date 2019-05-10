@@ -23,4 +23,12 @@ public interface ICodeGroupDAO extends CrudRepository<CodeGroupDO, Integer> {
 	@Query("select cg from CodeGroupDO cg where cg.group_code=?1")
 	CodeGroupDO findByGroupCode(String group_code);
 
+	/**
+	 * for fetch the CodeGroup by id
+	 * 
+	 * @param code_group_id
+	 * @return
+	 */
+	CodeGroupDO findById(int code_group_id);
+
 }

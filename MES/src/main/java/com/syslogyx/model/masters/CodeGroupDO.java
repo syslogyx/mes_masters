@@ -13,11 +13,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.syslogyx.model.user.UserDO;
 
 /**
@@ -29,6 +31,8 @@ import com.syslogyx.model.user.UserDO;
 @Entity
 @Table(name = "code_groups")
 @EntityListeners(AuditingEntityListener.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class CodeGroupDO {
 
 	@Id
@@ -50,6 +54,9 @@ public class CodeGroupDO {
 	@JoinColumn(name = "created_by", updatable = false)
 	private UserDO created_by;
 
+	@Transient
+	private String created_by_name;
+
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "updated_by")
 	private UserDO updated_by;
@@ -64,6 +71,22 @@ public class CodeGroupDO {
 
 	@Column(name = "status")
 	private int status;
+
+	public CodeGroupDO() {
+
+	}
+
+	public CodeGroupDO(int id, String group_code, String group_desc, String username, Date created, Date updated,
+			int status) {
+
+		this.id = id;
+		this.group_code = group_code;
+		this.group_desc = group_desc;
+		this.created_by_name = username;
+		this.created = created;
+		this.updated = updated;
+		this.status = status;
+	}
 
 	public int getId() {
 		return id;
@@ -127,6 +150,14 @@ public class CodeGroupDO {
 
 	public void setUpdated(Date updated) {
 		this.updated = updated;
+	}
+
+	public String getCreated_by_name() {
+		return created_by_name;
+	}
+
+	public void setCreated_by_name(String created_by_name) {
+		this.created_by_name = created_by_name;
 	}
 
 	public int getStatus() {

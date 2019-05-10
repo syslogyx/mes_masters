@@ -2,6 +2,8 @@ package com.syslogyx.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +40,7 @@ public class MasterController extends BaseController {
 	 *            : contains codeGroup Data provided by users
 	 * @return : Return response
 	 */
-	@PostMapping(value = INetworkConstants.IURLConstants.GROUP_CODE + INetworkConstants.IURLConstants.SAVE)
+	@PostMapping(value = INetworkConstants.IURLConstants.CODE_GROUP + INetworkConstants.IURLConstants.SAVE)
 	public ResponseEntity<BaseResponseBO> createGroupCode(@RequestBody CodeGroupDO codeGroupDO) {
 		try {
 
@@ -82,7 +84,32 @@ public class MasterController extends BaseController {
 			e.printStackTrace();
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
-
 	}
 
+	/**
+	 * this method is used for update status in CodeGroup table
+	 * 
+	 * @param id
+	 * @param status
+	 * @return
+	 */
+	@GetMapping(value = INetworkConstants.IURLConstants.CODE_GROUP + INetworkConstants.IURLConstants.STATUS + "/{"
+			+ INetworkConstants.IPathVariableConstants.CODE_GROUP_ID + "}")
+	public ResponseEntity<BaseResponseBO> updateStatus(
+			@PathVariable(name = INetworkConstants.IPathVariableConstants.CODE_GROUP_ID) int id,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.STATUS) int status) {
+		try {
+
+			iMasterService.changeStatus(id, status);
+
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+
+	}
 }

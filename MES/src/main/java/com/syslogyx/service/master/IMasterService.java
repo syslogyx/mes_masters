@@ -32,4 +32,15 @@ public interface IMasterService {
 	 */
 	Object listCodeGroup(RequestBO requestFilter, int page, int limit) throws ApplicationException;
 
+	/**
+	 * This method used for retrieving CodeGroup Id and update status
+	 * 
+	 * @param id
+	 *            : Retrieving CodeGroup id
+	 * @param status
+	 *            : Update status
+	 * @throws ApplicationException
+	 */
+	void changeStatus(int code_group_id, int status) throws ApplicationException;
+
 }

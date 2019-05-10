@@ -1,11 +1,14 @@
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/config/JwtAuthenticationEntryPoint.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/dao/user/IUserDAO.java
+/var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/bo/Pagination.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/controller/MasterController.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/config/TokenProvider.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/message/IResponseMessages.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/message/IResponseCodes.java
+/var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/bo/ResponseBO.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/bo/BaseResponseBO.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/dao/master/ICodeGroupDAO.java
+/var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/dao/master/IMasterDAO.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/service/BaseService.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/service/user/IUserService.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/config/WebSecurityConfig.java
@@ -17,8 +20,10 @@
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/bo/LoginUser.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/Application.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/constants/INetworkConstants.java
+/var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/bo/RequestBO.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/service/master/IMasterService.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/service/master/MasterServiceImpl.java
+/var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/dao/master/MasterDAOImpl.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/controller/BaseController.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/model/user/UserDO.java
 /var/www/MES/Back-End/mes_masters/MES/src/main/java/com/syslogyx/service/user/UserServiceImpl.java

@@ -14,9 +14,13 @@ com/syslogyx/bo/AuthToken.class
 com/syslogyx/constants/INetworkConstants$IHeaderConstants.class
 com/syslogyx/Application.class
 com/syslogyx/controller/ApplicationController.class
+com/syslogyx/bo/Pagination.class
 com/syslogyx/constants/IConstants.class
+com/syslogyx/dao/master/IMasterDAO.class
+com/syslogyx/bo/ResponseBO.class
 com/syslogyx/service/user/IUserService.class
 com/syslogyx/exception/ApplicationException.class
+com/syslogyx/dao/master/MasterDAOImpl.class
 com/syslogyx/message/IResponseCodes.class
 com/syslogyx/config/CORSFilter.class
 com/syslogyx/service/master/IMasterService.class
@@ -26,6 +30,7 @@ com/syslogyx/dao/user/IUserDAO.class
 com/syslogyx/bo/BaseResponseBO.class
 com/syslogyx/constants/INetworkConstants$IPathVariableConstants.class
 com/syslogyx/service/user/UserServiceImpl.class
+com/syslogyx/bo/RequestBO.class
 com/syslogyx/config/TokenProvider.class
 com/syslogyx/config/JwtAuthenticationFilter.class
 com/syslogyx/constants/INetworkConstants$IRequestParamConstants.class

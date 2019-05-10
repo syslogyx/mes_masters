@@ -22,10 +22,10 @@ public interface INetworkConstants {
 		public String LOGIN = "/login";
 		public String MASTERS = "/masters";
 		public String SAVE = "/save";
-		public String GROUP_CODE = "/group_code";
 		public String UPDATE = "/update";
 		public String CODE_GROUP = "/code_group";
 		public String LIST = "/list";
+		public String STATUS = "/status";
 	}
 
 	/**
@@ -49,7 +49,8 @@ public interface INetworkConstants {
 	public interface IRequestParamConstants {
 
 		String PAGE = "page";
-		String LIMIT ="limit";
+		String LIMIT = "limit";
+		String STATUS = "status";
 
 	}
 
@@ -60,6 +61,8 @@ public interface INetworkConstants {
 	 *
 	 */
 	public interface IPathVariableConstants {
+
+		String CODE_GROUP_ID = "code_group_id";
 
 	}
 }

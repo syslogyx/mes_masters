@@ -39,7 +39,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		int code_groupId = codeGroupDO.getId();
 		String group_code = codeGroupDO.getGroup_code();
 		if (code_groupId > 0) {
-			CodeGroupDO findById = iCodeGroupDAO.findById(code_groupId).get();
+			CodeGroupDO findById = iCodeGroupDAO.findById(code_groupId);
 			if (findById == null)
 				throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_GROUP_CODE);
 		}
@@ -58,6 +58,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	public Object listCodeGroup(RequestBO requestFilter, int page, int limit) throws ApplicationException {
 
@@ -73,6 +76,26 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		}
 
 		return null;
+	}
+
+	/**
+	 * This method is used for update CodeGroup table Status
+	 */
+	@Override
+	public void changeStatus(int code_group_id, int status) throws ApplicationException {
+
+		CodeGroupDO codeGroupDO = iCodeGroupDAO.findById(code_group_id);
+		if (codeGroupDO == null)
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_GROUP_CODE);
+
+		if (status == IConstants.VALUE_ZERO || status == IConstants.STATUS_ACTIVE) {
+			codeGroupDO.setStatus(status);
+			iCodeGroupDAO.save(codeGroupDO);
+		} else {
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_STATUS);
+
+		}
+
 	}
 
 }
