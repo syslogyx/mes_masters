@@ -25,9 +25,20 @@ public interface IMasterDAO {
 
 	/**
 	 * This method is used for count all Numbers of rows in CodeGroup table from db
+	 * 
 	 * @param requestFilter
 	 * @return
 	 */
 	long getCodeGroupListSize(RequestBO requestFilter);
+
+	/**
+	 * Fetch the List of Masters from DB table according to the Master name
+	 * specified in the parameter
+	 * 
+	 * @param master_name
+	 *            : identifier for returning the list accordingly
+	 * @return
+	 */
+	List<CodeGroupDO> findMastersList(String master_name);
 
 }

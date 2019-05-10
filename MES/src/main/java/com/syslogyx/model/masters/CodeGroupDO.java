@@ -55,7 +55,7 @@ public class CodeGroupDO {
 	private UserDO created_by;
 
 	@Transient
-	private String created_by_name;
+	private String updated_by_name;
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "updated_by")
@@ -82,7 +82,7 @@ public class CodeGroupDO {
 		this.id = id;
 		this.group_code = group_code;
 		this.group_desc = group_desc;
-		this.created_by_name = username;
+		this.updated_by_name = username;
 		this.created = created;
 		this.updated = updated;
 		this.status = status;
@@ -152,12 +152,12 @@ public class CodeGroupDO {
 		this.updated = updated;
 	}
 
-	public String getCreated_by_name() {
-		return created_by_name;
+	public String getUpdated_by_name() {
+		return updated_by_name;
 	}
 
-	public void setCreated_by_name(String created_by_name) {
-		this.created_by_name = created_by_name;
+	public void setUpdated_by_name(String updated_by_name) {
+		this.updated_by_name = updated_by_name;
 	}
 
 	public int getStatus() {

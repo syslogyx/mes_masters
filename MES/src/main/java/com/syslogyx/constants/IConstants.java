@@ -17,4 +17,17 @@ public interface IConstants {
 	public int STATUS_INACTIVE = 0;
 	public int DEFAULT = -1;
 	public int VALUE_ZERO = 0;
+	public String EXCEL_BASE_PATH = "/home/namrata/Desktop/excel";
+
+	/**
+	 * Interface to define constants of Date time format
+	 * 
+	 * @author namrata
+	 *
+	 */
+	public interface DATE_TIME_FORMAT {
+
+		String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+
+	}
 }

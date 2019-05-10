@@ -16,5 +16,9 @@ public interface IResponseMessages {
 	String INVALID_LIST_MESSAGE = "Data is not Present";
 	String DATA_NOT_FOUND = "Data not found.";
 	String INVALID_STATUS = "Invalid Status.";
+	String LIST_EXPORTED_SUCCESSFULLY = "List exported Successfully.";
+	String CANT_CONVERT_HASH_CODE = "Can't Convert Hash Code.";
+	String UNABLE_TO_LOCATE_FILE = "Unable to Locate File location.";
+	String UNABLE_TO_EXORT_EXCEL = "Unable to Export the Excel file.";
 
 }

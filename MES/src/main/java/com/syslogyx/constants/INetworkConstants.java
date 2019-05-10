@@ -26,6 +26,7 @@ public interface INetworkConstants {
 		public String CODE_GROUP = "/code_group";
 		public String LIST = "/list";
 		public String STATUS = "/status";
+		public String EXCEL = "/excel";
 	}
 
 	/**
@@ -63,6 +64,7 @@ public interface INetworkConstants {
 	public interface IPathVariableConstants {
 
 		String CODE_GROUP_ID = "code_group_id";
+		String MASTER_NAME = "master_name";
 
 	}
 }

@@ -8,9 +8,7 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
@@ -70,7 +68,7 @@ public class MasterDAOImpl implements IMasterDAO {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<CodeGroupDO> createQuery = builder.createQuery(CodeGroupDO.class);
 		Root<CodeGroupDO> codeGroupRoot = createQuery.from(CodeGroupDO.class);
-		Join<CodeGroupDO, UserDO> fetch = codeGroupRoot.join("created_by");
+		Join<CodeGroupDO, UserDO> fetch = codeGroupRoot.join("updated_by");
 
 		if (requestFilter != null) {
 			List<Predicate> conditions = new ArrayList<>();
@@ -102,7 +100,6 @@ public class MasterDAOImpl implements IMasterDAO {
 	 * 
 	 * This method is used for count all Numbers of rows in CodeGroup table from db
 	 */
-
 	@Override
 	public long getCodeGroupListSize(RequestBO requestFilter) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -121,5 +118,10 @@ public class MasterDAOImpl implements IMasterDAO {
 
 		Query query = entityManager.createQuery(createQuery);
 		return (long) query.getSingleResult();
+	}
+
+	@Override
+	public List<CodeGroupDO> findMastersList(String master_name) {
+		return getCodeGroupList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 	}
 }

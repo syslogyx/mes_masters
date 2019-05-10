@@ -17,7 +17,6 @@ import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.message.IResponseCodes;
 import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.model.masters.CodeGroupDO;
-
 import com.syslogyx.service.master.IMasterService;
 
 /**
@@ -103,6 +102,32 @@ public class MasterController extends BaseController {
 			iMasterService.updateStatus(code_group_id, status);
 
 			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+
+	}
+
+	/**
+	 * Controller Method to Map the URL which export the Master's list data to Excel
+	 * sheet and return the Path of Excel
+	 * 
+	 * @param master_name
+	 * @return
+	 */
+	@GetMapping(value = INetworkConstants.IURLConstants.EXCEL + "/{"
+			+ INetworkConstants.IPathVariableConstants.MASTER_NAME + "}")
+	public ResponseEntity<BaseResponseBO> exportListToExcel(
+			@PathVariable(name = INetworkConstants.IPathVariableConstants.MASTER_NAME) String master_name) {
+		try {
+
+			String filePath = iMasterService.exportListToExcel(master_name);
+
+			return getResponseModel(filePath, IResponseCodes.SUCCESS, IResponseMessages.LIST_EXPORTED_SUCCESSFULLY);
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 			return getResponseModel(null, e.getCode(), e.getMessage());

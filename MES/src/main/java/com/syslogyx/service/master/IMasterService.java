@@ -43,4 +43,13 @@ public interface IMasterService {
 	 */
 	void updateStatus(int code_group_id, int status) throws ApplicationException;
 
+	/**
+	 * export the Master's list data to Excel sheet and return the Path of Excel
+	 * 
+	 * @param master_name
+	 * @return
+	 * @throws ApplicationException
+	 */
+	String exportListToExcel(String master_name) throws ApplicationException;
+
 }
