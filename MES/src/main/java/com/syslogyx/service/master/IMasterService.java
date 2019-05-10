@@ -43,4 +43,13 @@ public interface IMasterService {
 	 */
 	void updateStatus(int code_group_id, int status) throws ApplicationException;
 
+	/**
+	 * This method used for retrieving CodeGroup by Id
+	 * 
+	 * @param code_group_id
+	 * @return
+	 * @throws ApplicationException
+	 */
+	CodeGroupDO getCodeGroupId(int code_group_id) throws ApplicationException;
+
 }

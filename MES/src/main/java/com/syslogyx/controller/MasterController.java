@@ -112,4 +112,30 @@ public class MasterController extends BaseController {
 		}
 
 	}
+
+	/**
+	 * This method is used for retrieving codeGroup by id and response all data in
+	 * 
+	 * @param code_group_id
+	 * @return
+	 */
+	@GetMapping(value = INetworkConstants.IURLConstants.CODE_GROUP + INetworkConstants.IURLConstants.VIEW + "/{"
+			+ INetworkConstants.IPathVariableConstants.CODE_GROUP_ID + "}")
+	public ResponseEntity<BaseResponseBO> getCodeGroupId(
+			@PathVariable(name = INetworkConstants.IPathVariableConstants.CODE_GROUP_ID) int code_group_id) {
+
+		try {
+			CodeGroupDO codeGroupDO = iMasterService.getCodeGroupId(code_group_id);
+
+			return getResponseModel(codeGroupDO, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+
+		
+	}
 }

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.syslogyx.bo.RequestBO;
 import com.syslogyx.constants.IConstants;
+
 import com.syslogyx.dao.master.ICodeGroupDAO;
 import com.syslogyx.dao.master.IMasterDAO;
 import com.syslogyx.exception.ApplicationException;
@@ -26,6 +27,8 @@ import com.syslogyx.service.BaseService;
 @Service
 @Transactional(rollbackFor = { Exception.class })
 public class MasterServiceImpl extends BaseService implements IMasterService {
+
+	private static final String icode = null;
 
 	@Autowired
 	private ICodeGroupDAO iCodeGroupDAO;
@@ -88,6 +91,17 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		} else {
 			throw new ApplicationException(IResponseCodes.INVALID_STATUS, IResponseMessages.INVALID_STATUS);
 		}
+	}
+
+	@Override
+	public CodeGroupDO getCodeGroupId(int code_group_id) throws ApplicationException {
+
+		CodeGroupDO codeGroupDO = iCodeGroupDAO.findById(code_group_id);
+		if (codeGroupDO == null)
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_GROUP_CODE);
+
+		return codeGroupDO;
+
 	}
 
 }

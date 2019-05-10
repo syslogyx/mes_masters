@@ -26,6 +26,7 @@ public interface INetworkConstants {
 		public String CODE_GROUP = "/code_group";
 		public String LIST = "/list";
 		public String STATUS = "/status";
+		public String VIEW = "/view";
 	}
 
 	/**

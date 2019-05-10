@@ -20,6 +20,7 @@ import org.springframework.stereotype.Repository;
 
 import com.syslogyx.bo.RequestBO;
 import com.syslogyx.constants.IConstants;
+import com.syslogyx.constants.IPropertyConstant;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.user.UserDO;
@@ -77,8 +78,8 @@ public class MasterDAOImpl implements IMasterDAO {
 
 			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
 				conditions.add(builder.or(
-						builder.like(codeGroupRoot.get("group_code"), "%" + requestFilter.getQuick_finder() + "%"),
-						builder.like(codeGroupRoot.get("group_desc"), "%" + requestFilter.getQuick_finder() + "%")));
+						builder.like(codeGroupRoot.get(IPropertyConstant.GROUP_CODE), "%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(codeGroupRoot.get(IPropertyConstant.GROUP_DESC), "%" + requestFilter.getQuick_finder() + "%")));
 			}
 
 			// add condition to restrict rows whose status is inactive
