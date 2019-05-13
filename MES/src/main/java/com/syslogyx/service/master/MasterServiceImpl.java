@@ -167,7 +167,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
 
 			// method call to set the PDF Header row
-			Utils.writrToPDFHeaderRow(table, headerList);
+			Utils.writeToPDFHeaderRow(table, headerList);
 
 			// process to set the Data Rows according to the master name
 			processPDFToExportingDataRows(table, mastersList, master_name);

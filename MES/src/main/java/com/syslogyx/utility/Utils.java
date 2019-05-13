@@ -532,7 +532,7 @@ public class Utils {
 	 * @param table
 	 * @param headerList
 	 */
-	public static void writrToPDFHeaderRow(PdfPTable table, List<String> headerList) {
+	public static void writeToPDFHeaderRow(PdfPTable table, List<String> headerList) {
 
 		for (int index = 0; index < headerList.size(); index++) {
 			table.addCell(headerList.get(index));
