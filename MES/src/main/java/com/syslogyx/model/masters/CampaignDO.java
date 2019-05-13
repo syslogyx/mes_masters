@@ -1,7 +1,5 @@
 package com.syslogyx.model.masters;
 
-
-
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -15,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -56,14 +55,13 @@ public class CampaignDO {
 
 	@Column(name = "priority_level")
 	private int priority_level;
-	
-//	@ManyToOne(cascade = CascadeType.ALL)
-//	@JoinColumn(name = "created_by")
-	@Column(name = "hold_unit")
-	private int hold_unit;
 
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "created_by", updatable = false, insertable=false)
+	@JoinColumn(name = "hold_unit", updatable = false)
+	private ProcessUnitDO hold_unit;
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "created_by", updatable = false)
 	private UserDO created_by;
 
 	@ManyToOne(cascade = CascadeType.ALL)
@@ -80,6 +78,9 @@ public class CampaignDO {
 
 	@Column(name = "status")
 	private int status;
+
+	@Transient
+	private int hold_unit_id;
 
 	public int getId() {
 		return id;
@@ -137,11 +138,11 @@ public class CampaignDO {
 		this.priority_level = priority_level;
 	}
 
-	public int getHold_unit() {
+	public ProcessUnitDO getHold_unit() {
 		return hold_unit;
 	}
 
-	public void setHold_unit(int hold_unit) {
+	public void setHold_unit(ProcessUnitDO hold_unit) {
 		this.hold_unit = hold_unit;
 	}
 
@@ -185,5 +186,12 @@ public class CampaignDO {
 		this.status = status;
 	}
 
-	
+	public int getHold_unit_id() {
+		return hold_unit_id;
+	}
+
+	public void setHold_unit_id(int hold_unit_id) {
+		this.hold_unit_id = hold_unit_id;
+	}
+
 }

@@ -23,6 +23,7 @@ import com.syslogyx.constants.IConstants;
 import com.syslogyx.constants.IPropertyConstant;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.masters.CodeGroupDO;
+import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.user.UserDO;
 
 /**
@@ -123,4 +124,10 @@ public class MasterDAOImpl implements IMasterDAO {
 		Query query = entityManager.createQuery(createQuery);
 		return (long) query.getSingleResult();
 	}
+
+
+
+	
+
+	
 }

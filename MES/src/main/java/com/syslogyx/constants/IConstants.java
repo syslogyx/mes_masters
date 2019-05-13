@@ -17,7 +17,18 @@ public interface IConstants {
 	public int STATUS_INACTIVE = 0;
 	public int DEFAULT = -1;
 	public int VALUE_ZERO = 0;
-	public int HIGH_PRIORITY = 3;
-	public int MEDIUM_PRIORITY = 2;
-	public int LOW_PRIORITY = 1;
+
+	/**
+	 * Priority constants
+	 * 
+	 * @author palash
+	 *
+	 */
+	public interface IPriority {
+
+		public int LOW = 1;
+		public int MEDIUM = 2;
+		public int HIGH = 3;
+	}
+
 }

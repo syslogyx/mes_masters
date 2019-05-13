@@ -4,6 +4,7 @@ import com.syslogyx.bo.RequestBO;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
+import com.syslogyx.model.masters.ProcessUnitDO;
 
 /**
  * This class is used for MasterService business logic related to Master module

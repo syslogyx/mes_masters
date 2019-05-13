@@ -8,8 +8,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.syslogyx.bo.Pagination;
 import com.syslogyx.bo.ResponseBO;
+import com.syslogyx.dao.master.IProcessUnitDAO;
 import com.syslogyx.dao.user.IUserDAO;
-import com.syslogyx.model.masters.CodeGroupDO;
+
+import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.user.UserDO;
 
 /**
@@ -24,6 +26,7 @@ public class BaseService {
 	private IUserDAO iUserDAO;
 
 	/**
+	 * 
 	 * Get the instance of Logged in user from Current Authentication details
 	 * 
 	 * @return

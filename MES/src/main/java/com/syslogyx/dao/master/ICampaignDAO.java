@@ -22,5 +22,7 @@ public interface ICampaignDAO extends JpaRepository<CampaignDO, Integer> {
 	 */
 	@Query("select cp from CampaignDO cp where cp.campaign_id=?1")
 	CampaignDO findByCampaignId(String campaign_id);
+	
+	
 
 }

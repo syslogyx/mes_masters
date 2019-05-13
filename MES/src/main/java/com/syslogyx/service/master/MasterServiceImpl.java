@@ -1,7 +1,6 @@
 package com.syslogyx.service.master;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,11 +11,13 @@ import com.syslogyx.constants.IConstants;
 import com.syslogyx.dao.master.ICampaignDAO;
 import com.syslogyx.dao.master.ICodeGroupDAO;
 import com.syslogyx.dao.master.IMasterDAO;
+import com.syslogyx.dao.master.IProcessUnitDAO;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.message.IResponseCodes;
 import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
+import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.user.UserDO;
 import com.syslogyx.service.BaseService;
 
@@ -30,10 +31,11 @@ import com.syslogyx.service.BaseService;
 @Transactional(rollbackFor = { Exception.class })
 public class MasterServiceImpl extends BaseService implements IMasterService {
 
-	private static final String icode = null;
-
 	@Autowired
 	private ICodeGroupDAO iCodeGroupDAO;
+
+	@Autowired
+	private IProcessUnitDAO iprocessUnitDAO;
 
 	@Autowired
 	private ICampaignDAO iCampaignDAO;
@@ -56,7 +58,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		CodeGroupDO existingCodeGroup = iCodeGroupDAO.findByGroupCode(group_code);
 
 		if (existingCodeGroup != null && existingCodeGroup.getId() != code_groupId)
-			throw new ApplicationException(IResponseCodes.EXISTING_ENTITY, IResponseMessages.EXISTING_GROUP_CODE);
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.EXISTING_GROUP_CODE);
 
 		UserDO loggedInUser = getLoggedInUser();
 		codeGroupDO.setCreated_by(loggedInUser);
@@ -113,26 +115,57 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	public void createCampaign(CampaignDO campaignDO) throws ApplicationException {
 
 		int camp_id = campaignDO.getId();
+		int priority_level = campaignDO.getPriority_level();
 		String campaign_id = campaignDO.getCampaign_id();
-		if (camp_id > 0) {
-			Optional<CampaignDO> findByCampaignId = iCampaignDAO.findById(camp_id);
+		int hold_unit_id = campaignDO.getHold_unit_id();
+
+		// it's use to differentiation for save and update
+		if (camp_id > IConstants.VALUE_ZERO) {
+			CampaignDO findByCampaignId = iCampaignDAO.findById(camp_id).get();
 			if (findByCampaignId == null)
 				throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_CAMPAIGN_ID);
-
 		}
 
-		// validate the group code if already exists in database or not
+		// Validate Campaign id
+		if (campaign_id == null || campaign_id.isEmpty())
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.EMPTY_CAMPAIGN_ID);
+
+		// validate the campaign if already exists in database or not
 		CampaignDO existingCampaignId = iCampaignDAO.findByCampaignId(campaign_id);
 
 		if (existingCampaignId != null && existingCampaignId.getId() != camp_id)
-			throw new ApplicationException(IResponseCodes.EXISTING_ENTITY, IResponseMessages.EXISTING_CAMPAIGN_ID);
-		
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.EXISTING_CAMPAIGN_ID);
+
+		// for validate processUnit id from db
+		if (hold_unit_id > IConstants.VALUE_ZERO) {
+			ProcessUnitDO findByProcessUnitId = iprocessUnitDAO.findById(hold_unit_id).get();
+			if (findByProcessUnitId == null)
+				throw new ApplicationException(IResponseCodes.INVALID_ENTITY,
+						IResponseMessages.INVALID_PROCESS_UNIT_ID);
+			campaignDO.setHold_unit(findByProcessUnitId);
+		}
+
+		validatePriority(priority_level);
+
 		UserDO loggedInUser = getLoggedInUser();
 		campaignDO.setCreated_by(loggedInUser);
 		campaignDO.setUpdated_by(loggedInUser);
 		campaignDO.setStatus(IConstants.STATUS_ACTIVE);
 		iCampaignDAO.save(campaignDO);
-		
+
+	}
+
+	/**
+	 * For validate priority
+	 * 
+	 * @param priority_level
+	 * @throws ApplicationException
+	 */
+	private void validatePriority(int priority_level) throws ApplicationException {
+		if (priority_level != IConstants.IPriority.HIGH && priority_level != IConstants.IPriority.MEDIUM
+				&& priority_level != IConstants.IPriority.LOW)
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_PRIORITY);
+
 	}
 
 }
