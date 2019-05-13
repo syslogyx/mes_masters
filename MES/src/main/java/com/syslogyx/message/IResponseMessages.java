@@ -13,8 +13,11 @@ public interface IResponseMessages {
 	String SERVER_ERROR = "Server Error.";
 	String EXISTING_GROUP_CODE = "This Group Code already exists.";
 	String INVALID_GROUP_CODE = "Invalid Group Code Id.";
-	String INVALID_LIST_MESSAGE = "Data is not Present";
+	String INVALID_LIST_MESSAGE = "Data is not Present.";
 	String DATA_NOT_FOUND = "Data not found.";
 	String INVALID_STATUS = "Invalid Status.";
+	String EXISTING_CAMPAIGN_ID = "This Campaign Id already exists.";
+	String INVALID_CAMPAIGN_ID = "Invalid Campaign Id.";
+	
 
 }

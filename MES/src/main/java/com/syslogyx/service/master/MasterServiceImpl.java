@@ -1,6 +1,7 @@
 package com.syslogyx.service.master;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,12 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.syslogyx.bo.RequestBO;
 import com.syslogyx.constants.IConstants;
-
+import com.syslogyx.dao.master.ICampaignDAO;
 import com.syslogyx.dao.master.ICodeGroupDAO;
 import com.syslogyx.dao.master.IMasterDAO;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.message.IResponseCodes;
 import com.syslogyx.message.IResponseMessages;
+import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.user.UserDO;
 import com.syslogyx.service.BaseService;
@@ -32,6 +34,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 	@Autowired
 	private ICodeGroupDAO iCodeGroupDAO;
+
+	@Autowired
+	private ICampaignDAO iCampaignDAO;
 
 	@Autowired
 	private IMasterDAO masterDAO;
@@ -102,6 +107,32 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		return codeGroupDO;
 
+	}
+
+	@Override
+	public void createCampaign(CampaignDO campaignDO) throws ApplicationException {
+
+		int camp_id = campaignDO.getId();
+		String campaign_id = campaignDO.getCampaign_id();
+		if (camp_id > 0) {
+			Optional<CampaignDO> findByCampaignId = iCampaignDAO.findById(camp_id);
+			if (findByCampaignId == null)
+				throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_CAMPAIGN_ID);
+
+		}
+
+		// validate the group code if already exists in database or not
+		CampaignDO existingCampaignId = iCampaignDAO.findByCampaignId(campaign_id);
+
+		if (existingCampaignId != null && existingCampaignId.getId() != camp_id)
+			throw new ApplicationException(IResponseCodes.EXISTING_ENTITY, IResponseMessages.EXISTING_CAMPAIGN_ID);
+		
+		UserDO loggedInUser = getLoggedInUser();
+		campaignDO.setCreated_by(loggedInUser);
+		campaignDO.setUpdated_by(loggedInUser);
+		campaignDO.setStatus(IConstants.STATUS_ACTIVE);
+		iCampaignDAO.save(campaignDO);
+		
 	}
 
 }

@@ -2,6 +2,7 @@ package com.syslogyx.service.master;
 
 import com.syslogyx.bo.RequestBO;
 import com.syslogyx.exception.ApplicationException;
+import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 
 /**
@@ -51,5 +52,14 @@ public interface IMasterService {
 	 * @throws ApplicationException
 	 */
 	CodeGroupDO getCodeGroupId(int code_group_id) throws ApplicationException;
+
+	/**
+	 * This Method is used to validation on Campaign and Save Campaign Data in db
+	 * 
+	 * @param campaignDO
+	 *            : contains campaign Data provided by users
+	 * @throws ApplicationException
+	 */
+	void createCampaign(CampaignDO campaignDO) throws ApplicationException;
 
 }

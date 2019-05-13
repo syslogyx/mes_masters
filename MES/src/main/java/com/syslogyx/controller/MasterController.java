@@ -16,6 +16,7 @@ import com.syslogyx.constants.INetworkConstants;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.message.IResponseCodes;
 import com.syslogyx.message.IResponseMessages;
+import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 
 import com.syslogyx.service.master.IMasterService;
@@ -136,6 +137,28 @@ public class MasterController extends BaseController {
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
 
-		
+	}
+	
+	/**
+	 * This method is used to save Campaign Data to db
+	 * 
+	 * @param CampaignDO
+	 *            : contains Campaign_Id Data provided by users
+	 * @return : Return response
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.CAMPAIGN + INetworkConstants.IURLConstants.SAVE)
+	public ResponseEntity<BaseResponseBO> createCampaign(@RequestBody CampaignDO campaignDO) {
+		try {
+
+			iMasterService.createCampaign(campaignDO);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+
 	}
 }
