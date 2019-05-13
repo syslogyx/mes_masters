@@ -27,6 +27,7 @@ public interface INetworkConstants {
 		public String LIST = "/list";
 		public String STATUS = "/status";
 		public String EXCEL = "/excel";
+		public String PDF = "/pdf";
 	}
 
 	/**

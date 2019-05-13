@@ -37,4 +37,18 @@ public interface IFileHeaderConstants {
 
 		return headers;
 	}
+
+	/**
+	 * Return the Headers list of Masters according to the Masters name specified
+	 * 
+	 * @param master_name
+	 * @return
+	 */
+	public static List<String> getMastersHeaderList(String master_name) {
+
+		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP)) {
+			return getCodeGroupListHeaders();
+		}
+		return null;
+	}
 }

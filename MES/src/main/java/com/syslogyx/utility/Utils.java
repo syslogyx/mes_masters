@@ -30,6 +30,12 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfPRow;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.syslogyx.bo.Pagination;
 import com.syslogyx.constants.IConstants;
 import com.syslogyx.constants.IConstants.DATE_TIME_FORMAT;
@@ -455,7 +461,7 @@ public class Utils {
 	 * @param cellStyle
 	 * @param cellFont
 	 */
-	public static void writeToHeaderRow(HSSFSheet sheet, List<String> excelHeaders, HSSFCellStyle cellStyle,
+	public static void writeToExcelHeaderRow(HSSFSheet sheet, List<String> excelHeaders, HSSFCellStyle cellStyle,
 			HSSFFont cellFont) {
 		HSSFRow rowhead = sheet.createRow(IConstants.VALUE_ZERO);
 
@@ -491,11 +497,11 @@ public class Utils {
 	public static String writeDataToWorkbook(HSSFWorkbook workbook, String filepath) throws ApplicationException {
 		FileOutputStream fileOut;
 		try {
-			fileOut = new FileOutputStream(filepath);
+			fileOut = new FileOutputStream(filepath + IConstants.EXTENSION_EXCEL);
 			workbook.write(fileOut);
 			fileOut.close();
 
-			return filepath;
+			return filepath + IConstants.EXTENSION_EXCEL;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.UNABLE_TO_LOCATE_FILE);
@@ -517,6 +523,48 @@ public class Utils {
 			return basePath + System.currentTimeMillis() + fileName;
 		}
 		return fileName;
+	}
+
+	/**
+	 * Prepare the Header row of PDF File according to the provided Header String
+	 * List
+	 * 
+	 * @param table
+	 * @param headerList
+	 */
+	public static void writrToPDFHeaderRow(PdfPTable table, List<String> headerList) {
+
+		for (int index = 0; index < headerList.size(); index++) {
+			table.addCell(headerList.get(index));
+		}
+
+		PdfPRow headerRows = table.getRow(IConstants.VALUE_ZERO);
+		for (int index = 0; index < headerRows.getCells().length; index++) {
+			headerRows.getCells()[index].setBackgroundColor(BaseColor.GRAY);
+		}
+	}
+
+	/**
+	 * 
+	 * @param document
+	 * @param table
+	 * @param filename
+	 * @return
+	 * @throws ApplicationException
+	 */
+	public static String writeDataToPDF(Document document, PdfPTable table, String filename)
+			throws ApplicationException {
+		try {
+			PdfWriter.getInstance(document, new FileOutputStream(filename + IConstants.EXTENSION_PDF));
+			document.open();
+			document.add(table);
+			document.close();
+
+			return filename + IConstants.EXTENSION_PDF;
+		} catch (FileNotFoundException | DocumentException e) {
+			e.printStackTrace();
+			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.UNABLE_TO_EXORT_PDF);
+		}
 	}
 
 }

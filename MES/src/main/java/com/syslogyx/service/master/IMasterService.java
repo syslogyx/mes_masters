@@ -52,4 +52,13 @@ public interface IMasterService {
 	 */
 	String exportListToExcel(String master_name) throws ApplicationException;
 
+	/**
+	 * export the Master's list data to PDF sheet and return the Path of PDF
+	 * 
+	 * @param master_name
+	 * @return
+	 * @throws ApplicationException
+	 */
+	String exportListToPDF(String master_name) throws ApplicationException;
+
 }

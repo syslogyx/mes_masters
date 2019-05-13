@@ -20,5 +20,6 @@ public interface IResponseMessages {
 	String CANT_CONVERT_HASH_CODE = "Can't Convert Hash Code.";
 	String UNABLE_TO_LOCATE_FILE = "Unable to Locate File location.";
 	String UNABLE_TO_EXORT_EXCEL = "Unable to Export the Excel file.";
+	String UNABLE_TO_EXORT_PDF = "Unable to Export PDF.";
 
 }
