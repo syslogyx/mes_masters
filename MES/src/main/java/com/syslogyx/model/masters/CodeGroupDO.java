@@ -32,7 +32,6 @@ import com.syslogyx.model.user.UserDO;
 @Table(name = "code_groups")
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-
 public class CodeGroupDO {
 
 	@Id

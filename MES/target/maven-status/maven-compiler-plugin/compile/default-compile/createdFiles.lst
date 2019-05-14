@@ -2,6 +2,7 @@ com/syslogyx/config/JwtAuthenticationEntryPoint.class
 com/syslogyx/constants/IConstants$DATE_TIME_FORMAT.class
 com/syslogyx/constants/IFileHeaderConstants.class
 com/syslogyx/service/BaseService.class
+com/syslogyx/constants/IConstants$MASTERS_NAME.class
 com/syslogyx/dao/master/ICodeGroupDAO.class
 com/syslogyx/config/JPAConfiguration.class
 com/syslogyx/service/master/MasterServiceImpl.class
