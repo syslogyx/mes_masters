@@ -18,7 +18,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "hold_units")
+@Table(name = "process_units")
 public class ProcessUnitDO {
 	
 	@Id

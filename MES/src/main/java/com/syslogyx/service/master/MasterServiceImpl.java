@@ -51,7 +51,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		if (code_groupId > 0) {
 			CodeGroupDO findById = iCodeGroupDAO.findById(code_groupId);
 			if (findById == null)
-				throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_GROUP_CODE);
+				throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_GROUP_CODE_ID);
 		}
 
 		// validate the group code if already exists in database or not
@@ -90,22 +90,25 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		CodeGroupDO codeGroupDO = iCodeGroupDAO.findById(code_group_id);
 		if (codeGroupDO == null)
-			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_GROUP_CODE);
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_GROUP_CODE_ID);
 
-		if (status == IConstants.STATUS_INACTIVE || status == IConstants.STATUS_ACTIVE) {
-			codeGroupDO.setStatus(status);
-			iCodeGroupDAO.save(codeGroupDO);
-		} else {
+		validateStatus(status);
+		codeGroupDO.setStatus(status);
+		iCodeGroupDAO.save(codeGroupDO);
+	}
+
+	private void validateStatus(int status) throws ApplicationException {
+		if (status != IConstants.STATUS_INACTIVE && status != IConstants.STATUS_ACTIVE)
 			throw new ApplicationException(IResponseCodes.INVALID_STATUS, IResponseMessages.INVALID_STATUS);
-		}
+
 	}
 
 	@Override
 	public CodeGroupDO getCodeGroupId(int code_group_id) throws ApplicationException {
 
 		CodeGroupDO codeGroupDO = iCodeGroupDAO.findById(code_group_id);
-		if (codeGroupDO == null)
-			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_GROUP_CODE);
+		if (codeGroupDO == null || codeGroupDO.getStatus() == IConstants.STATUS_INACTIVE)
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_GROUP_CODE_ID);
 
 		return codeGroupDO;
 
@@ -121,7 +124,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		// it's use to differentiation for save and update
 		if (camp_id > IConstants.VALUE_ZERO) {
-			CampaignDO findByCampaignId = iCampaignDAO.findById(camp_id).get();
+			CampaignDO findByCampaignId = iCampaignDAO.findById(camp_id);
 			if (findByCampaignId == null)
 				throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_CAMPAIGN_ID);
 		}
@@ -165,7 +168,46 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		if (priority_level != IConstants.IPriority.HIGH && priority_level != IConstants.IPriority.MEDIUM
 				&& priority_level != IConstants.IPriority.LOW)
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_PRIORITY);
+	}
 
+	@Override
+	public Object getCampaignList(RequestBO requestFilter, int page, int limit) throws ApplicationException {
+
+		List<CampaignDO> campaignDO = masterDAO.getCampaignList(requestFilter, page, limit);
+
+		if (campaignDO != null && !campaignDO.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getCampaignListSize(requestFilter);
+
+				return generatePaginationResponse(campaignDO, listSize, page, limit);
+			}
+			return campaignDO;
+		}
+		return null;
+	}
+
+	@Override
+	public void updateCampaignStatus(int camp_id, int status) throws ApplicationException {
+
+		CampaignDO campaignDO = iCampaignDAO.findById(camp_id);
+		if (campaignDO == null)
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_CAMPAIGN_ID);
+
+		validateStatus(status);
+		campaignDO.setStatus(status);
+		iCampaignDAO.save(campaignDO);
+
+	}
+
+	@Override
+	public CampaignDO getCampaignId(int camp_id) throws ApplicationException {
+
+		CampaignDO campaignDO = iCampaignDAO.findById(camp_id);
+
+		if (campaignDO == null || campaignDO.getStatus() == IConstants.STATUS_INACTIVE)
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_CAMPAIGN_ID);
+
+		return campaignDO;
 	}
 
 }

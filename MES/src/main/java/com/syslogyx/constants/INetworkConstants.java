@@ -66,6 +66,7 @@ public interface INetworkConstants {
 	public interface IPathVariableConstants {
 
 		String CODE_GROUP_ID = "code_group_id";
+		String CAMP_ID = "cam_id";
 
 	}
 }

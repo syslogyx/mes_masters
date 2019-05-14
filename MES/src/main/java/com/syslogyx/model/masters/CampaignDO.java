@@ -19,6 +19,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.syslogyx.model.user.UserDO;
 
 /**
@@ -30,6 +31,7 @@ import com.syslogyx.model.user.UserDO;
 @Entity
 @Table(name = "campaigns")
 @EntityListeners(AuditingEntityListener.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CampaignDO {
 
 	@Id
@@ -81,6 +83,33 @@ public class CampaignDO {
 
 	@Transient
 	private int hold_unit_id;
+
+	@Transient
+	private String hold_unit_name;
+
+	@Transient
+	private String created_by_name;
+
+	public CampaignDO() {
+
+	}
+
+	public CampaignDO(int id, String campaign_id, String attribute, String aim, float capacity_min, float capacity_max,
+			int priority_level, Date created, Date updated, int status, String username, String unit) {
+
+		this.id = id;
+		this.campaign_id = campaign_id;
+		this.attribute = attribute;
+		this.aim = aim;
+		this.capacity_min = capacity_min;
+		this.capacity_max = capacity_max;
+		this.priority_level = priority_level;
+		this.created = created;
+		this.updated = updated;
+		this.status = status;
+		this.created_by_name = username;
+		this.hold_unit_name = unit;
+	}
 
 	public int getId() {
 		return id;
@@ -192,6 +221,22 @@ public class CampaignDO {
 
 	public void setHold_unit_id(int hold_unit_id) {
 		this.hold_unit_id = hold_unit_id;
+	}
+
+	public String getCreated_by_name() {
+		return created_by_name;
+	}
+
+	public void setCreated_by_name(String created_by_name) {
+		this.created_by_name = created_by_name;
+	}
+
+	public String getHold_unit_name() {
+		return hold_unit_name;
+	}
+
+	public void setHold_unit_name(String hold_unit_name) {
+		this.hold_unit_name = hold_unit_name;
 	}
 
 }

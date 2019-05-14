@@ -63,4 +63,30 @@ public interface IMasterService {
 	 */
 	void createCampaign(CampaignDO campaignDO) throws ApplicationException;
 
+	/**
+	 * For retrieving list data of Campaign table from database
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	Object getCampaignList(RequestBO requestFilter, int page, int limit) throws ApplicationException;
+
+	/**
+	 * For retrieving Campaign by id and update status
+	 * 
+	 * @param camp_id
+	 * @param status
+	 */
+	void updateCampaignStatus(int camp_id, int status) throws ApplicationException;
+
+	/**
+	 * For Retrieving Campaign by Id
+	 * 
+	 * @param camp_id
+	 * @return
+	 */
+	CampaignDO getCampaignId(int camp_id) throws ApplicationException;
+
 }
