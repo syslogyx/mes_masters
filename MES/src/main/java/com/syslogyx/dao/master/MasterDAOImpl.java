@@ -71,7 +71,7 @@ public class MasterDAOImpl implements IMasterDAO {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<CodeGroupDO> createQuery = builder.createQuery(CodeGroupDO.class);
 		Root<CodeGroupDO> codeGroupRoot = createQuery.from(CodeGroupDO.class);
-		Join<CodeGroupDO, UserDO> fetch = codeGroupRoot.join("updated_by");
+		Join<CodeGroupDO, UserDO> fetch = codeGroupRoot.join(IPropertyConstant.UPDATED_BY);
 
 		if (requestFilter != null) {
 			List<Predicate> conditions = new ArrayList<>();
@@ -143,8 +143,15 @@ public class MasterDAOImpl implements IMasterDAO {
 	}
 
 	@Override
-	public List<CodeGroupDO> findMastersList(String master_name) {
-		return getCodeGroupList(null, IConstants.DEFAULT, IConstants.DEFAULT);
+	public List findMastersList(String master_name) {
+
+		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP))
+			return getCodeGroupList(null, IConstants.DEFAULT, IConstants.DEFAULT);
+
+		if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN))
+			return getCampaignList(null, IConstants.DEFAULT, IConstants.DEFAULT);
+
+		return null;
 	}
 
 	@Override

@@ -17,7 +17,7 @@ public interface IConstants {
 	public int STATUS_INACTIVE = 0;
 	public int DEFAULT = -1;
 	public int VALUE_ZERO = 0;
-	public String EXCEL_BASE_PATH = "/home/namrata/Desktop/excel/";
+	public String EXCEL_BASE_PATH = "/home/alok/Desktop/excel/";
 	public String PDF_BASE_PATH = "/home/namrata/Desktop/pdf/";
 	public String EXTENSION_EXCEL = ".xls";
 	public String EXTENSION_PDF = ".pdf";
@@ -42,6 +42,7 @@ public interface IConstants {
 	 */
 	public interface MASTERS_NAME {
 		public String CODE_GROUP = "code_group";
+		public String CAMPAIGN = "campaign";
 	}
 
 	/**

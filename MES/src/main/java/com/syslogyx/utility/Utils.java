@@ -29,6 +29,8 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.format.CellFormat;
+import org.apache.poi.ss.format.CellGeneralFormatter;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -526,11 +528,14 @@ public class Utils {
 	}
 
 	/**
+	 * 
 	 * Prepare the Header row of PDF File according to the provided Header String
 	 * List
 	 * 
+	 * 
 	 * @param table
 	 * @param headerList
+	 * 
 	 */
 	public static void writeToPDFHeaderRow(PdfPTable table, List<String> headerList) {
 

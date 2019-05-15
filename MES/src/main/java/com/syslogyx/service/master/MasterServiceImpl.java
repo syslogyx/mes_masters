@@ -228,6 +228,30 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP)) {
 			processExportingCodeGroupListExcel(sheet, mastersList);
 		}
+		
+		if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN)) {
+			processExportingCampaignListExcel(sheet, mastersList);
+		}
+	}
+
+	private void processExportingCampaignListExcel(HSSFSheet sheet, List<CampaignDO> campaignList) {
+		for (int index = 0; index < campaignList.size(); index++) {
+			CampaignDO campaignDO = campaignList.get(index);
+			HSSFRow row = sheet.createRow(index + 1);
+			row.createCell(0).setCellValue(index + 1);
+			row.createCell(1).setCellValue(campaignDO.getCampaign_id());
+			row.createCell(2).setCellValue(campaignDO.getAttribute());
+			row.createCell(3).setCellValue(campaignDO.getAim());
+			row.createCell(4).setCellValue(campaignDO.getCapacity_min());
+			row.createCell(5).setCellValue(campaignDO.getCapacity_max());
+			row.createCell(6).setCellValue(campaignDO.getUpdated_by_name());
+			row.createCell(7).setCellValue(
+					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+			row.createCell(8).setCellValue(campaignDO.getPriority_level());
+			row.createCell(9).setCellValue(campaignDO.getHold_unit_name());
+			row.createCell(10).setCellValue(getStatusString(campaignDO.getStatus()));
+		}
+		
 	}
 
 	/**
@@ -285,6 +309,27 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	private void processPDFToExportingDataRows(PdfPTable table, List mastersList, String master_name) {
 		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP)) {
 			processExportingCodeGroupListPDF(table, mastersList);
+		}
+		if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN)) {
+			processExportingCampaignListPDF(table, mastersList);
+		}
+	}
+
+	private void processExportingCampaignListPDF(PdfPTable table, List<CampaignDO> campaignList) {
+		
+		for (int index = 0; index < campaignList.size(); index++) {
+			CampaignDO campaignDO = campaignList.get(index);
+
+			table.addCell(index + 1 + "");
+			table.addCell(campaignDO.getCampaign_id());	
+			table.addCell(campaignDO.getAttribute());
+			table.addCell(campaignDO.getAim());
+		
+			table.addCell(campaignDO.getUpdated_by_name());
+			table.addCell(
+					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+			
+			table.addCell(getStatusString(campaignDO.getStatus()));
 		}
 	}
 

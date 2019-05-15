@@ -88,7 +88,7 @@ public class CampaignDO {
 	private String hold_unit_name;
 
 	@Transient
-	private String created_by_name;
+	private String updated_by_name;
 
 	public CampaignDO() {
 
@@ -107,7 +107,7 @@ public class CampaignDO {
 		this.created = created;
 		this.updated = updated;
 		this.status = status;
-		this.created_by_name = username;
+		this.updated_by_name = username;
 		this.hold_unit_name = unit;
 		this.hold_unit_id = pu_id;
 	}
@@ -224,12 +224,12 @@ public class CampaignDO {
 		this.hold_unit_id = hold_unit_id;
 	}
 
-	public String getCreated_by_name() {
-		return created_by_name;
+	public String getUpdated_by_name() {
+		return updated_by_name;
 	}
 
-	public void setCreated_by_name(String created_by_name) {
-		this.created_by_name = created_by_name;
+	public void setUpdated_by_name(String updated_by_name) {
+		this.updated_by_name = updated_by_name;
 	}
 
 	public String getHold_unit_name() {
