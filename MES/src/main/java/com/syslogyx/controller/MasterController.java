@@ -16,6 +16,7 @@ import com.syslogyx.constants.INetworkConstants;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.message.IResponseCodes;
 import com.syslogyx.message.IResponseMessages;
+import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.service.master.IMasterService;
 
@@ -44,7 +45,7 @@ public class MasterController extends BaseController {
 		try {
 
 			iMasterService.createGroupCode(codeGroupDO);
-			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 			return getResponseModel(null, e.getCode(), e.getMessage());
@@ -56,7 +57,7 @@ public class MasterController extends BaseController {
 	}
 
 	/**
-	 * This method is used for Fetching list and Pagination
+	 * For fetching CodeGroup list with Pagination and Quick Finder
 	 * 
 	 * @param page
 	 * @param limit
@@ -101,7 +102,7 @@ public class MasterController extends BaseController {
 
 			iMasterService.updateStatus(code_group_id, status);
 
-			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.STATUS_UPDATE);
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 			return getResponseModel(null, e.getCode(), e.getMessage());
@@ -162,5 +163,132 @@ public class MasterController extends BaseController {
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
 
+	}
+
+	/**
+	 * This method is used for retrieving codeGroup by id and response all data in
+	 * 
+	 * @param code_group_id
+	 * @return
+	 */
+	@GetMapping(value = INetworkConstants.IURLConstants.CODE_GROUP + INetworkConstants.IURLConstants.VIEW + "/{"
+			+ INetworkConstants.IPathVariableConstants.CODE_GROUP_ID + "}")
+	public ResponseEntity<BaseResponseBO> getCodeGroupId(
+			@PathVariable(name = INetworkConstants.IPathVariableConstants.CODE_GROUP_ID) int code_group_id) {
+
+		try {
+			CodeGroupDO codeGroupDO = iMasterService.getCodeGroupId(code_group_id);
+
+			return getResponseModel(codeGroupDO, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+
+	}
+
+	/**
+	 * This method is used to save Campaign Data to db
+	 * 
+	 * @param CampaignDO
+	 *            : contains Campaign_Id Data provided by users
+	 * @return : Return response
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.CAMPAIGN + INetworkConstants.IURLConstants.SAVE)
+	public ResponseEntity<BaseResponseBO> createCampaign(@RequestBody CampaignDO campaignDO) {
+		try {
+
+			iMasterService.createCampaign(campaignDO);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+
+	}
+
+	/**
+	 * For fetching Campaign list with Pagination and Quick Finder
+	 * 
+	 * @param page
+	 * @param limit
+	 * @param requestFilter
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.CAMPAIGN + INetworkConstants.IURLConstants.LIST)
+	public ResponseEntity<BaseResponseBO> getCampaignList(
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.LIMIT, required = false, defaultValue = "-1") int limit,
+			@RequestBody RequestBO requestFilter) {
+		try {
+
+			Object campaignList = iMasterService.getCampaignList(requestFilter, page, limit);
+
+			if (campaignList != null)
+				return getResponseModel(campaignList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+
+			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * For Update Campaign status
+	 * 
+	 * @param camp_id
+	 * @param status
+	 * @return
+	 */
+	@GetMapping(value = INetworkConstants.IURLConstants.CAMPAIGN + INetworkConstants.IURLConstants.STATUS + "/{"
+			+ INetworkConstants.IPathVariableConstants.CAMP_ID + "}")
+	public ResponseEntity<BaseResponseBO> updateCampaignStatus(
+			@PathVariable(name = INetworkConstants.IPathVariableConstants.CAMP_ID) int camp_id,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.STATUS) int status) {
+
+		try {
+			iMasterService.updateCampaignStatus(camp_id, status);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.STATUS_UPDATE);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * For view Campaign table Data on particular Id
+	 * 
+	 * @param camp_id
+	 * @return
+	 */
+	@GetMapping(value = INetworkConstants.IURLConstants.CAMPAIGN + INetworkConstants.IURLConstants.VIEW + "/{"
+			+ INetworkConstants.IPathVariableConstants.CAMP_ID + "}")
+	public ResponseEntity<BaseResponseBO> getCampaignId(
+			@PathVariable(name = INetworkConstants.IPathVariableConstants.CAMP_ID) int camp_id) {
+
+		try {
+			CampaignDO campaignDO = iMasterService.getCampaignId(camp_id);
+
+			return getResponseModel(campaignDO, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
 	}
 }

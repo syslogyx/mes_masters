@@ -43,4 +43,18 @@ public interface IConstants {
 	public interface MASTERS_NAME {
 		public String CODE_GROUP = "code_group";
 	}
+
+	/**
+	 * Priority constants
+	 * 
+	 * @author palash
+	 *
+	 */
+	public interface IPriority {
+
+		public int LOW = 1;
+		public int MEDIUM = 2;
+		public int HIGH = 3;
+	}
+
 }

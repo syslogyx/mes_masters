@@ -3,6 +3,7 @@ com/syslogyx/constants/IConstants$DATE_TIME_FORMAT.class
 com/syslogyx/constants/IFileHeaderConstants.class
 com/syslogyx/service/BaseService.class
 com/syslogyx/dao/master/ICodeGroupDAO.class
+com/syslogyx/constants/IPropertyConstant.class
 com/syslogyx/config/JPAConfiguration.class
 com/syslogyx/service/master/MasterServiceImpl.class
 com/syslogyx/model/user/UserDO.class
@@ -12,6 +13,7 @@ com/syslogyx/model/masters/CodeGroupDO.class
 com/syslogyx/config/WebSecurityConfig.class
 com/syslogyx/controller/BaseController.class
 com/syslogyx/message/IResponseMessages.class
+com/syslogyx/model/masters/CampaignDO.class
 com/syslogyx/bo/AuthToken.class
 com/syslogyx/constants/INetworkConstants$IHeaderConstants.class
 com/syslogyx/Application.class
@@ -21,7 +23,9 @@ com/syslogyx/constants/IConstants.class
 com/syslogyx/dao/master/IMasterDAO.class
 com/syslogyx/bo/ResponseBO.class
 com/syslogyx/service/user/IUserService.class
+com/syslogyx/model/masters/ProcessUnitDO.class
 com/syslogyx/exception/ApplicationException.class
+com/syslogyx/constants/IConstants$IPriority.class
 com/syslogyx/dao/master/MasterDAOImpl.class
 com/syslogyx/message/IResponseCodes.class
 com/syslogyx/config/CORSFilter.class
@@ -34,6 +38,8 @@ com/syslogyx/constants/INetworkConstants$IPathVariableConstants.class
 com/syslogyx/service/user/UserServiceImpl.class
 com/syslogyx/bo/RequestBO.class
 com/syslogyx/config/TokenProvider.class
+com/syslogyx/dao/master/ICampaignDAO.class
 com/syslogyx/config/JwtAuthenticationFilter.class
 com/syslogyx/constants/INetworkConstants$IRequestParamConstants.class
 com/syslogyx/utility/Utils.class
+com/syslogyx/dao/master/IProcessUnitDAO.class

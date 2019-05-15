@@ -28,6 +28,8 @@ public interface INetworkConstants {
 		public String STATUS = "/status";
 		public String EXCEL = "/excel";
 		public String PDF = "/pdf";
+		public String VIEW = "/view";
+		public String CAMPAIGN = "/campaign";
 	}
 
 	/**
@@ -53,6 +55,7 @@ public interface INetworkConstants {
 		String PAGE = "page";
 		String LIMIT = "limit";
 		String STATUS = "status";
+		String PROCESS_UNIT_ID = "process_unit_id";
 
 	}
 
@@ -66,6 +69,7 @@ public interface INetworkConstants {
 
 		String CODE_GROUP_ID = "code_group_id";
 		String MASTER_NAME = "master_name";
+		String CAMP_ID = "cam_id";
 
 	}
 }
