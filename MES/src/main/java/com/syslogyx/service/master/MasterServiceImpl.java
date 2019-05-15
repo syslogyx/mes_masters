@@ -97,7 +97,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		validateStatus(status);
 
 		// for validate update status
-		validateUpdateStatus(status, presentStatus);
+		validateOldStatus(status, presentStatus);
 		codeGroupDO.setStatus(status);
 		iCodeGroupDAO.save(codeGroupDO);
 	}
@@ -109,7 +109,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	 * @param presentStatus
 	 * @throws ApplicationException
 	 */
-	private void validateUpdateStatus(int status, int presentStatus) throws ApplicationException {
+	private void validateOldStatus(int status, int presentStatus) throws ApplicationException {
 
 		if (status == presentStatus && presentStatus == IConstants.STATUS_INACTIVE)
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INACTIVE_STATUS);
@@ -218,16 +218,16 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	public void updateCampaignStatus(int camp_id, int status) throws ApplicationException {
 
 		CampaignDO campaignDO = iCampaignDAO.findById(camp_id);
-		int presentStatus = campaignDO.getStatus();
 
 		if (campaignDO == null)
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_CAMPAIGN_ID);
 
+		int presentStatus = campaignDO.getStatus();
 		// For validate Status
 		validateStatus(status);
 
 		// for validate update status
-		validateUpdateStatus(status, presentStatus);
+		validateOldStatus(status, presentStatus);
 
 		campaignDO.setStatus(status);
 		iCampaignDAO.save(campaignDO);

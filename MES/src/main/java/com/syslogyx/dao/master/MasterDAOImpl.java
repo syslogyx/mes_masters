@@ -173,7 +173,7 @@ public class MasterDAOImpl implements IMasterDAO {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<CampaignDO> createQuery = builder.createQuery(CampaignDO.class);
 		Root<CampaignDO> campaignRoot = createQuery.from(CampaignDO.class);
-		Join<CampaignDO, UserDO> fetch = campaignRoot.join(IPropertyConstant.CREATED_BY);
+		Join<CampaignDO, UserDO> fetch = campaignRoot.join(IPropertyConstant.UPDATED_BY);
 		Join<CampaignDO, ProcessUnitDO> processUnitFetch = campaignRoot.join(IPropertyConstant.HOLD_UNIT);
 
 		if (requestFilter != null) {

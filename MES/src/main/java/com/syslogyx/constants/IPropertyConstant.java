@@ -1,7 +1,5 @@
 package com.syslogyx.constants;
 
-import javax.persistence.metamodel.SingularAttribute;
-
 /**
  * Constant to define all properties in Entity
  * 
@@ -10,12 +8,20 @@ import javax.persistence.metamodel.SingularAttribute;
  */
 public interface IPropertyConstant {
 
+	//Common Constants
 	String ID = "id";
+	String USERNAME = "username";
+	String CREATED = "created";
+	String UPDATED = "updated";
+	String STATUS = "status";
+	String CREATED_BY = "created_by";
+	String UPDATED_BY = "updated_by";
+	
+	//CodeGroup Constants
 	String GROUP_CODE = "group_code";
 	String GROUP_DESC = "group_desc";
-	String CREATED_BY = "created_by";
-	String USERNAME = "username";
-
+	
+	//Campaign Constants
 	String CAMPAIGN_ID = "campaign_id";
 	String ATTRIBUTE = "attribute";
 	String AIM = "aim";
@@ -23,11 +29,9 @@ public interface IPropertyConstant {
 	String CAPACITY_MIN = "capacity_min";
 	String CAPACITY_MAX = "capacity_max";
 	String PRIORITY_LEVEL = "priority_level";
-	String CREATED = "created";
-	String UPDATED = "updated";
-	String STATUS = "status";
-
 	String UNIT = "unit";
+	
+	//ProcessUnit Constants
 	String PU_ID = "pu_id";
 	
 

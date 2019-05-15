@@ -19,10 +19,10 @@ public interface IResponseMessages {
 	String EXISTING_CAMPAIGN_ID = "This Campaign Id already exists.";
 	String INVALID_CAMPAIGN_ID = "Invalid Campaign Id.";
 	String INVALID_PRIORITY = "Invalid Priority level.";
-	String INVALID_PROCESS_UNIT_ID = "Invalid Process Unit Id";
-	String EMPTY_CAMPAIGN_ID = "Campaign Id is can't be empty";
+	String INVALID_PROCESS_UNIT_ID = "Invalid Process Unit Id.";
+	String EMPTY_CAMPAIGN_ID = "Campaign Id is can't be empty.";
 	String DATA_STORED_SUCCESSFULLY = "Data Stored Succesfully.";
-	String STATUS_UPDATE = "Status Update Successfully";
-	String INACTIVE_STATUS = "Status Already Inactive";
+	String STATUS_UPDATE = "Status Update Successfully.";
+	String INACTIVE_STATUS = "Status Already Inactive.";
 
 }
