@@ -37,6 +37,7 @@ public interface IMasterDAO {
 	 * 
 	 * @param master_name
 	 *            : identifier for returning the list accordingly
+	 * @param class1 
 	 * @return
 	 */
 	List<CodeGroupDO> findMastersList(String master_name);

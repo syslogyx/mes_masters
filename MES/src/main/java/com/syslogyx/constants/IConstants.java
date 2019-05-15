@@ -43,4 +43,15 @@ public interface IConstants {
 	public interface MASTERS_NAME {
 		public String CODE_GROUP = "code_group";
 	}
+
+	/**
+	 * Interface to define constants of OSP identifier
+	 * 
+	 * @author namrata
+	 *
+	 */
+	public interface OSP_IDENTIFIER {
+		public int YES = 1;
+		public int NO = 2;
+	}
 }

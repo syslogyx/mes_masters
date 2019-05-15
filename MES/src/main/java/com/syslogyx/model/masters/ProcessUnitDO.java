@@ -1,12 +1,25 @@
 package com.syslogyx.model.masters;
 
+import java.util.Date;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.syslogyx.model.user.UserDO;
 
 /**
  * This class store process unit data
@@ -16,6 +29,8 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "process_units")
+@EntityListeners(AuditingEntityListener.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProcessUnitDO {
 
 	@Id
@@ -26,6 +41,41 @@ public class ProcessUnitDO {
 
 	@Column(name = "unit")
 	private String unit;
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "process_family_id")
+	private ProcessFamilyDO process_family;
+
+	@Column(name = "cost_center")
+	private String cost_center;
+
+	@Column(name = "capacity")
+	private String capacity;
+
+	@Column(name = "const_setup_time")
+	private String const_setup_time;
+
+	@Column(name = "yield")
+	private String yield;
+
+	@Column(name = "osp_identifier")
+	private int osp_identifier;
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "created_by", updatable = false)
+	private UserDO created_by;
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "updated_by")
+	private UserDO updated_by;
+
+	@CreatedDate
+	@Column(name = "created", updatable = false)
+	private Date created;
+
+	@LastModifiedDate
+	@Column(name = "updated")
+	private Date updated;
 
 	@Column(name = "status")
 	private int status;
@@ -52,6 +102,86 @@ public class ProcessUnitDO {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public ProcessFamilyDO getProcess_family() {
+		return process_family;
+	}
+
+	public void setProcess_family(ProcessFamilyDO process_family) {
+		this.process_family = process_family;
+	}
+
+	public String getCost_center() {
+		return cost_center;
+	}
+
+	public void setCost_center(String cost_center) {
+		this.cost_center = cost_center;
+	}
+
+	public String getCapacity() {
+		return capacity;
+	}
+
+	public void setCapacity(String capacity) {
+		this.capacity = capacity;
+	}
+
+	public String getConst_setup_time() {
+		return const_setup_time;
+	}
+
+	public void setConst_setup_time(String const_setup_time) {
+		this.const_setup_time = const_setup_time;
+	}
+
+	public String getYield() {
+		return yield;
+	}
+
+	public void setYield(String yield) {
+		this.yield = yield;
+	}
+
+	public int getOsp_identifier() {
+		return osp_identifier;
+	}
+
+	public void setOsp_identifier(int osp_identifier) {
+		this.osp_identifier = osp_identifier;
+	}
+
+	public UserDO getCreated_by() {
+		return created_by;
+	}
+
+	public void setCreated_by(UserDO created_by) {
+		this.created_by = created_by;
+	}
+
+	public UserDO getUpdated_by() {
+		return updated_by;
+	}
+
+	public void setUpdated_by(UserDO updated_by) {
+		this.updated_by = updated_by;
+	}
+
+	public Date getCreated() {
+		return created;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	public Date getUpdated() {
+		return updated;
+	}
+
+	public void setUpdated(Date updated) {
+		this.updated = updated;
 	}
 
 }

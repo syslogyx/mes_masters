@@ -39,6 +39,9 @@ public class ProcessTypeDO {
 	@Column(name = "pt_id")
 	private int id;
 
+	@Column(name = "name")
+	private String name;
+
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by", updatable = false)
 	private UserDO created_by;
@@ -57,4 +60,61 @@ public class ProcessTypeDO {
 
 	@Column(name = "status")
 	private int status;
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public UserDO getCreated_by() {
+		return created_by;
+	}
+
+	public void setCreated_by(UserDO created_by) {
+		this.created_by = created_by;
+	}
+
+	public UserDO getUpdated_by() {
+		return updated_by;
+	}
+
+	public void setUpdated_by(UserDO updated_by) {
+		this.updated_by = updated_by;
+	}
+
+	public Date getCreated() {
+		return created;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	public Date getUpdated() {
+		return updated;
+	}
+
+	public void setUpdated(Date updated) {
+		this.updated = updated;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
 }

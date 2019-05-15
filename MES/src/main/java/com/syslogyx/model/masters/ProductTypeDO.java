@@ -13,7 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -23,35 +22,25 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.syslogyx.model.user.UserDO;
 
 /**
- * This Class store Trimming Data
+ * This Class store Product Type Data
  * 
  * @author namrata
  *
  */
 @Entity
-@Table(name = "trimmings")
+@Table(name = "product_types")
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TrimmingDO {
+public class ProductTypeDO {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "trim_Sequence")
-	@SequenceGenerator(name = "trim_Sequence", sequenceName = "TRIM_SEQ", allocationSize = 1)
-	@Column(name = "trim_id")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "productT_Sequence")
+	@SequenceGenerator(name = "productT_Sequence", sequenceName = "PRODUCT_SEQ", allocationSize = 1)
+	@Column(name = "pt_id")
 	private int id;
 
-	@Column(name = "trim_allo_min")
-	private float trim_allo_min;
-
-	@Column(name = "trim_allo_max")
-	private float trim_allo_max;
-
-	@Column(name = "trim_allo_aim")
-	private float trim_allo_aim;
-
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "cr_grade_id")
-	private CRGradeDO cr_grade;
+	@Column(name = "name")
+	private String name;
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by", updatable = false)
@@ -72,9 +61,6 @@ public class TrimmingDO {
 	@Column(name = "status")
 	private int status;
 
-	@Transient
-	private int cr_grade_id;
-
 	public int getId() {
 		return id;
 	}
@@ -83,36 +69,12 @@ public class TrimmingDO {
 		this.id = id;
 	}
 
-	public float getTrim_allo_min() {
-		return trim_allo_min;
+	public String getName() {
+		return name;
 	}
 
-	public void setTrim_allo_min(float trim_allo_min) {
-		this.trim_allo_min = trim_allo_min;
-	}
-
-	public float getTrim_allo_max() {
-		return trim_allo_max;
-	}
-
-	public void setTrim_allo_max(float trim_allo_max) {
-		this.trim_allo_max = trim_allo_max;
-	}
-
-	public float getTrim_allo_aim() {
-		return trim_allo_aim;
-	}
-
-	public void setTrim_allo_aim(int trim_allo_aim) {
-		this.trim_allo_aim = trim_allo_aim;
-	}
-
-	public CRGradeDO getCr_grade() {
-		return cr_grade;
-	}
-
-	public void setCr_grade(CRGradeDO cr_grade) {
-		this.cr_grade = cr_grade;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public UserDO getCreated_by() {
@@ -153,14 +115,6 @@ public class TrimmingDO {
 
 	public void setStatus(int status) {
 		this.status = status;
-	}
-
-	public int getCr_grade_id() {
-		return cr_grade_id;
-	}
-
-	public void setCr_grade_id(int cr_grade_id) {
-		this.cr_grade_id = cr_grade_id;
 	}
 
 }
