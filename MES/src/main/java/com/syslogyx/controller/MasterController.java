@@ -17,6 +17,7 @@ import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.message.IResponseCodes;
 import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.model.masters.CodeGroupDO;
+import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.service.master.IMasterService;
 
 /**
@@ -52,7 +53,6 @@ public class MasterController extends BaseController {
 			e.printStackTrace();
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
-
 	}
 
 	/**
@@ -109,7 +109,6 @@ public class MasterController extends BaseController {
 			e.printStackTrace();
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
-
 	}
 
 	/**
@@ -135,7 +134,6 @@ public class MasterController extends BaseController {
 			e.printStackTrace();
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
-
 	}
 
 	/**
@@ -154,6 +152,28 @@ public class MasterController extends BaseController {
 			String filePath = iMasterService.exportListToPDF(master_name);
 
 			return getResponseModel(filePath, IResponseCodes.SUCCESS, IResponseMessages.LIST_EXPORTED_SUCCESSFULLY);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * This method is used to save DPRTargetDO Data to db
+	 * 
+	 * @param dprTargetDO
+	 *            : contains codeGroup Data provided by users
+	 * @return : Return response
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.DPR_TARGET + INetworkConstants.IURLConstants.SAVE)
+	public ResponseEntity<BaseResponseBO> createDPRTarget(@RequestBody DPRTargetDO dprTargetDO) {
+		try {
+
+			iMasterService.createDPRTarget(dprTargetDO);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 			return getResponseModel(null, e.getCode(), e.getMessage());

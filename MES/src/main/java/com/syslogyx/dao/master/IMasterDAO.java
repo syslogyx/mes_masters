@@ -3,6 +3,7 @@ package com.syslogyx.dao.master;
 import java.util.List;
 
 import com.syslogyx.bo.RequestBO;
+import com.syslogyx.dao.base.IBaseDAO;
 import com.syslogyx.model.masters.CodeGroupDO;
 
 /**
@@ -11,7 +12,7 @@ import com.syslogyx.model.masters.CodeGroupDO;
  * @author Palash
  *
  */
-public interface IMasterDAO {
+public interface IMasterDAO extends IBaseDAO {
 
 	/**
 	 * This method is used for pagination
@@ -37,7 +38,7 @@ public interface IMasterDAO {
 	 * 
 	 * @param master_name
 	 *            : identifier for returning the list accordingly
-	 * @param class1 
+	 * @param class1
 	 * @return
 	 */
 	List<CodeGroupDO> findMastersList(String master_name);

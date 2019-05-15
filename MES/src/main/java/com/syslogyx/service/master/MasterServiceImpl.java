@@ -16,11 +16,15 @@ import com.syslogyx.bo.RequestBO;
 import com.syslogyx.constants.IConstants;
 import com.syslogyx.constants.IFileHeaderConstants;
 import com.syslogyx.dao.master.ICodeGroupDAO;
+import com.syslogyx.dao.master.IDPRTargetDAO;
 import com.syslogyx.dao.master.IMasterDAO;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.message.IResponseCodes;
 import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.model.masters.CodeGroupDO;
+import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.ProcessUnitDO;
+import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.user.UserDO;
 import com.syslogyx.service.BaseService;
 import com.syslogyx.utility.Utils;
@@ -37,6 +41,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 	@Autowired
 	private ICodeGroupDAO iCodeGroupDAO;
+
+	@Autowired
+	private IDPRTargetDAO idprTargetDAO;
 
 	@Autowired
 	private IMasterDAO masterDAO;
@@ -211,6 +218,33 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			table.addCell(codeGroupDO.getUpdated_by_name());
 			table.addCell(getStatusString(codeGroupDO.getStatus()));
 		}
+	}
+
+	@Override
+	public void createDPRTarget(DPRTargetDO dprTargetDO) throws ApplicationException {
+
+		int dpr_id = dprTargetDO.getId();
+		int unit_id = dprTargetDO.getUnit_id();
+		int product_id = dprTargetDO.getProduct_id();
+
+		// if the dpr id is provided, validate it in DB
+		masterDAO.validateEntityById(DPRTargetDO.class, dpr_id, IResponseMessages.INVALID_DPR_TARGET_ID);
+
+		// validate and set unit id
+		ProcessUnitDO processUnitDO = (ProcessUnitDO) masterDAO.validateEntityById(ProcessUnitDO.class, unit_id,
+				IResponseMessages.INVALID_PROCESS_UNIT_ID);
+		dprTargetDO.setUnit(processUnitDO);
+
+		// validate and set product id
+		ProductDefDO productDefDO = (ProductDefDO) masterDAO.validateEntityById(ProductDefDO.class, product_id,
+				IResponseMessages.INVALID_PRODUCT_ID);
+		dprTargetDO.setProduct(productDefDO);
+
+		UserDO loggedInUser = getLoggedInUser();
+		dprTargetDO.setCreated_by(loggedInUser);
+		dprTargetDO.setUpdated_by(loggedInUser);
+		dprTargetDO.setStatus(IConstants.STATUS_ACTIVE);
+		idprTargetDAO.save(dprTargetDO);
 	}
 
 }

@@ -21,5 +21,8 @@ public interface IResponseMessages {
 	String UNABLE_TO_LOCATE_FILE = "Unable to Locate File location.";
 	String UNABLE_TO_EXORT_EXCEL = "Unable to Export the Excel file.";
 	String UNABLE_TO_EXORT_PDF = "Unable to Export PDF.";
+	String INVALID_DPR_TARGET_ID = "Invalid DPR Target Id.";
+	String INVALID_PROCESS_UNIT_ID = "Invalid Process Unit Id.";
+	String INVALID_PRODUCT_ID = "Invalid Product Id.";
 
 }

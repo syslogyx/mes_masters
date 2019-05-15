@@ -28,6 +28,7 @@ public interface INetworkConstants {
 		public String STATUS = "/status";
 		public String EXCEL = "/excel";
 		public String PDF = "/pdf";
+		public String DPR_TARGET = "dpr_target";
 	}
 
 	/**

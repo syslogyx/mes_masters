@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import com.syslogyx.bo.RequestBO;
 import com.syslogyx.constants.IConstants;
+import com.syslogyx.dao.base.BaseDAOImpl;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.user.UserDO;
@@ -31,18 +32,33 @@ import com.syslogyx.model.user.UserDO;
  */
 @Repository
 @Transactional(rollbackOn = { ApplicationException.class, Exception.class })
-public class MasterDAOImpl implements IMasterDAO {
+public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 	@Autowired
 	private EntityManager entityManager;
 
-	/**
-	 * This method is used for pagination
-	 */
 	@Override
 	public List<CodeGroupDO> getCodeGroupList(RequestBO requestFilter, int page, int limit) {
 
-		Query query = entityManager.createQuery(getCriteriaWithFilter(requestFilter));
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<CodeGroupDO> createQuery = builder.createQuery(CodeGroupDO.class);
+		Root<CodeGroupDO> codeGroupRoot = createQuery.from(CodeGroupDO.class);
+		Join<CodeGroupDO, UserDO> fetch = codeGroupRoot.join("updated_by");
+
+		// set the list of properties whose values are required to fetch
+		CompoundSelection<CodeGroupDO> construct = builder.construct(CodeGroupDO.class, codeGroupRoot.get("id"),
+				codeGroupRoot.get("group_code"), codeGroupRoot.get("group_desc"), fetch.get("username"),
+				codeGroupRoot.get("created"), codeGroupRoot.get("updated"), codeGroupRoot.get("status"));
+
+		// prepare where conditions according to provided filter
+		List<Predicate> conditions = addCriteriaForFilter(requestFilter, builder, codeGroupRoot);
+
+		// add the list of predicates in where clause
+		if (conditions != null && !conditions.isEmpty()) {
+			createQuery.where(conditions.toArray(new Predicate[] {}));
+		}
+
+		Query query = entityManager.createQuery(createQuery.select(construct));
 
 		if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
 			int start_index = IConstants.VALUE_ZERO;
@@ -62,13 +78,12 @@ public class MasterDAOImpl implements IMasterDAO {
 	 * Prepare the Criteria for Code Groups by adding required filters
 	 * 
 	 * @param requestFilter
+	 * @param codeGroupRoot
+	 * @param builder
 	 * @return
 	 */
-	private CriteriaQuery<CodeGroupDO> getCriteriaWithFilter(RequestBO requestFilter) {
-		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<CodeGroupDO> createQuery = builder.createQuery(CodeGroupDO.class);
-		Root<CodeGroupDO> codeGroupRoot = createQuery.from(CodeGroupDO.class);
-		Join<CodeGroupDO, UserDO> fetch = codeGroupRoot.join("updated_by");
+	private List<Predicate> addCriteriaForFilter(RequestBO requestFilter, CriteriaBuilder builder,
+			Root<CodeGroupDO> codeGroupRoot) {
 
 		if (requestFilter != null) {
 			List<Predicate> conditions = new ArrayList<>();
@@ -83,23 +98,11 @@ public class MasterDAOImpl implements IMasterDAO {
 			if (!requestFilter.isInclude_inactive_data()) {
 				conditions.add(builder.notEqual(codeGroupRoot.get("status"), IConstants.STATUS_INACTIVE));
 			}
-
-			if (conditions != null && !conditions.isEmpty()) {
-				createQuery.where(conditions.toArray(new Predicate[] {}));
-			}
+			return conditions;
 		}
-
-		CompoundSelection<CodeGroupDO> construct = builder.construct(CodeGroupDO.class, codeGroupRoot.get("id"),
-				codeGroupRoot.get("group_code"), codeGroupRoot.get("group_desc"), fetch.get("username"),
-				codeGroupRoot.get("created"), codeGroupRoot.get("updated"), codeGroupRoot.get("status"));
-
-		return createQuery.select(construct);
+		return null;
 	}
 
-	/**
-	 * 
-	 * This method is used for count all Numbers of rows in CodeGroup table from db
-	 */
 	@Override
 	public long getCodeGroupListSize(RequestBO requestFilter) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -108,12 +111,12 @@ public class MasterDAOImpl implements IMasterDAO {
 
 		createQuery.select(builder.count(codeGroupRoot));
 
-		if (requestFilter != null && requestFilter.getQuick_finder() != null
-				&& !requestFilter.getQuick_finder().isEmpty()) {
+		// prepare where conditions according to provided filter
+		List<Predicate> conditions = addCriteriaForFilter(requestFilter, builder, codeGroupRoot);
 
-			createQuery.where(builder.or(
-					builder.like(codeGroupRoot.get("group_code"), "%" + requestFilter.getQuick_finder() + "%"),
-					builder.like(codeGroupRoot.get("group_desc"), "%" + requestFilter.getQuick_finder() + "%")));
+		// add the list of predicates in where clause
+		if (conditions != null && !conditions.isEmpty()) {
+			createQuery.where(conditions.toArray(new Predicate[] {}));
 		}
 
 		Query query = entityManager.createQuery(createQuery);
@@ -124,4 +127,5 @@ public class MasterDAOImpl implements IMasterDAO {
 	public List<CodeGroupDO> findMastersList(String master_name) {
 		return getCodeGroupList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 	}
+
 }

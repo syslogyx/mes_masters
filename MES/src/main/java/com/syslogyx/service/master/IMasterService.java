@@ -3,6 +3,7 @@ package com.syslogyx.service.master;
 import com.syslogyx.bo.RequestBO;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.masters.CodeGroupDO;
+import com.syslogyx.model.masters.DPRTargetDO;
 
 /**
  * This class is used for MasterService business logic related to Master module
@@ -60,5 +61,13 @@ public interface IMasterService {
 	 * @throws ApplicationException
 	 */
 	String exportListToPDF(String master_name) throws ApplicationException;
+
+	/**
+	 * This Method is used to validation on DPRTargetDO and Save CodeGroup Data
+	 * 
+	 * @param dprTargetDO
+	 * @throws ApplicationException
+	 */
+	void createDPRTarget(DPRTargetDO dprTargetDO) throws ApplicationException;
 
 }
