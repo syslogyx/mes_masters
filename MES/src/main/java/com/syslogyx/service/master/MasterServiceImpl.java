@@ -89,15 +89,43 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	public void updateStatus(int code_group_id, int status) throws ApplicationException {
 
 		CodeGroupDO codeGroupDO = iCodeGroupDAO.findById(code_group_id);
+		int presentStatus = codeGroupDO.getStatus();
 		if (codeGroupDO == null)
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_GROUP_CODE_ID);
 
+		// for validate status
 		validateStatus(status);
+
+		// for validate update status
+		validateUpdateStatus(status, presentStatus);
 		codeGroupDO.setStatus(status);
 		iCodeGroupDAO.save(codeGroupDO);
 	}
 
+	/**
+	 * For check status is already Inactive or not
+	 * 
+	 * @param status
+	 * @param presentStatus
+	 * @throws ApplicationException
+	 */
+	private void validateUpdateStatus(int status, int presentStatus) throws ApplicationException {
+
+		if (status == presentStatus && presentStatus == IConstants.STATUS_INACTIVE)
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INACTIVE_STATUS);
+
+		if (status == presentStatus && presentStatus == IConstants.STATUS_ACTIVE)
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_STATUS);
+	}
+
+	/**
+	 * For Validate status
+	 * 
+	 * @param status
+	 * @throws ApplicationException
+	 */
 	private void validateStatus(int status) throws ApplicationException {
+
 		if (status != IConstants.STATUS_INACTIVE && status != IConstants.STATUS_ACTIVE)
 			throw new ApplicationException(IResponseCodes.INVALID_STATUS, IResponseMessages.INVALID_STATUS);
 
@@ -190,10 +218,17 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	public void updateCampaignStatus(int camp_id, int status) throws ApplicationException {
 
 		CampaignDO campaignDO = iCampaignDAO.findById(camp_id);
+		int presentStatus = campaignDO.getStatus();
+
 		if (campaignDO == null)
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_CAMPAIGN_ID);
 
+		// For validate Status
 		validateStatus(status);
+
+		// for validate update status
+		validateUpdateStatus(status, presentStatus);
+
 		campaignDO.setStatus(status);
 		iCampaignDAO.save(campaignDO);
 

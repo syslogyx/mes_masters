@@ -117,15 +117,26 @@ public class MasterDAOImpl implements IMasterDAO {
 
 		createQuery.select(builder.count(codeGroupRoot));
 
-		if (requestFilter != null && requestFilter.getQuick_finder() != null
-				&& !requestFilter.getQuick_finder().isEmpty()) {
+		if (requestFilter != null) {
+			List<Predicate> conditions = new ArrayList<>();
 
-			createQuery.where(builder.or(
-					builder.like(codeGroupRoot.get(IPropertyConstant.GROUP_CODE),
-							"%" + requestFilter.getQuick_finder() + "%"),
-					builder.like(codeGroupRoot.get(IPropertyConstant.GROUP_DESC),
-							"%" + requestFilter.getQuick_finder() + "%")));
+			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
+				conditions.add(builder.or(
+						builder.like(codeGroupRoot.get(IPropertyConstant.GROUP_CODE),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(codeGroupRoot.get(IPropertyConstant.GROUP_DESC),
+								"%" + requestFilter.getQuick_finder() + "%")));
+			}
 
+			// add condition to restrict rows whose status is inactive
+			if (!requestFilter.isInclude_inactive_data()) {
+				conditions
+						.add(builder.notEqual(codeGroupRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
+			}
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
 		}
 
 		Query query = entityManager.createQuery(createQuery);
@@ -175,6 +186,8 @@ public class MasterDAOImpl implements IMasterDAO {
 						builder.like(campaignRoot.get(IPropertyConstant.ATTRIBUTE),
 								"%" + requestFilter.getQuick_finder() + "%"),
 						builder.like(campaignRoot.get(IPropertyConstant.AIM),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(processUnitFetch.get(IPropertyConstant.UNIT),
 								"%" + requestFilter.getQuick_finder() + "%")));
 			}
 
@@ -195,7 +208,8 @@ public class MasterDAOImpl implements IMasterDAO {
 				campaignRoot.get(IPropertyConstant.CAPACITY_MIN), campaignRoot.get(IPropertyConstant.CAPACITY_MAX),
 				campaignRoot.get(IPropertyConstant.PRIORITY_LEVEL), campaignRoot.get(IPropertyConstant.CREATED),
 				campaignRoot.get(IPropertyConstant.UPDATED), campaignRoot.get(IPropertyConstant.STATUS),
-				fetch.get(IPropertyConstant.USERNAME), processUnitFetch.get(IPropertyConstant.UNIT));
+				fetch.get(IPropertyConstant.USERNAME), processUnitFetch.get(IPropertyConstant.UNIT),
+				processUnitFetch.get(IPropertyConstant.PU_ID));
 
 		return createQuery.select(construct);
 	}
@@ -205,22 +219,36 @@ public class MasterDAOImpl implements IMasterDAO {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
 		Root<CampaignDO> campaignRoot = createQuery.from(CampaignDO.class);
+		Join<CampaignDO, ProcessUnitDO> processUnitFetch = campaignRoot.join(IPropertyConstant.HOLD_UNIT);
 
 		createQuery.select(builder.count(campaignRoot));
 
-		if (requestFilter == null && requestFilter.getQuick_finder() == null
-			&& !requestFilter.getQuick_finder().isEmpty()) {
+		if (requestFilter != null) {
+			List<Predicate> conditions = new ArrayList<>();
 
-			createQuery.where(builder.or(
-					builder.like(campaignRoot.get(IPropertyConstant.CAMPAIGN_ID),
-							"%" + requestFilter.getQuick_finder() + "%"),
-					builder.like(campaignRoot.get(IPropertyConstant.ATTRIBUTE),
-							"%" + requestFilter.getQuick_finder() + "%"),
-					builder.like(campaignRoot.get(IPropertyConstant.AIM),
-							"%" + requestFilter.getQuick_finder() + "%")));
+			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
+				conditions.add(builder.or(
+						builder.like(campaignRoot.get(IPropertyConstant.CAMPAIGN_ID),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(campaignRoot.get(IPropertyConstant.ATTRIBUTE),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(campaignRoot.get(IPropertyConstant.AIM),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(processUnitFetch.get(IPropertyConstant.UNIT),
+								"%" + requestFilter.getQuick_finder() + "%")));
+			}
+
+			// add condition to restrict rows whose status is inactive
+			if (!requestFilter.isInclude_inactive_data()) {
+				conditions
+						.add(builder.notEqual(campaignRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
+			}
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
 
 		}
-
 		Query query = entityManager.createQuery(createQuery);
 		return (long) query.getSingleResult();
 	}

@@ -59,7 +59,7 @@ public class CampaignDO {
 	private int priority_level;
 
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "hold_unit", updatable = false)
+	@JoinColumn(name = "hold_unit")
 	private ProcessUnitDO hold_unit;
 
 	@ManyToOne(cascade = CascadeType.ALL)
@@ -95,7 +95,7 @@ public class CampaignDO {
 	}
 
 	public CampaignDO(int id, String campaign_id, String attribute, String aim, float capacity_min, float capacity_max,
-			int priority_level, Date created, Date updated, int status, String username, String unit) {
+			int priority_level, Date created, Date updated, int status, String username, String unit, int pu_id) {
 
 		this.id = id;
 		this.campaign_id = campaign_id;
@@ -109,6 +109,7 @@ public class CampaignDO {
 		this.status = status;
 		this.created_by_name = username;
 		this.hold_unit_name = unit;
+		this.hold_unit_id = pu_id;
 	}
 
 	public int getId() {

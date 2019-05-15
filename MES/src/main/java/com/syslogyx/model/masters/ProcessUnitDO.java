@@ -25,7 +25,7 @@ public class ProcessUnitDO {
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "processUnit_Sequence")
 	@SequenceGenerator(name = "processUnit_Sequence", sequenceName = "PROCESS_SEQ", allocationSize = 1)
 	@Column(name="pu_id")
-	private int id;
+	private int pu_id;
 
 	@Column(name="unit")
 	private String unit;
@@ -33,12 +33,13 @@ public class ProcessUnitDO {
 	@Column(name="status")
 	private int status;
 
-	public int getId() {
-		return id;
+
+	public int getPu_id() {
+		return pu_id;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setPu_id(int pu_id) {
+		this.pu_id = pu_id;
 	}
 
 	public String getUnit() {

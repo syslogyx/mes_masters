@@ -23,5 +23,6 @@ public interface IResponseMessages {
 	String EMPTY_CAMPAIGN_ID = "Campaign Id is can't be empty";
 	String DATA_STORED_SUCCESSFULLY = "Data Stored Succesfully.";
 	String STATUS_UPDATE = "Status Update Successfully";
+	String INACTIVE_STATUS = "Status Already Inactive";
 
 }

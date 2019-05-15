@@ -28,6 +28,7 @@ public interface IPropertyConstant {
 	String STATUS = "status";
 
 	String UNIT = "unit";
+	String PU_ID = "pu_id";
 	
 
 }
