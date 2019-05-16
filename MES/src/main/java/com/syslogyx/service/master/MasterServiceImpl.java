@@ -228,6 +228,38 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP)) {
 			processExportingCodeGroupListExcel(sheet, mastersList);
 		}
+
+		if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN)) {
+			processExportingCampaignListExcel(sheet, mastersList);
+		}
+	}
+
+	/**
+	 * Set the Field value from Campaign Object to it's respective index number in
+	 * the excel sheet
+	 * 
+	 * @param sheet
+	 * @param campaignList
+	 */
+
+	private void processExportingCampaignListExcel(HSSFSheet sheet, List<CampaignDO> campaignList) {
+		for (int index = 0; index < campaignList.size(); index++) {
+			CampaignDO campaignDO = campaignList.get(index);
+			HSSFRow row = sheet.createRow(index + 1);
+			row.createCell(0).setCellValue(index + 1);
+			row.createCell(1).setCellValue(campaignDO.getCampaign_id());
+			row.createCell(2).setCellValue(campaignDO.getAttribute());
+			row.createCell(3).setCellValue(campaignDO.getAim());
+			row.createCell(4).setCellValue(campaignDO.getCapacity_min());
+			row.createCell(5).setCellValue(campaignDO.getCapacity_max());
+			row.createCell(6).setCellValue(campaignDO.getUpdated_by_name());
+			row.createCell(7).setCellValue(
+					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+			row.createCell(8).setCellValue(campaignDO.getPriority_level());
+			row.createCell(9).setCellValue(campaignDO.getHold_unit_name());
+			row.createCell(10).setCellValue(getStatusString(campaignDO.getStatus()));
+		}
+
 	}
 
 	/**
@@ -258,7 +290,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		if (mastersList != null && !mastersList.isEmpty()) {
 			Document document = new Document();
-			PdfPTable table = new PdfPTable(new float[] { 1, 1, 2, 2, 2, 1 });
+
+			PdfPTable table = new PdfPTable(setPDFwidth(master_name));
+
 			List<String> headerList = IFileHeaderConstants.getMastersHeaderList(master_name);
 			table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
 
@@ -276,6 +310,23 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	}
 
 	/**
+	 * to set PDF table width according to Master Name
+	 * 
+	 * @param table
+	 * @param master_name
+	 * @return
+	 */
+	private float[] setPDFwidth(String master_name) {
+		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP)) {
+			return new float[] { 1, 1, 2, 2, 2, 1 };
+		}
+		if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN)) {
+			return new float[] { 1, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1 };
+		}
+		return null;
+	}
+
+	/**
 	 * Process the PDF Sheet Data Rows According to the master_name specified
 	 * 
 	 * @param table
@@ -285,6 +336,36 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	private void processPDFToExportingDataRows(PdfPTable table, List mastersList, String master_name) {
 		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP)) {
 			processExportingCodeGroupListPDF(table, mastersList);
+		}
+		if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN)) {
+			processExportingCampaignListPDF(table, mastersList);
+		}
+	}
+
+	/**
+	 * Set the Field value from Campaign Object to it's respective index number in
+	 * the PDF Table
+	 * 
+	 * @param table
+	 * @param campaignList
+	 */
+	private void processExportingCampaignListPDF(PdfPTable table, List<CampaignDO> campaignList) {
+
+		for (int index = 0; index < campaignList.size(); index++) {
+			CampaignDO campaignDO = campaignList.get(index);
+
+			table.addCell(index + 1 + "");
+			table.addCell(campaignDO.getCampaign_id());
+			table.addCell(campaignDO.getAttribute());
+			table.addCell(campaignDO.getAim());
+			table.addCell(campaignDO.getCapacity_max() + "");
+			table.addCell(campaignDO.getCapacity_min() + "");
+			table.addCell(campaignDO.getUpdated_by_name());
+			table.addCell(
+					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+			table.addCell(getPriorityString(campaignDO.getPriority_level()));
+			table.addCell(campaignDO.getHold_unit_name());
+			table.addCell(getStatusString(campaignDO.getStatus()));
 		}
 	}
 
