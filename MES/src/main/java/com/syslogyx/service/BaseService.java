@@ -76,7 +76,29 @@ public class BaseService {
 		}
 		return null;
 	}
-	
 
+	/**
+	 * Return the Text of priority according to it's value
+	 * 
+	 * @param priority
+	 *            : priority value in integer
+	 * @return
+	 */
+	public String getPriorityString(int priority) {
+		switch (priority) {
+		case IConstants.IPriority.LOW:
+			return "Low";
+
+		case IConstants.IPriority.MEDIUM:
+			return "Medium";
+
+		case IConstants.IPriority.HIGH:
+			return "High";
+
+		default:
+			break;
+		}
+		return null;
+	}
 
 }

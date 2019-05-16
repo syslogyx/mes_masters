@@ -18,7 +18,7 @@ public interface IConstants {
 	public int DEFAULT = -1;
 	public int VALUE_ZERO = 0;
 	public String EXCEL_BASE_PATH = "/home/alok/Desktop/excel/";
-	public String PDF_BASE_PATH = "/home/namrata/Desktop/pdf/";
+	public String PDF_BASE_PATH = "/home/alok/Desktop/pdf/";
 	public String EXTENSION_EXCEL = ".xls";
 	public String EXTENSION_PDF = ".pdf";
 
