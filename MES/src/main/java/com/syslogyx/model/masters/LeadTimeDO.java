@@ -65,7 +65,7 @@ public class LeadTimeDO {
 	private Date updated;
 
 	@Column(name = "status")
-	private int status;
+	public int status;
 
 	@Transient
 	private int after_process_unit_id;

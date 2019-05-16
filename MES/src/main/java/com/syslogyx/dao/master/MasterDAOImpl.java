@@ -25,7 +25,6 @@ import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.DPRTargetDO;
-import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.user.UserDO;
 
@@ -49,12 +48,14 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<CodeGroupDO> createQuery = builder.createQuery(CodeGroupDO.class);
 		Root<CodeGroupDO> codeGroupRoot = createQuery.from(CodeGroupDO.class);
-		Join<CodeGroupDO, UserDO> fetch = codeGroupRoot.join("updated_by");
+		Join<CodeGroupDO, UserDO> fetch = codeGroupRoot.join(IPropertyConstant.UPDATED_BY);
 
 		// set the list of properties whose values are required to fetch
-		CompoundSelection<CodeGroupDO> construct = builder.construct(CodeGroupDO.class, codeGroupRoot.get("id"),
-				codeGroupRoot.get("group_code"), codeGroupRoot.get("group_desc"), fetch.get("username"),
-				codeGroupRoot.get("created"), codeGroupRoot.get("updated"), codeGroupRoot.get("status"));
+		CompoundSelection<CodeGroupDO> construct = builder.construct(CodeGroupDO.class,
+				codeGroupRoot.get(IPropertyConstant.ID), codeGroupRoot.get(IPropertyConstant.GROUP_CODE),
+				codeGroupRoot.get(IPropertyConstant.GROUP_DESC), fetch.get(IPropertyConstant.USERNAME),
+				codeGroupRoot.get(IPropertyConstant.CREATED), codeGroupRoot.get(IPropertyConstant.UPDATED),
+				codeGroupRoot.get(IPropertyConstant.STATUS));
 
 		// prepare where conditions according to provided filter
 		List<Predicate> conditions = addCriteriaForCodeGroupFilter(requestFilter, builder, codeGroupRoot);
@@ -141,6 +142,9 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN))
 			return getCampaignList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
+		if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
+			return getDPRTargetList(null, IConstants.DEFAULT, IConstants.DEFAULT);
+
 		return null;
 	}
 
@@ -177,6 +181,35 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		Join<CampaignDO, UserDO> fetch = campaignRoot.join(IPropertyConstant.UPDATED_BY);
 		Join<CampaignDO, ProcessUnitDO> processUnitFetch = campaignRoot.join(IPropertyConstant.HOLD_UNIT);
 
+		List<Predicate> conditions = getConditionsForCampaign(requestFilter, builder, campaignRoot, processUnitFetch);
+
+		if (conditions != null && !conditions.isEmpty()) {
+			createQuery.where(conditions.toArray(new Predicate[] {}));
+		}
+
+		CompoundSelection<CampaignDO> construct = builder.construct(CampaignDO.class,
+				campaignRoot.get(IPropertyConstant.ID), campaignRoot.get(IPropertyConstant.CAMPAIGN_ID),
+				campaignRoot.get(IPropertyConstant.ATTRIBUTE), campaignRoot.get(IPropertyConstant.AIM),
+				campaignRoot.get(IPropertyConstant.CAPACITY_MIN), campaignRoot.get(IPropertyConstant.CAPACITY_MAX),
+				campaignRoot.get(IPropertyConstant.PRIORITY_LEVEL), campaignRoot.get(IPropertyConstant.CREATED),
+				campaignRoot.get(IPropertyConstant.UPDATED), campaignRoot.get(IPropertyConstant.STATUS),
+				fetch.get(IPropertyConstant.USERNAME), processUnitFetch.get(IPropertyConstant.UNIT),
+				processUnitFetch.get(IPropertyConstant.ID));
+
+		return createQuery.select(construct);
+	}
+
+	/**
+	 * Prepare the list of Predicates according to the provided filter request
+	 * 
+	 * @param requestFilter
+	 * @param builder
+	 * @param campaignRoot
+	 * @param processUnitFetch
+	 * @return
+	 */
+	private List<Predicate> getConditionsForCampaign(RequestBO requestFilter, CriteriaBuilder builder,
+			Root<CampaignDO> campaignRoot, Join<CampaignDO, ProcessUnitDO> processUnitFetch) {
 		if (requestFilter != null) {
 			List<Predicate> conditions = new ArrayList<>();
 
@@ -197,22 +230,9 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 				conditions
 						.add(builder.notEqual(campaignRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
 			}
-
-			if (conditions != null && !conditions.isEmpty()) {
-				createQuery.where(conditions.toArray(new Predicate[] {}));
-			}
+			return conditions;
 		}
-
-		CompoundSelection<CampaignDO> construct = builder.construct(CampaignDO.class,
-				campaignRoot.get(IPropertyConstant.ID), campaignRoot.get(IPropertyConstant.CAMPAIGN_ID),
-				campaignRoot.get(IPropertyConstant.ATTRIBUTE), campaignRoot.get(IPropertyConstant.AIM),
-				campaignRoot.get(IPropertyConstant.CAPACITY_MIN), campaignRoot.get(IPropertyConstant.CAPACITY_MAX),
-				campaignRoot.get(IPropertyConstant.PRIORITY_LEVEL), campaignRoot.get(IPropertyConstant.CREATED),
-				campaignRoot.get(IPropertyConstant.UPDATED), campaignRoot.get(IPropertyConstant.STATUS),
-				fetch.get(IPropertyConstant.USERNAME), processUnitFetch.get(IPropertyConstant.UNIT),
-				processUnitFetch.get(IPropertyConstant.PU_ID));
-
-		return createQuery.select(construct);
+		return null;
 	}
 
 	@Override
@@ -224,52 +244,32 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 		createQuery.select(builder.count(campaignRoot));
 
-		if (requestFilter != null) {
-			List<Predicate> conditions = new ArrayList<>();
+		List<Predicate> conditions = getConditionsForCampaign(requestFilter, builder, campaignRoot, processUnitFetch);
 
-			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
-				conditions.add(builder.or(
-						builder.like(campaignRoot.get(IPropertyConstant.CAMPAIGN_ID),
-								"%" + requestFilter.getQuick_finder() + "%"),
-						builder.like(campaignRoot.get(IPropertyConstant.ATTRIBUTE),
-								"%" + requestFilter.getQuick_finder() + "%"),
-						builder.like(campaignRoot.get(IPropertyConstant.AIM),
-								"%" + requestFilter.getQuick_finder() + "%"),
-						builder.like(processUnitFetch.get(IPropertyConstant.UNIT),
-								"%" + requestFilter.getQuick_finder() + "%")));
-			}
-
-			// add condition to restrict rows whose status is inactive
-			if (!requestFilter.isInclude_inactive_data()) {
-				conditions
-						.add(builder.notEqual(campaignRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
-			}
-
-			if (conditions != null && !conditions.isEmpty()) {
-				createQuery.where(conditions.toArray(new Predicate[] {}));
-			}
-
+		if (conditions != null && !conditions.isEmpty()) {
+			createQuery.where(conditions.toArray(new Predicate[] {}));
 		}
 		Query query = entityManager.createQuery(createQuery);
 		return (long) query.getSingleResult();
 	}
-
 
 	@Override
 	public List<DPRTargetDO> getDPRTargetList(RequestBO requestFilter, int page, int limit) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<DPRTargetDO> createQuery = builder.createQuery(DPRTargetDO.class);
 		Root<DPRTargetDO> dprTargetRoot = createQuery.from(DPRTargetDO.class);
-		Join<DPRTargetDO, UserDO> fetch = dprTargetRoot.join("updated_by");
-		Join<DPRTargetDO, ProcessUnitDO> unitJoin = dprTargetRoot.join("unit");
-		Join<DPRTargetDO, ProductDefDO> productJoin = dprTargetRoot.join("product");
+		Join<DPRTargetDO, UserDO> fetch = dprTargetRoot.join(IPropertyConstant.UPDATED_BY);
+		Join<DPRTargetDO, ProcessUnitDO> unitJoin = dprTargetRoot.join(IPropertyConstant.UNIT);
+		Join<DPRTargetDO, ProductDefDO> productJoin = dprTargetRoot.join(IPropertyConstant.PRODUCT);
 
 		// set the list of properties whose values are required to fetch
-		CompoundSelection<DPRTargetDO> construct = builder.construct(DPRTargetDO.class, dprTargetRoot.get("id"),
-				dprTargetRoot.get("business_plan_target"), dprTargetRoot.get("internal_target"),
-				dprTargetRoot.get("updated"), dprTargetRoot.get("status"), dprTargetRoot.get("year"),
-				unitJoin.get("id"), productJoin.get("id"), productJoin.get("product_form"), unitJoin.get("unit"),
-				fetch.get("username"));
+		CompoundSelection<DPRTargetDO> construct = builder.construct(DPRTargetDO.class,
+				dprTargetRoot.get(IPropertyConstant.ID), dprTargetRoot.get(IPropertyConstant.BUSINESS_PLAN_TARGET),
+				dprTargetRoot.get(IPropertyConstant.INTERNAL_TARGET), dprTargetRoot.get(IPropertyConstant.YEAR),
+				dprTargetRoot.get(IPropertyConstant.UPDATED), dprTargetRoot.get(IPropertyConstant.STATUS),
+				unitJoin.get(IPropertyConstant.ID), productJoin.get(IPropertyConstant.ID),
+				productJoin.get(IPropertyConstant.PRODUCT_FORM), unitJoin.get(IPropertyConstant.UNIT),
+				fetch.get(IPropertyConstant.USERNAME));
 
 		// prepare where conditions according to provided filter
 		List<Predicate> conditions = addCriteriaForDPRFilter(requestFilter, builder, dprTargetRoot);
@@ -328,15 +328,17 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 			Root<DPRTargetDO> dprTargetRoot) {
 		if (requestFilter != null) {
 
-			Join<DPRTargetDO, ProcessUnitDO> unitJoin = dprTargetRoot.join("unit");
-			Join<DPRTargetDO, ProductDefDO> productJoin = dprTargetRoot.join("product");
+			Join<DPRTargetDO, ProcessUnitDO> unitJoin = dprTargetRoot.join(IPropertyConstant.UNIT);
+			Join<DPRTargetDO, ProductDefDO> productJoin = dprTargetRoot.join(IPropertyConstant.PRODUCT);
 			List<Predicate> conditions = new ArrayList<>();
 
 			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
 				conditions.add(builder.or(
-						builder.like(dprTargetRoot.get("year"), "%" + requestFilter.getQuick_finder() + "%"),
-						builder.like(unitJoin.get("unit"), "%" + requestFilter.getQuick_finder() + "%"),
-						builder.like(productJoin.get("product_form"), "%" + requestFilter.getQuick_finder() + "%")));
+						builder.like(dprTargetRoot.get(IPropertyConstant.YEAR),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(unitJoin.get(IPropertyConstant.UNIT), "%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(productJoin.get(IPropertyConstant.PRODUCT_FORM),
+								"%" + requestFilter.getQuick_finder() + "%")));
 			}
 
 			// add condition to restrict rows whose status is inactive

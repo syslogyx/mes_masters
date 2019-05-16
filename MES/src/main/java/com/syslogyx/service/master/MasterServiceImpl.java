@@ -16,18 +16,15 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.syslogyx.bo.RequestBO;
 import com.syslogyx.constants.IConstants;
 import com.syslogyx.constants.IFileHeaderConstants;
-import com.syslogyx.dao.master.ICampaignDAO;
-import com.syslogyx.dao.master.ICodeGroupDAO;
-import com.syslogyx.dao.master.IDPRTargetDAO;
+import com.syslogyx.constants.IPropertyConstant;
 import com.syslogyx.dao.master.IMasterDAO;
-import com.syslogyx.dao.master.IProcessUnitDAO;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.message.IResponseCodes;
 import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
-import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.user.UserDO;
 import com.syslogyx.service.BaseService;
@@ -40,37 +37,24 @@ import com.syslogyx.utility.Utils;
  *
  */
 @Service
-@Transactional(rollbackFor = { Exception.class })
+@Transactional(rollbackFor = { ApplicationException.class, Exception.class })
 public class MasterServiceImpl extends BaseService implements IMasterService {
-
-	@Autowired
-	private ICodeGroupDAO iCodeGroupDAO;
-
-	@Autowired
-	private IProcessUnitDAO iprocessUnitDAO;
-
-	@Autowired
-	private ICampaignDAO iCampaignDAO;
-
-	@Autowired
-	private IDPRTargetDAO idprTargetDAO;
 
 	@Autowired
 	private IMasterDAO masterDAO;
 
 	@Override
-	public void createGroupCode(CodeGroupDO codeGroupDO) throws ApplicationException {
+	public void createGroupCode(CodeGroupDO codeGroupDO) throws ApplicationException, Exception {
 
 		int code_groupId = codeGroupDO.getId();
 		String group_code = codeGroupDO.getGroup_code();
-		if (code_groupId > 0) {
-			CodeGroupDO findById = iCodeGroupDAO.findById(code_groupId);
-			if (findById == null)
-				throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_GROUP_CODE_ID);
-		}
+
+		// validate code group id
+		masterDAO.validateEntityById(CodeGroupDO.class, code_groupId, IResponseMessages.INVALID_GROUP_CODE_ID);
 
 		// validate the group code if already exists in database or not
-		CodeGroupDO existingCodeGroup = iCodeGroupDAO.findByGroupCode(group_code);
+		CodeGroupDO existingCodeGroup = (CodeGroupDO) masterDAO.getEntityByPropertyName(CodeGroupDO.class,
+				IPropertyConstant.GROUP_CODE, group_code);
 
 		if (existingCodeGroup != null && existingCodeGroup.getId() != code_groupId)
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.EXISTING_GROUP_CODE);
@@ -79,7 +63,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		codeGroupDO.setCreated_by(loggedInUser);
 		codeGroupDO.setUpdated_by(loggedInUser);
 		codeGroupDO.setStatus(IConstants.STATUS_ACTIVE);
-		iCodeGroupDAO.save(codeGroupDO);
+		masterDAO.mergeEntity(codeGroupDO);
 
 	}
 
@@ -101,44 +85,50 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	}
 
 	@Override
-	public void updateMastersStatus(String master_name, int master_id, int status) throws ApplicationException {
+	public void createDPRTarget(DPRTargetDO dprTargetDO) throws ApplicationException, Exception {
 
-		// validate the status constant
-		validateStatus(status);
+		int dpr_id = dprTargetDO.getId();
+		int unit_id = dprTargetDO.getUnit_id();
+		int product_id = dprTargetDO.getProduct_id();
 
-		Class<?> masterByType = getMasterByType(master_name);
+		// if the dpr id is provided, validate it in DB
+		masterDAO.validateEntityById(DPRTargetDO.class, dpr_id, IResponseMessages.INVALID_DPR_TARGET_ID);
 
-		Object master = masterDAO.getEntityById(masterByType, master_id);
+		// validate and set unit id
+		ProcessUnitDO processUnitDO = (ProcessUnitDO) masterDAO.validateEntityById(ProcessUnitDO.class, unit_id,
+				IResponseMessages.INVALID_PROCESS_UNIT_ID);
+		dprTargetDO.setUnit(processUnitDO);
 
-		validateAndUpdateStatus(masterByType, master, status);
+		// validate and set product id
+		ProductDefDO productDefDO = (ProductDefDO) masterDAO.validateEntityById(ProductDefDO.class, product_id,
+				IResponseMessages.INVALID_PRODUCT_ID);
+		dprTargetDO.setProduct(productDefDO);
 
+		UserDO loggedInUser = getLoggedInUser();
+		dprTargetDO.setCreated_by(loggedInUser);
+		dprTargetDO.setUpdated_by(loggedInUser);
+		dprTargetDO.setStatus(IConstants.STATUS_ACTIVE);
+		masterDAO.mergeEntity(dprTargetDO);
 	}
 
-	/**
-	 * Validate the Value of Status provided from the API call
-	 * 
-	 * @param status
-	 * @throws ApplicationException
-	 */
-	private void validateStatus(int status) throws ApplicationException {
-		if (status != IConstants.STATUS_INACTIVE && status != IConstants.STATUS_ACTIVE) {
-			throw new ApplicationException(IResponseCodes.INVALID_STATUS, IResponseMessages.INVALID_STATUS);
+	@Override
+	public Object getDPRTargetList(RequestBO requestFilter, int page, int limit) {
+		List<DPRTargetDO> dprTargets = masterDAO.getDPRTargetList(requestFilter, page, limit);
+
+		if (dprTargets != null && !dprTargets.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getDPRTargetListSize(requestFilter);
+
+				return generatePaginationResponse(dprTargets, listSize, page, limit);
+			}
+			return dprTargets;
 		}
+
+		return null;
 	}
 
 	@Override
-	public CodeGroupDO getCodeGroupId(int code_group_id) throws ApplicationException {
-
-		CodeGroupDO codeGroupDO = iCodeGroupDAO.findById(code_group_id);
-		if (codeGroupDO == null || codeGroupDO.getStatus() == IConstants.STATUS_INACTIVE)
-			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_GROUP_CODE_ID);
-
-		return codeGroupDO;
-
-	}
-
-	@Override
-	public void createCampaign(CampaignDO campaignDO) throws ApplicationException {
+	public void createCampaign(CampaignDO campaignDO) throws ApplicationException, Exception {
 
 		int camp_id = campaignDO.getId();
 		int priority_level = campaignDO.getPriority_level();
@@ -146,30 +136,23 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		int hold_unit_id = campaignDO.getHold_unit_id();
 
 		// it's use to differentiation for save and update
-		if (camp_id > IConstants.VALUE_ZERO) {
-			CampaignDO findByCampaignId = iCampaignDAO.findById(camp_id);
-			if (findByCampaignId == null)
-				throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_CAMPAIGN_ID);
-		}
+		masterDAO.validateEntityById(CampaignDO.class, camp_id, IResponseMessages.INVALID_CAMPAIGN_ID);
 
 		// Validate Campaign id
 		if (campaign_id == null || campaign_id.isEmpty())
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.EMPTY_CAMPAIGN_ID);
 
 		// validate the campaign if already exists in database or not
-		CampaignDO existingCampaignId = iCampaignDAO.findByCampaignId(campaign_id);
+		CampaignDO existingCampaignId = (CampaignDO) masterDAO.getEntityByPropertyName(CampaignDO.class,
+				IPropertyConstant.CAMPAIGN_ID, campaign_id);
 
 		if (existingCampaignId != null && existingCampaignId.getId() != camp_id)
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.EXISTING_CAMPAIGN_ID);
 
 		// for validate processUnit id from db
-		if (hold_unit_id > IConstants.VALUE_ZERO) {
-			ProcessUnitDO findByProcessUnitId = iprocessUnitDAO.findById(hold_unit_id).get();
-			if (findByProcessUnitId == null)
-				throw new ApplicationException(IResponseCodes.INVALID_ENTITY,
-						IResponseMessages.INVALID_PROCESS_UNIT_ID);
-			campaignDO.setHold_unit(findByProcessUnitId);
-		}
+		ProcessUnitDO hold_unit = (ProcessUnitDO) masterDAO.validateEntityById(ProcessUnitDO.class, hold_unit_id,
+				IResponseMessages.INVALID_PROCESS_UNIT_ID);
+		campaignDO.setHold_unit(hold_unit);
 
 		validatePriority(priority_level);
 
@@ -177,8 +160,24 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		campaignDO.setCreated_by(loggedInUser);
 		campaignDO.setUpdated_by(loggedInUser);
 		campaignDO.setStatus(IConstants.STATUS_ACTIVE);
-		iCampaignDAO.save(campaignDO);
+		masterDAO.mergeEntity(campaignDO);
 
+	}
+
+	@Override
+	public Object getCampaignList(RequestBO requestFilter, int page, int limit) throws ApplicationException {
+
+		List<CampaignDO> campaignDO = masterDAO.getCampaignList(requestFilter, page, limit);
+
+		if (campaignDO != null && !campaignDO.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getCampaignListSize(requestFilter);
+
+				return generatePaginationResponse(campaignDO, listSize, page, limit);
+			}
+			return campaignDO;
+		}
+		return null;
 	}
 
 	@Override
@@ -203,6 +202,33 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		}
 	}
 
+	@Override
+	public void updateMastersStatus(String master_name, int master_id, int status)
+			throws ApplicationException, Exception {
+
+		// validate the status constant
+		validateStatus(status);
+
+		Class<?> masterByType = getMasterByType(master_name);
+
+		Object master = masterDAO.getEntityById(masterByType, master_id);
+
+		validateAndUpdateStatus(masterByType, master, status);
+
+	}
+
+	/**
+	 * Validate the Value of Status provided from the API call
+	 * 
+	 * @param status
+	 * @throws ApplicationException
+	 */
+	private void validateStatus(int status) throws ApplicationException {
+		if (status != IConstants.STATUS_INACTIVE && status != IConstants.STATUS_ACTIVE) {
+			throw new ApplicationException(IResponseCodes.INVALID_STATUS, IResponseMessages.INVALID_STATUS);
+		}
+	}
+
 	/**
 	 * Process the Excel Sheet Data Rows According to the master_name specified
 	 * 
@@ -212,12 +238,38 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	 */
 	private void processExcelToExportingDataRows(HSSFSheet sheet, List mastersList, String master_name) {
 
-		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP)) {
+		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP))
 			processExportingCodeGroupListExcel(sheet, mastersList);
-		}
 
-		if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN)) {
+		else if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN))
 			processExportingCampaignListExcel(sheet, mastersList);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
+			processExportingDPRTargetListExcel(sheet, mastersList);
+
+	}
+
+	/**
+	 * Set the Field value from DPRTargetDO Object to it's respective index number
+	 * in the excel sheet
+	 * 
+	 * @param sheet
+	 * @param dprTargetList
+	 */
+	private void processExportingDPRTargetListExcel(HSSFSheet sheet, List<DPRTargetDO> dprTargetList) {
+		for (int index = 0; index < dprTargetList.size(); index++) {
+			DPRTargetDO dprTargetDO = dprTargetList.get(index);
+			HSSFRow row = sheet.createRow(index + 1);
+			row.createCell(0).setCellValue(index + 1);
+			row.createCell(1).setCellValue(dprTargetDO.getYear());
+			row.createCell(2).setCellValue(dprTargetDO.getUnit_name());
+			row.createCell(3).setCellValue(dprTargetDO.getProduct_name());
+			row.createCell(4).setCellValue(dprTargetDO.getBusiness_plan_target());
+			row.createCell(5).setCellValue(dprTargetDO.getInternal_target());
+			row.createCell(6).setCellValue(dprTargetDO.getUpdated_by_name());
+			row.createCell(7).setCellValue(
+					Utils.getFormatedDate(dprTargetDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+			row.createCell(8).setCellValue(getStatusString(dprTargetDO.getStatus()));
 		}
 	}
 
@@ -228,7 +280,6 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	 * @param sheet
 	 * @param campaignList
 	 */
-
 	private void processExportingCampaignListExcel(HSSFSheet sheet, List<CampaignDO> campaignList) {
 		for (int index = 0; index < campaignList.size(); index++) {
 			CampaignDO campaignDO = campaignList.get(index);
@@ -242,7 +293,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			row.createCell(6).setCellValue(campaignDO.getUpdated_by_name());
 			row.createCell(7).setCellValue(
 					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
-			row.createCell(8).setCellValue(campaignDO.getPriority_level());
+			row.createCell(8).setCellValue(getPriorityString(campaignDO.getPriority_level()));
 			row.createCell(9).setCellValue(campaignDO.getHold_unit_name());
 			row.createCell(10).setCellValue(getStatusString(campaignDO.getStatus()));
 		}
@@ -304,12 +355,15 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	 * @return
 	 */
 	private float[] setPDFwidth(String master_name) {
-		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP)) {
+		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP))
 			return new float[] { 1, 1, 2, 2, 2, 1 };
-		}
-		if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN)) {
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN))
 			return new float[] { 1, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1 };
-		}
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
+			return new float[] { 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+
 		return null;
 	}
 
@@ -321,11 +375,38 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	 * @param master_name
 	 */
 	private void processPDFToExportingDataRows(PdfPTable table, List mastersList, String master_name) {
-		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP)) {
+		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP))
 			processExportingCodeGroupListPDF(table, mastersList);
-		}
-		if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN)) {
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN))
 			processExportingCampaignListPDF(table, mastersList);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
+			processExportingDPRTargetListPDF(table, mastersList);
+
+	}
+
+	/**
+	 * Set the Field value from DPR Target Object to it's respective index number in
+	 * the PDF Table
+	 * 
+	 * @param table
+	 * @param dprTargetList
+	 */
+	private void processExportingDPRTargetListPDF(PdfPTable table, List<DPRTargetDO> dprTargetList) {
+		for (int index = 0; index < dprTargetList.size(); index++) {
+			DPRTargetDO dprTargetDO = dprTargetList.get(index);
+
+			table.addCell(index + 1 + "");
+			table.addCell(dprTargetDO.getYear());
+			table.addCell(dprTargetDO.getUnit_name());
+			table.addCell(dprTargetDO.getProduct_name());
+			table.addCell(dprTargetDO.getBusiness_plan_target() + "");
+			table.addCell(dprTargetDO.getInternal_target() + "");
+			table.addCell(dprTargetDO.getUpdated_by_name());
+			table.addCell(
+					Utils.getFormatedDate(dprTargetDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+			table.addCell(getStatusString(dprTargetDO.getStatus()));
 		}
 	}
 
@@ -389,42 +470,6 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_PRIORITY);
 	}
 
-	@Override
-	public Object getCampaignList(RequestBO requestFilter, int page, int limit) throws ApplicationException {
-
-		List<CampaignDO> campaignDO = masterDAO.getCampaignList(requestFilter, page, limit);
-
-		if (campaignDO != null && !campaignDO.isEmpty()) {
-			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
-				long listSize = masterDAO.getCampaignListSize(requestFilter);
-
-				return generatePaginationResponse(campaignDO, listSize, page, limit);
-			}
-			return campaignDO;
-		}
-		return null;
-	}
-
-	@Override
-	public void updateCampaignStatus(int camp_id, int status) throws ApplicationException {
-
-		CampaignDO campaignDO = iCampaignDAO.findById(camp_id);
-
-		if (campaignDO == null)
-			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_CAMPAIGN_ID);
-
-		int presentStatus = campaignDO.getStatus();
-		// For validate Status
-		validateStatus(status);
-
-		// for validate update status
-		validateOldStatus(status, presentStatus);
-
-		campaignDO.setStatus(status);
-		iCampaignDAO.save(campaignDO);
-
-	}
-
 	/**
 	 * Validate the New Status Against the current status
 	 * 
@@ -440,60 +485,6 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			throw new ApplicationException(IResponseCodes.INVALID_STATUS, IResponseMessages.INVALID_STATUS);
 	}
 
-	@Override
-	public CampaignDO getCampaignId(int camp_id) throws ApplicationException {
-
-		CampaignDO campaignDO = iCampaignDAO.findById(camp_id);
-
-		if (campaignDO == null || campaignDO.getStatus() == IConstants.STATUS_INACTIVE)
-			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_CAMPAIGN_ID);
-
-		return campaignDO;
-	}
-
-	@Override
-	public void createDPRTarget(DPRTargetDO dprTargetDO) throws ApplicationException, Exception {
-
-		int dpr_id = dprTargetDO.getId();
-		int unit_id = dprTargetDO.getUnit_id();
-		int product_id = dprTargetDO.getProduct_id();
-
-		// if the dpr id is provided, validate it in DB
-		masterDAO.validateEntityById(DPRTargetDO.class, dpr_id, IResponseMessages.INVALID_DPR_TARGET_ID);
-
-		// validate and set unit id
-		ProcessUnitDO processUnitDO = (ProcessUnitDO) masterDAO.validateEntityById(ProcessUnitDO.class, unit_id,
-				IResponseMessages.INVALID_PROCESS_UNIT_ID);
-		dprTargetDO.setUnit(processUnitDO);
-
-		// validate and set product id
-		ProductDefDO productDefDO = (ProductDefDO) masterDAO.validateEntityById(ProductDefDO.class, product_id,
-				IResponseMessages.INVALID_PRODUCT_ID);
-		dprTargetDO.setProduct(productDefDO);
-
-		UserDO loggedInUser = getLoggedInUser();
-		dprTargetDO.setCreated_by(loggedInUser);
-		dprTargetDO.setUpdated_by(loggedInUser);
-		dprTargetDO.setStatus(IConstants.STATUS_ACTIVE);
-		idprTargetDAO.save(dprTargetDO);
-	}
-
-	@Override
-	public Object getDPRTargetList(RequestBO requestFilter, int page, int limit) {
-		List<DPRTargetDO> dprTargets = masterDAO.getDPRTargetList(requestFilter, page, limit);
-
-		if (dprTargets != null && !dprTargets.isEmpty()) {
-			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
-				long listSize = masterDAO.getDPRTargetListSize(requestFilter);
-
-				return generatePaginationResponse(dprTargets, listSize, page, limit);
-			}
-			return dprTargets;
-		}
-
-		return null;
-	}
-
 	/**
 	 * Return the Master Class name according to the provided master_name
 	 * 
@@ -507,6 +498,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return CodeGroupDO.class;
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.DPR_TARGET))
 			return DPRTargetDO.class;
+		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.CAMPAIGN))
+			return CampaignDO.class;
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
@@ -520,19 +513,17 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	 * @param status
 	 * @throws ApplicationException
 	 */
-	private void validateAndUpdateStatus(Class<?> masterByType, Object master, int status) throws ApplicationException {
+	private void validateAndUpdateStatus(Class<?> masterByType, Object master, int status)
+			throws ApplicationException, Exception {
 
-		try {
-			Field declaredField = masterByType.getDeclaredField("status");
-			int oldStatus = (int) declaredField.get(master);
+		Field declaredField = masterByType.getDeclaredField(IPropertyConstant.STATUS);
+		int oldStatus = (int) declaredField.get(master);
 
-			declaredField.set(master, status);
+		validateOldStatus(oldStatus, status);
 
-			masterDAO.mergeEntity(master);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
-		}
+		declaredField.set(master, status);
+
+		masterDAO.mergeEntity(master);
 	}
 
 	@Override
@@ -540,4 +531,53 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		return masterDAO.validateEntityById(getMasterByType(master_name), master_id,
 				IResponseMessages.INVALID_MASTER_ID);
 	}
+
+	// @Override
+	// public CampaignDO getCampaignId(int camp_id) throws ApplicationException {
+	//
+	// CampaignDO campaignDO = iCampaignDAO.findById(camp_id);
+	//
+	// if (campaignDO == null || campaignDO.getStatus() ==
+	// IConstants.STATUS_INACTIVE)
+	// throw new ApplicationException(IResponseCodes.INVALID_ENTITY,
+	// IResponseMessages.INVALID_CAMPAIGN_ID);
+	//
+	// return campaignDO;
+	// }
+
+	// @Override
+	// public void updateCampaignStatus(int camp_id, int status) throws
+	// ApplicationException {
+	//
+	// CampaignDO campaignDO = iCampaignDAO.findById(camp_id);
+	//
+	// if (campaignDO == null)
+	// throw new ApplicationException(IResponseCodes.INVALID_ENTITY,
+	// IResponseMessages.INVALID_CAMPAIGN_ID);
+	//
+	// int presentStatus = campaignDO.getStatus();
+	// // For validate Status
+	// validateStatus(status);
+	//
+	// // for validate update status
+	// validateOldStatus(status, presentStatus);
+	//
+	// campaignDO.setStatus(status);
+	// iCampaignDAO.save(campaignDO);
+	//
+	// }
+
+	// @Override
+	// public CodeGroupDO getCodeGroupId(int code_group_id) throws
+	// ApplicationException {
+	//
+	// CodeGroupDO codeGroupDO = iCodeGroupDAO.findById(code_group_id);
+	// if (codeGroupDO == null || codeGroupDO.getStatus() ==
+	// IConstants.STATUS_INACTIVE)
+	// throw new ApplicationException(IResponseCodes.INVALID_ENTITY,
+	// IResponseMessages.INVALID_GROUP_CODE_ID);
+	//
+	// return codeGroupDO;
+	//
+	// }
 }

@@ -59,7 +59,7 @@ public class ProductTypeDO {
 	private Date updated;
 
 	@Column(name = "status")
-	private int status;
+	public int status;
 
 	public int getId() {
 		return id;

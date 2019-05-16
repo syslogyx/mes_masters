@@ -546,7 +546,10 @@ public class Utils {
 		PdfPRow headerRows = table.getRow(IConstants.VALUE_ZERO);
 		for (int index = 0; index < headerRows.getCells().length; index++) {
 			headerRows.getCells()[index].setBackgroundColor(BaseColor.GRAY);
+			headerRows.getCells()[index].setFixedHeight(50);
 		}
+
+		table.setWidthPercentage(100);
 	}
 
 	/**

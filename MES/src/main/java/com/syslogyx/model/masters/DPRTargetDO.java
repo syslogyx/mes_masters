@@ -74,7 +74,7 @@ public class DPRTargetDO {
 	private Date updated;
 
 	@Column(name = "status")
-	private int status;
+	public int status;
 
 	@Transient
 	private int unit_id;
@@ -90,6 +90,9 @@ public class DPRTargetDO {
 
 	@Transient
 	private String updated_by_name;
+
+	public DPRTargetDO() {
+	}
 
 	public DPRTargetDO(int id, float business_plan_target, float internal_target, String year, Date updated, int status,
 			int unit_id, int product_id, String product_name, String unit_name, String updated_by_name) {
@@ -208,6 +211,18 @@ public class DPRTargetDO {
 
 	public void setProduct_id(int product_id) {
 		this.product_id = product_id;
+	}
+
+	public String getProduct_name() {
+		return product_name;
+	}
+
+	public String getUnit_name() {
+		return unit_name;
+	}
+
+	public String getUpdated_by_name() {
+		return updated_by_name;
 	}
 
 }

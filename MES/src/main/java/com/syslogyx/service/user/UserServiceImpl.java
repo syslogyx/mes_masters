@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.syslogyx.dao.user.IUserDAO;
+import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.user.UserDO;
 
 /**
@@ -22,7 +23,7 @@ import com.syslogyx.model.user.UserDO;
  *
  */
 @Service(value = "userService")
-@Transactional(rollbackFor = { Exception.class })
+@Transactional(rollbackFor = { ApplicationException.class, Exception.class })
 public class UserServiceImpl implements UserDetailsService, IUserService {
 
 	@Autowired

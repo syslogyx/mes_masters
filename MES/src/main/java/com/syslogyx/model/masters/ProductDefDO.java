@@ -64,7 +64,7 @@ public class ProductDefDO {
 	private Date updated;
 
 	@Column(name = "status")
-	private int status;
+	public int status;
 
 	@Transient
 	private int product_type_id;

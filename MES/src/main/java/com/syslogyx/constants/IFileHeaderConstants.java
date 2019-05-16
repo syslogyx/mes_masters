@@ -3,8 +3,6 @@ package com.syslogyx.constants;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.net.httpserver.Headers;
-
 /**
  * This Interface includes the Excel and PDF Header constants
  * 
@@ -32,6 +30,13 @@ public interface IFileHeaderConstants {
 	public String PRIORITY_LEVEL = "Priority_level";
 	public String HOLD_UNIT = "Hold_unit";
 
+	// DPR Target Headers
+	public String YEAR = "Year";
+	public String UNIT = "Unit";
+	public String PRODUCT = "Product";
+	public String BUSINESS_PLAN_TARGET = "Business Plan Target";
+	public String INTERNAL_TARGET = "Internal Target";
+
 	/**
 	 * Prepare the List of Headers used in Code Group Excel and PDF
 	 * 
@@ -49,6 +54,11 @@ public interface IFileHeaderConstants {
 		return headers;
 	}
 
+	/**
+	 * Prepare the List of Headers used in Campaign Excel and PDF
+	 * 
+	 * @return
+	 */
 	public static List<String> getCampaignListHeaders() {
 
 		List<String> headers = new ArrayList<>();
@@ -65,7 +75,6 @@ public interface IFileHeaderConstants {
 		headers.add(STATUS);
 
 		return headers;
-
 	}
 
 	/**
@@ -76,15 +85,36 @@ public interface IFileHeaderConstants {
 	 */
 	public static List<String> getMastersHeaderList(String master_name) {
 
-		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP)) {
+		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP))
 			return getCodeGroupListHeaders();
-		}
 
-		if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN)) {
+		else if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN))
 			return getCampaignListHeaders();
-		}
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
+			return getDPRTargetHeaders();
 
 		return null;
+	}
+
+	/**
+	 * Prepare the List of Headers used in DPR Target Excel and PDF
+	 * 
+	 * @return
+	 */
+	public static List<String> getDPRTargetHeaders() {
+		List<String> headers = new ArrayList<>();
+		headers.add(SR_NO);
+		headers.add(YEAR);
+		headers.add(UNIT);
+		headers.add(PRODUCT);
+		headers.add(BUSINESS_PLAN_TARGET);
+		headers.add(INTERNAL_TARGET);
+		headers.add(UPDATED_BY);
+		headers.add(LAST_UPDATED);
+		headers.add(STATUS);
+
+		return headers;
 	}
 
 }

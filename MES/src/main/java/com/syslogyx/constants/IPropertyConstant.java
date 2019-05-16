@@ -8,7 +8,7 @@ package com.syslogyx.constants;
  */
 public interface IPropertyConstant {
 
-	//Common Constants
+	// Common Constants
 	String ID = "id";
 	String USERNAME = "username";
 	String CREATED = "created";
@@ -16,12 +16,12 @@ public interface IPropertyConstant {
 	String STATUS = "status";
 	String CREATED_BY = "created_by";
 	String UPDATED_BY = "updated_by";
-	
-	//CodeGroup Constants
+
+	// CodeGroup Constants
 	String GROUP_CODE = "group_code";
 	String GROUP_DESC = "group_desc";
-	
-	//Campaign Constants
+
+	// Campaign Constants
 	String CAMPAIGN_ID = "campaign_id";
 	String ATTRIBUTE = "attribute";
 	String AIM = "aim";
@@ -30,9 +30,15 @@ public interface IPropertyConstant {
 	String CAPACITY_MAX = "capacity_max";
 	String PRIORITY_LEVEL = "priority_level";
 	String UNIT = "unit";
-	
-	//ProcessUnit Constants
+
+	// ProcessUnit Constants
 	String PU_ID = "pu_id";
-	
+
+	// DPR Target Constants
+	String PRODUCT = "product";
+	String BUSINESS_PLAN_TARGET = "business_plan_target";
+	String INTERNAL_TARGET = "internal_target";
+	String YEAR = "year";
+	String PRODUCT_FORM = "product_form";
 
 }

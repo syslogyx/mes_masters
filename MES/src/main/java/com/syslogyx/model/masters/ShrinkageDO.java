@@ -61,7 +61,7 @@ public class ShrinkageDO {
 	private Date updated;
 
 	@Column(name = "status")
-	private int status;
+	public int status;
 
 	@Transient
 	private int cr_grade_id;

@@ -60,7 +60,6 @@ public interface IConstants {
 		public int HIGH = 3;
 	}
 
-
 	/**
 	 * Interface to define constants of OSP identifier
 	 * 

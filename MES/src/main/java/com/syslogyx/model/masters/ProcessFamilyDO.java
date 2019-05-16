@@ -70,7 +70,7 @@ public class ProcessFamilyDO {
 	private Date updated;
 
 	@Column(name = "status")
-	private int status;
+	public int status;
 
 	@Transient
 	private int process_type_id;

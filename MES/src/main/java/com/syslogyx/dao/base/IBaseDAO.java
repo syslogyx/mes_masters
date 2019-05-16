@@ -29,6 +29,22 @@ public interface IBaseDAO {
 			throws ApplicationException, Exception;
 
 	/**
+	 * Fetch the Entity according to provided class name, property name and it's
+	 * value
+	 * 
+	 * @param classT
+	 *            : Name of the Entity class
+	 * @param property_name
+	 *            : Name of the property by which we need to search
+	 * @param property_value
+	 *            : Required value of the property
+	 * @return
+	 * @throws ApplicationException
+	 * @throws Exception
+	 */
+	Object getEntityByPropertyName(Class<?> classT, String property_name, Object property_value);
+
+	/**
 	 * Get the Entity by Id
 	 * 
 	 * @param classT
@@ -44,4 +60,5 @@ public interface IBaseDAO {
 	 * @param master
 	 */
 	void mergeEntity(Object entity);
+
 }

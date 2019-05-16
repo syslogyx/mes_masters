@@ -4,7 +4,6 @@ import com.syslogyx.bo.RequestBO;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
-import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 
 /**
@@ -21,8 +20,9 @@ public interface IMasterService {
 	 * @param codeGroupDO
 	 *            : contains codeGroup Data provided by users
 	 * @throws ApplicationException
+	 * @throws Exception
 	 */
-	void createGroupCode(CodeGroupDO codeGroupDO) throws ApplicationException;
+	void createGroupCode(CodeGroupDO codeGroupDO) throws ApplicationException, Exception;
 
 	/**
 	 * This method used for retrieving list data of CodeGroup table from database
@@ -36,6 +36,57 @@ public interface IMasterService {
 	Object listCodeGroup(RequestBO requestFilter, int page, int limit);
 
 	/**
+	 * This Method is used to validation on DPRTargetDO and Save CodeGroup Data
+	 * 
+	 * @param dprTargetDO
+	 * @throws ApplicationException
+	 * @throws Exception
+	 */
+	void createDPRTarget(DPRTargetDO dprTargetDO) throws ApplicationException, Exception;
+
+	/**
+	 * Fetch the DPT Target list according to the provided filters along with the
+	 * Pagination
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	Object getDPRTargetList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * This Method is used to validation on Campaign and Save Campaign Data in db
+	 * 
+	 * @param campaignDO
+	 *            : contains campaign Data provided by users
+	 * @throws ApplicationException
+	 * @throws Exception
+	 */
+	void createCampaign(CampaignDO campaignDO) throws ApplicationException, Exception;
+
+	/**
+	 * For retrieving list data of Campaign table from database
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	Object getCampaignList(RequestBO requestFilter, int page, int limit) throws ApplicationException;
+
+	/**
+	 * Get the Master Entity by provided Id
+	 * 
+	 * @param master_name
+	 * @param master_id
+	 * @return
+	 * @throws ApplicationException
+	 * @throws Exception
+	 */
+	Object getMasterById(String master_name, int master_id) throws ApplicationException, Exception;
+
+	/**
 	 * This method used for retrieving Master Entity by Id and update status
 	 * 
 	 * @param master_name
@@ -45,8 +96,9 @@ public interface IMasterService {
 	 * @param status
 	 *            : Update status
 	 * @throws ApplicationException
+	 * @throws Exception
 	 */
-	void updateMastersStatus(String master_name, int master_id, int status) throws ApplicationException;
+	void updateMastersStatus(String master_name, int master_id, int status) throws ApplicationException, Exception;
 
 	/**
 	 * export the Master's list data to Excel sheet and return the Path of Excel
@@ -73,26 +125,7 @@ public interface IMasterService {
 	 * @return
 	 * @throws ApplicationException
 	 */
-	CodeGroupDO getCodeGroupId(int code_group_id) throws ApplicationException;
-
-	/**
-	 * This Method is used to validation on Campaign and Save Campaign Data in db
-	 * 
-	 * @param campaignDO
-	 *            : contains campaign Data provided by users
-	 * @throws ApplicationException
-	 */
-	void createCampaign(CampaignDO campaignDO) throws ApplicationException;
-
-	/**
-	 * For retrieving list data of Campaign table from database
-	 * 
-	 * @param requestFilter
-	 * @param page
-	 * @param limit
-	 * @return
-	 */
-	Object getCampaignList(RequestBO requestFilter, int page, int limit) throws ApplicationException;
+	// CodeGroupDO getCodeGroupId(int code_group_id) throws ApplicationException;
 
 	/**
 	 * For retrieving Campaign by id and update status
@@ -100,7 +133,8 @@ public interface IMasterService {
 	 * @param camp_id
 	 * @param status
 	 */
-	void updateCampaignStatus(int camp_id, int status) throws ApplicationException;
+	// void updateCampaignStatus(int camp_id, int status) throws
+	// ApplicationException;
 
 	/**
 	 * For Retrieving Campaign by Id
@@ -108,37 +142,6 @@ public interface IMasterService {
 	 * @param camp_id
 	 * @return
 	 */
-	CampaignDO getCampaignId(int camp_id) throws ApplicationException;
-
-	/**
-	 * This Method is used to validation on DPRTargetDO and Save CodeGroup Data
-	 * 
-	 * @param dprTargetDO
-	 * @throws ApplicationException
-	 * @throws Exception
-	 */
-	void createDPRTarget(DPRTargetDO dprTargetDO) throws ApplicationException, Exception;
-
-	/**
-	 * Fetch the DPT Target list according to the provided filters along with the
-	 * Pagination
-	 * 
-	 * @param requestFilter
-	 * @param page
-	 * @param limit
-	 * @return
-	 */
-	Object getDPRTargetList(RequestBO requestFilter, int page, int limit);
-
-	/**
-	 * Get the Master Entity by provided Id
-	 * 
-	 * @param master_name
-	 * @param master_id
-	 * @return
-	 * @throws ApplicationException
-	 * @throws Exception
-	 */
-	Object getMasterById(String master_name, int master_id) throws ApplicationException, Exception;
+	// CampaignDO getCampaignId(int camp_id) throws ApplicationException;
 
 }

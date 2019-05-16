@@ -65,7 +65,7 @@ public class ElongationDO {
 	private Date updated;
 
 	@Column(name = "status")
-	private int status;
+	public int status;
 
 	@Transient
 	private int unit_id;

@@ -79,7 +79,7 @@ public class CampaignDO {
 	private Date updated;
 
 	@Column(name = "status")
-	private int status;
+	public int status;
 
 	@Transient
 	private int hold_unit_id;
