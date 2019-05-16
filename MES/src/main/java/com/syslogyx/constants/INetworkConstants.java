@@ -30,6 +30,7 @@ public interface INetworkConstants {
 		public String PDF = "/pdf";
 		public String VIEW = "/view";
 		public String CAMPAIGN = "/campaign";
+		public String DPR_TARGET = "dpr_target";
 	}
 
 	/**
@@ -70,6 +71,7 @@ public interface INetworkConstants {
 		String CODE_GROUP_ID = "code_group_id";
 		String MASTER_NAME = "master_name";
 		String CAMP_ID = "cam_id";
+		String MASTER_ID = "master_id";
 
 	}
 }

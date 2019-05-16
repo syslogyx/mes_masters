@@ -18,6 +18,7 @@ import com.syslogyx.message.IResponseCodes;
 import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
+import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.service.master.IMasterService;
 
 /**
@@ -53,7 +54,6 @@ public class MasterController extends BaseController {
 			e.printStackTrace();
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
-
 	}
 
 	/**
@@ -77,9 +77,6 @@ public class MasterController extends BaseController {
 				return getResponseModel(codeGroupList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
 
 			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
-		} catch (ApplicationException e) {
-			e.printStackTrace();
-			return getResponseModel(null, e.getCode(), e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
@@ -87,20 +84,21 @@ public class MasterController extends BaseController {
 	}
 
 	/**
-	 * this method is used for update status in CodeGroup table
+	 * Update the Status of Master's Entity according to the specified Master name
 	 * 
-	 * @param code_group_id
+	 * @param master_id
 	 * @param status
 	 * @return
 	 */
-	@GetMapping(value = INetworkConstants.IURLConstants.CODE_GROUP + INetworkConstants.IURLConstants.STATUS + "/{"
-			+ INetworkConstants.IPathVariableConstants.CODE_GROUP_ID + "}")
-	public ResponseEntity<BaseResponseBO> updateStatus(
-			@PathVariable(name = INetworkConstants.IPathVariableConstants.CODE_GROUP_ID) int code_group_id,
+	@GetMapping(value = "/{" + INetworkConstants.IPathVariableConstants.MASTER_NAME + "}"
+			+ INetworkConstants.IURLConstants.STATUS + "/{" + INetworkConstants.IPathVariableConstants.MASTER_ID + "}")
+	public ResponseEntity<BaseResponseBO> updateMastersStatus(
+			@PathVariable(name = INetworkConstants.IPathVariableConstants.MASTER_NAME) String master_name,
+			@PathVariable(name = INetworkConstants.IPathVariableConstants.MASTER_ID) int master_id,
 			@RequestParam(name = INetworkConstants.IRequestParamConstants.STATUS) int status) {
 		try {
 
-			iMasterService.updateStatus(code_group_id, status);
+			iMasterService.updateMastersStatus(master_name, master_id, status);
 
 			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.STATUS_UPDATE);
 		} catch (ApplicationException e) {
@@ -110,7 +108,6 @@ public class MasterController extends BaseController {
 			e.printStackTrace();
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
-
 	}
 
 	/**
@@ -136,7 +133,6 @@ public class MasterController extends BaseController {
 			e.printStackTrace();
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
-
 	}
 
 	/**
@@ -162,7 +158,28 @@ public class MasterController extends BaseController {
 			e.printStackTrace();
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
+	}
 
+	/**
+	 * This method is used to save DPRTargetDO Data to db
+	 * 
+	 * @param dprTargetDO
+	 *            : contains codeGroup Data provided by users
+	 * @return : Return response
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.DPR_TARGET + INetworkConstants.IURLConstants.SAVE)
+	public ResponseEntity<BaseResponseBO> createDPRTarget(@RequestBody DPRTargetDO dprTargetDO) {
+		try {
+
+			iMasterService.createDPRTarget(dprTargetDO);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -291,4 +308,59 @@ public class MasterController extends BaseController {
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
 	}
+
+	/**
+	 * This method is used for Fetching DPR Target list with Pagination and Quick
+	 * filter
+	 * 
+	 * @param page
+	 * @param limit
+	 * @param requestFilter
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.DPR_TARGET + INetworkConstants.IURLConstants.LIST)
+	public ResponseEntity<BaseResponseBO> getDPRTargetList(
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.LIMIT, required = false, defaultValue = "-1") int limit,
+			@RequestBody RequestBO requestFilter) {
+		try {
+
+			Object dprTargetList = iMasterService.getDPRTargetList(requestFilter, page, limit);
+
+			if (dprTargetList != null)
+				return getResponseModel(dprTargetList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+
+			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Get Master's Entity according to the specified Master name and id
+	 * 
+	 * @param master_id
+	 * @param status
+	 * @return
+	 */
+	@GetMapping(value = "/{" + INetworkConstants.IPathVariableConstants.MASTER_NAME + "}" + "/{"
+			+ INetworkConstants.IPathVariableConstants.MASTER_ID + "}")
+	public ResponseEntity<BaseResponseBO> getMasterById(
+			@PathVariable(name = INetworkConstants.IPathVariableConstants.MASTER_NAME) String master_name,
+			@PathVariable(name = INetworkConstants.IPathVariableConstants.MASTER_ID) int master_id) {
+		try {
+
+			Object master = iMasterService.getMasterById(master_name, master_id);
+
+			return getResponseModel(master, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
 }

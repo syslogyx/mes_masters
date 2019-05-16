@@ -4,7 +4,9 @@ import java.util.List;
 
 import com.syslogyx.bo.RequestBO;
 import com.syslogyx.model.masters.CampaignDO;
+import com.syslogyx.dao.base.IBaseDAO;
 import com.syslogyx.model.masters.CodeGroupDO;
+import com.syslogyx.model.masters.DPRTargetDO;
 
 /**
  * This interface is used for communicating with db
@@ -12,7 +14,7 @@ import com.syslogyx.model.masters.CodeGroupDO;
  * @author Palash
  *
  */
-public interface IMasterDAO {
+public interface IMasterDAO extends IBaseDAO {
 
 	/**
 	 * This method is used for retrieving CodeGroup table data for pagination and
@@ -39,6 +41,7 @@ public interface IMasterDAO {
 	 * 
 	 * @param master_name
 	 *            : identifier for returning the list accordingly
+	 * @param class1
 	 * @return
 	 */
 	List<CodeGroupDO> findMastersList(String master_name);
@@ -59,5 +62,23 @@ public interface IMasterDAO {
 	 * @return
 	 */
 	long getCampaignListSize(RequestBO requestFilter);
+
+	/**
+	 * Fetch the list of DPR Targets according to the filter and Pagination provided
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	List<DPRTargetDO> getDPRTargetList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Fetch the list size of DPR Targets according to the filter
+	 * 
+	 * @param requestFilter
+	 * @return
+	 */
+	long getDPRTargetListSize(RequestBO requestFilter);
 
 }

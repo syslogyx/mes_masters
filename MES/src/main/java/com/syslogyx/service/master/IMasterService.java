@@ -5,6 +5,7 @@ import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
+import com.syslogyx.model.masters.DPRTargetDO;
 
 /**
  * This class is used for MasterService business logic related to Master module
@@ -32,18 +33,20 @@ public interface IMasterService {
 	 * @return
 	 * @throws ApplicationException
 	 */
-	Object listCodeGroup(RequestBO requestFilter, int page, int limit) throws ApplicationException;
+	Object listCodeGroup(RequestBO requestFilter, int page, int limit);
 
 	/**
-	 * This method used for retrieving CodeGroup by Id and update status
+	 * This method used for retrieving Master Entity by Id and update status
 	 * 
-	 * @param id
-	 *            : Retrieving CodeGroup id
+	 * @param master_name
+	 *            : identifier for master entity
+	 * @param master_id
+	 *            : Id of the respective master
 	 * @param status
 	 *            : Update status
 	 * @throws ApplicationException
 	 */
-	void updateStatus(int code_group_id, int status) throws ApplicationException;
+	void updateMastersStatus(String master_name, int master_id, int status) throws ApplicationException;
 
 	/**
 	 * export the Master's list data to Excel sheet and return the Path of Excel
@@ -106,5 +109,36 @@ public interface IMasterService {
 	 * @return
 	 */
 	CampaignDO getCampaignId(int camp_id) throws ApplicationException;
+
+	/**
+	 * This Method is used to validation on DPRTargetDO and Save CodeGroup Data
+	 * 
+	 * @param dprTargetDO
+	 * @throws ApplicationException
+	 * @throws Exception
+	 */
+	void createDPRTarget(DPRTargetDO dprTargetDO) throws ApplicationException, Exception;
+
+	/**
+	 * Fetch the DPT Target list according to the provided filters along with the
+	 * Pagination
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	Object getDPRTargetList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Get the Master Entity by provided Id
+	 * 
+	 * @param master_name
+	 * @param master_id
+	 * @return
+	 * @throws ApplicationException
+	 * @throws Exception
+	 */
+	Object getMasterById(String master_name, int master_id) throws ApplicationException, Exception;
 
 }

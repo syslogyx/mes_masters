@@ -21,6 +21,7 @@ public interface IConstants {
 	public String PDF_BASE_PATH = "/home/alok/Desktop/pdf/";
 	public String EXTENSION_EXCEL = ".xls";
 	public String EXTENSION_PDF = ".pdf";
+	public int VALUE_ONE = 1;
 
 	/**
 	 * Interface to define constants of Date time format
@@ -43,6 +44,7 @@ public interface IConstants {
 	public interface MASTERS_NAME {
 		public String CODE_GROUP = "code_group";
 		public String CAMPAIGN = "campaign";
+		public String DPR_TARGET = "dpr_target";
 	}
 
 	/**
@@ -58,4 +60,15 @@ public interface IConstants {
 		public int HIGH = 3;
 	}
 
+
+	/**
+	 * Interface to define constants of OSP identifier
+	 * 
+	 * @author namrata
+	 *
+	 */
+	public interface OSP_IDENTIFIER {
+		public int YES = 1;
+		public int NO = 2;
+	}
 }
