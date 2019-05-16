@@ -24,5 +24,7 @@ public interface IResponseMessages {
 	String INVALID_DPR_TARGET_ID = "Invalid DPR Target Id.";
 	String INVALID_PROCESS_UNIT_ID = "Invalid Process Unit Id.";
 	String INVALID_PRODUCT_ID = "Invalid Product Id.";
+	String INVALID_MASTER_ID = "Invalid Master Id.";
+	String INVALID_MASTER_NAME = "Invalid Master name.";
 
 }

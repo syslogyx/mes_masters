@@ -69,7 +69,7 @@ public class CodeGroupDO {
 	private Date updated;
 
 	@Column(name = "status")
-	private int status;
+	public int status;
 
 	public CodeGroupDO() {
 

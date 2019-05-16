@@ -5,6 +5,7 @@ import java.util.List;
 import com.syslogyx.bo.RequestBO;
 import com.syslogyx.dao.base.IBaseDAO;
 import com.syslogyx.model.masters.CodeGroupDO;
+import com.syslogyx.model.masters.DPRTargetDO;
 
 /**
  * This interface is used for communicating with db
@@ -42,5 +43,23 @@ public interface IMasterDAO extends IBaseDAO {
 	 * @return
 	 */
 	List<CodeGroupDO> findMastersList(String master_name);
+
+	/**
+	 * Fetch the list of DPR Targets according to the filter and Pagination provided
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	List<DPRTargetDO> getDPRTargetList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Fetch the list size of DPR Targets according to the filter
+	 * 
+	 * @param requestFilter
+	 * @return
+	 */
+	long getDPRTargetListSize(RequestBO requestFilter);
 
 }

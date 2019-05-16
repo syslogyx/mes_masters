@@ -21,6 +21,7 @@ public interface IConstants {
 	public String PDF_BASE_PATH = "/home/namrata/Desktop/pdf/";
 	public String EXTENSION_EXCEL = ".xls";
 	public String EXTENSION_PDF = ".pdf";
+	public int VALUE_ONE = 1;
 
 	/**
 	 * Interface to define constants of Date time format
@@ -42,6 +43,7 @@ public interface IConstants {
 	 */
 	public interface MASTERS_NAME {
 		public String CODE_GROUP = "code_group";
+		public String DPR_TARGET = "dpr_target";
 	}
 
 	/**

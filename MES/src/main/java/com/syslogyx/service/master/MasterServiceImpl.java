@@ -1,5 +1,6 @@
 package com.syslogyx.service.master;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -74,7 +75,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	}
 
 	@Override
-	public Object listCodeGroup(RequestBO requestFilter, int page, int limit) throws ApplicationException {
+	public Object listCodeGroup(RequestBO requestFilter, int page, int limit) {
 
 		List<CodeGroupDO> codeGroups = masterDAO.getCodeGroupList(requestFilter, page, limit);
 
@@ -91,15 +92,15 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	}
 
 	@Override
-	public void updateStatus(int code_group_id, int status) throws ApplicationException {
-
-		CodeGroupDO codeGroupDO = iCodeGroupDAO.findById(code_group_id);
-		if (codeGroupDO == null)
-			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_GROUP_CODE);
+	public void updateMastersStatus(String master_name, int master_id, int status) throws ApplicationException {
 
 		if (status == IConstants.STATUS_INACTIVE || status == IConstants.STATUS_ACTIVE) {
-			codeGroupDO.setStatus(status);
-			iCodeGroupDAO.save(codeGroupDO);
+			Class<?> masterByType = getMasterByType(master_name);
+
+			Object master = masterDAO.getEntityById(masterByType, master_id);
+
+			validateAndUpdateStatus(masterByType, master, status);
+
 		} else {
 			throw new ApplicationException(IResponseCodes.INVALID_STATUS, IResponseMessages.INVALID_STATUS);
 		}
@@ -221,7 +222,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	}
 
 	@Override
-	public void createDPRTarget(DPRTargetDO dprTargetDO) throws ApplicationException {
+	public void createDPRTarget(DPRTargetDO dprTargetDO) throws ApplicationException, Exception {
 
 		int dpr_id = dprTargetDO.getId();
 		int unit_id = dprTargetDO.getUnit_id();
@@ -247,4 +248,66 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		idprTargetDAO.save(dprTargetDO);
 	}
 
+	@Override
+	public Object getDPRTargetList(RequestBO requestFilter, int page, int limit) {
+		List<DPRTargetDO> dprTargets = masterDAO.getDPRTargetList(requestFilter, page, limit);
+
+		if (dprTargets != null && !dprTargets.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getDPRTargetListSize(requestFilter);
+
+				return generatePaginationResponse(dprTargets, listSize, page, limit);
+			}
+			return dprTargets;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Return the Master Class name according to the provided master_name
+	 * 
+	 * @param master_name
+	 * @return
+	 * @throws ApplicationException
+	 */
+	private Class<?> getMasterByType(String master_name) throws ApplicationException {
+
+		if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.CODE_GROUP))
+			return CodeGroupDO.class;
+		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.DPR_TARGET))
+			return DPRTargetDO.class;
+		else
+			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
+	}
+
+	/**
+	 * Validate the Status provided to update against the existing status and update
+	 * the Master object
+	 * 
+	 * @param masterByType
+	 * @param master
+	 * @param status
+	 * @throws ApplicationException
+	 */
+	private void validateAndUpdateStatus(Class<?> masterByType, Object master, int status) throws ApplicationException {
+
+		try {
+			Field declaredField = masterByType.getDeclaredField("status");
+			int oldStatus = (int) declaredField.get(master);
+
+			declaredField.set(master, status);
+
+			masterDAO.mergeEntity(master);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	@Override
+	public Object getMasterById(String master_name, int master_id) throws Exception {
+		return masterDAO.validateEntityById(getMasterByType(master_name), master_id,
+				IResponseMessages.INVALID_MASTER_ID);
+	}
 }

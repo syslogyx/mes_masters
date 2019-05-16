@@ -82,6 +82,30 @@ public class DPRTargetDO {
 	@Transient
 	private int product_id;
 
+	@Transient
+	private String product_name;
+
+	@Transient
+	private String unit_name;
+
+	@Transient
+	private String updated_by_name;
+
+	public DPRTargetDO(int id, float business_plan_target, float internal_target, String year, Date updated, int status,
+			int unit_id, int product_id, String product_name, String unit_name, String updated_by_name) {
+		this.id = id;
+		this.business_plan_target = business_plan_target;
+		this.internal_target = internal_target;
+		this.year = year;
+		this.updated = updated;
+		this.status = status;
+		this.unit_id = unit_id;
+		this.product_id = product_id;
+		this.product_name = product_name;
+		this.unit_name = unit_name;
+		this.updated_by_name = updated_by_name;
+	}
+
 	public int getId() {
 		return id;
 	}

@@ -23,6 +23,25 @@ public interface IBaseDAO {
 	 *            : Error msg to show in case of invalid id
 	 * @return
 	 * @throws ApplicationException
+	 * @throws Exception
 	 */
-	Object validateEntityById(Class<?> classT, Object entity_id, String error_msg) throws ApplicationException;
+	Object validateEntityById(Class<?> classT, Object entity_id, String error_msg)
+			throws ApplicationException, Exception;
+
+	/**
+	 * Get the Entity by Id
+	 * 
+	 * @param classT
+	 *            : Name of the Entity class
+	 * @param entity_id
+	 *            : Primary key Unique id of the Entity
+	 */
+	Object getEntityById(Class<?> classT, Object entity_id);
+
+	/**
+	 * Merge the Provided Entity in DB
+	 * 
+	 * @param master
+	 */
+	void mergeEntity(Object entity);
 }

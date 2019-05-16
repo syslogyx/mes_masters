@@ -67,6 +67,7 @@ public interface INetworkConstants {
 
 		String CODE_GROUP_ID = "code_group_id";
 		String MASTER_NAME = "master_name";
+		String MASTER_ID = "master_id";
 
 	}
 }
