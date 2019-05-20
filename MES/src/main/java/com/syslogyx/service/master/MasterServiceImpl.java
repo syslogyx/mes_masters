@@ -502,6 +502,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return DPRTargetDO.class;
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.CAMPAIGN))
 			return CampaignDO.class;
+		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.ELONGATION))
+			return ElongationDO.class;
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
