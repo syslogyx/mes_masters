@@ -21,9 +21,11 @@ import com.syslogyx.dao.master.IMasterDAO;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.message.IResponseCodes;
 import com.syslogyx.message.IResponseMessages;
+import com.syslogyx.model.masters.CRGradeDO;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.user.UserDO;
@@ -530,6 +532,33 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	public Object getMasterById(String master_name, int master_id) throws Exception {
 		return masterDAO.validateEntityById(getMasterByType(master_name), master_id,
 				IResponseMessages.INVALID_MASTER_ID);
+	}
+
+	@Override
+	public void createElongation(ElongationDO elongationDO) throws ApplicationException, Exception {
+		int elong_id = elongationDO.getId();
+		int cr_grade_id = elongationDO.getCr_grade_id();
+		int unit_id = elongationDO.getUnit_id();
+
+		// validate the elongation id in case of update scenario
+		masterDAO.validateEntityById(ElongationDO.class, elong_id, IResponseMessages.INVALID_ELONGATION_ID);
+
+		// validate and set the CR Grade id
+		CRGradeDO crGradeDO = (CRGradeDO) masterDAO.validateEntityById(CRGradeDO.class, cr_grade_id,
+				IResponseMessages.INVALID_CR_GRADE_ID);
+		elongationDO.setCr_grade(crGradeDO);
+
+		// validate and set the CR Grade id
+		ProcessUnitDO processUnitDO = (ProcessUnitDO) masterDAO.validateEntityById(ProcessUnitDO.class, unit_id,
+				IResponseMessages.INVALID_PROCESS_UNIT_ID);
+		elongationDO.setUnit(processUnitDO);
+
+		// set the required details
+		UserDO loggedInUser = getLoggedInUser();
+
+		elongationDO.setStatus(IConstants.STATUS_ACTIVE);
+		elongationDO.setCreated_by(loggedInUser);
+		elongationDO.setUpdated_by(loggedInUser);
 	}
 
 	// @Override

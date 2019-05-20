@@ -5,6 +5,7 @@ import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.ElongationDO;
 
 /**
  * This class is used for MasterService business logic related to Master module
@@ -117,6 +118,15 @@ public interface IMasterService {
 	 * @throws ApplicationException
 	 */
 	String exportListToPDF(String master_name) throws ApplicationException;
+
+	/**
+	 * Validate the provided Elongation data and Store into DB
+	 * 
+	 * @param elongationDO
+	 * @throws Exception
+	 * @throws ApplicationException
+	 */
+	void createElongation(ElongationDO elongationDO) throws ApplicationException, Exception;
 
 	/**
 	 * This method used for retrieving CodeGroup by Id

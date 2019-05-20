@@ -30,7 +30,8 @@ public interface INetworkConstants {
 		public String PDF = "/pdf";
 		public String VIEW = "/view";
 		public String CAMPAIGN = "/campaign";
-		public String DPR_TARGET = "dpr_target";
+		public String DPR_TARGET = "/dpr_target";
+		public String ELONGATION = "/elongation";
 	}
 
 	/**

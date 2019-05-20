@@ -19,6 +19,7 @@ import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.service.master.IMasterService;
 
 /**
@@ -87,7 +88,7 @@ public class MasterController extends BaseController {
 	 * This method is used to save DPRTargetDO Data to db
 	 * 
 	 * @param dprTargetDO
-	 *            : contains codeGroup Data provided by users
+	 *            : contains DPRTargetDO Data provided by users
 	 * @return : Return response
 	 */
 	@PostMapping(value = INetworkConstants.IURLConstants.DPR_TARGET + INetworkConstants.IURLConstants.SAVE)
@@ -280,6 +281,28 @@ public class MasterController extends BaseController {
 			String filePath = iMasterService.exportListToPDF(master_name);
 
 			return getResponseModel(filePath, IResponseCodes.SUCCESS, IResponseMessages.LIST_EXPORTED_SUCCESSFULLY);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * This method is used to save elongationDO Data to db
+	 * 
+	 * @param elongationDO
+	 *            : contains Elongation Data provided by users
+	 * @return : Return response
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.ELONGATION + INetworkConstants.IURLConstants.SAVE)
+	public ResponseEntity<BaseResponseBO> createElongation(@RequestBody ElongationDO elongationDO) {
+		try {
+
+			iMasterService.createElongation(elongationDO);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 			return getResponseModel(null, e.getCode(), e.getMessage());
