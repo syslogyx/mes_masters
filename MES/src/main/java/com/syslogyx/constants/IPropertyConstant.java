@@ -16,6 +16,9 @@ public interface IPropertyConstant {
 	String STATUS = "status";
 	String CREATED_BY = "created_by";
 	String UPDATED_BY = "updated_by";
+	String CR_GRADE = "cr_grade";
+	String UNIT = "unit";
+	String NAME = "name";
 
 	// CodeGroup Constants
 	String GROUP_CODE = "group_code";
@@ -29,7 +32,6 @@ public interface IPropertyConstant {
 	String CAPACITY_MIN = "capacity_min";
 	String CAPACITY_MAX = "capacity_max";
 	String PRIORITY_LEVEL = "priority_level";
-	String UNIT = "unit";
 
 	// ProcessUnit Constants
 	String PU_ID = "pu_id";

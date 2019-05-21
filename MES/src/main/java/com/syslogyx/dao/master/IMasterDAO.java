@@ -3,10 +3,11 @@ package com.syslogyx.dao.master;
 import java.util.List;
 
 import com.syslogyx.bo.RequestBO;
-import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.dao.base.IBaseDAO;
+import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.ElongationDO;
 
 /**
  * This interface is used for communicating with db
@@ -58,6 +59,7 @@ public interface IMasterDAO extends IBaseDAO {
 
 	/**
 	 * For count number of rows in campaign table for pagination
+	 * 
 	 * @param requestFilter
 	 * @return
 	 */
@@ -80,5 +82,23 @@ public interface IMasterDAO extends IBaseDAO {
 	 * @return
 	 */
 	long getDPRTargetListSize(RequestBO requestFilter);
+
+	/**
+	 * Fetch the Elongation List according to the Filter and Pagination
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	List<ElongationDO> getElongationList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Fetch the Elongation List Size according to the Filter
+	 * 
+	 * @param requestFilter
+	 * @return
+	 */
+	long getElongationListSize(RequestBO requestFilter);
 
 }

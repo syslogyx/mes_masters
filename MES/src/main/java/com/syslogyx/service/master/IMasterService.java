@@ -129,6 +129,17 @@ public interface IMasterService {
 	void createElongation(ElongationDO elongationDO) throws ApplicationException, Exception;
 
 	/**
+	 * Fetch the list of Elongation Master according to the Pagination and the Quick
+	 * Finder specified
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	Object getElongationList(RequestBO requestFilter, int page, int limit);
+
+	/**
 	 * This method used for retrieving CodeGroup by Id
 	 * 
 	 * @param code_group_id

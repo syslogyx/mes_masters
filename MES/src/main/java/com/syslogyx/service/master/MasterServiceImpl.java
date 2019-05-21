@@ -561,6 +561,24 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		elongationDO.setStatus(IConstants.STATUS_ACTIVE);
 		elongationDO.setCreated_by(loggedInUser);
 		elongationDO.setUpdated_by(loggedInUser);
+
+		masterDAO.mergeEntity(elongationDO);
+	}
+
+	@Override
+	public Object getElongationList(RequestBO requestFilter, int page, int limit) {
+		List<ElongationDO> elongations = masterDAO.getElongationList(requestFilter, page, limit);
+
+		if (elongations != null && !elongations.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getElongationListSize(requestFilter);
+
+				return generatePaginationResponse(elongations, listSize, page, limit);
+			}
+			return elongations;
+		}
+
+		return null;
 	}
 
 	// @Override

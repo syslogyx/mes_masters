@@ -313,6 +313,34 @@ public class MasterController extends BaseController {
 	}
 
 	/**
+	 * This method is used for Fetching Elongation list with Pagination and Quick
+	 * filter
+	 * 
+	 * @param page
+	 * @param limit
+	 * @param requestFilter
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.ELONGATION + INetworkConstants.IURLConstants.LIST)
+	public ResponseEntity<BaseResponseBO> getElongationList(
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.LIMIT, required = false, defaultValue = "-1") int limit,
+			@RequestBody RequestBO requestFilter) {
+		try {
+
+			Object dprTargetList = iMasterService.getElongationList(requestFilter, page, limit);
+
+			if (dprTargetList != null)
+				return getResponseModel(dprTargetList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+
+			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
 	 * This method is used for retrieving codeGroup by id and response all data in
 	 * 
 	 * @param code_group_id
