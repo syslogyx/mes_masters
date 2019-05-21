@@ -31,6 +31,8 @@ public interface INetworkConstants {
 		public String VIEW = "/view";
 		public String CAMPAIGN = "/campaign";
 		public String DPR_TARGET = "dpr_target";
+		public String LOGOUT = "/logout";
+		public String LEAD_TIME = "/lead_time";
 	}
 
 	/**

@@ -72,6 +72,29 @@ public class LeadTimeDO {
 
 	@Transient
 	private int before_process_unit_id;
+	
+	@Transient
+	private String process_unit_name;
+
+	@Transient
+	private String updated_by_name;
+	
+	
+
+	public LeadTimeDO() {
+		
+	}
+
+	public LeadTimeDO(int id, String username, Date created, Date updated, int status, String unit, int pu_id) {
+
+		this.id = id;
+		this.updated_by_name = username;
+		this.created = created;
+		this.updated = updated;
+		this.status = status;
+		
+
+	}
 
 	public int getId() {
 		return id;
@@ -153,4 +176,22 @@ public class LeadTimeDO {
 		this.before_process_unit_id = before_process_unit_id;
 	}
 
+	public String getUpdated_by_name() {
+		return updated_by_name;
+	}
+
+	public void setUpdated_by_name(String updated_by_name) {
+		this.updated_by_name = updated_by_name;
+	}
+
+	public String getProcess_unit_name() {
+		return process_unit_name;
+	}
+
+	public void setProcess_unit_name(String process_unit_name) {
+		this.process_unit_name = process_unit_name;
+	}
+
+	
+	
 }

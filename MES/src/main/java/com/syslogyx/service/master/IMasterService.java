@@ -5,6 +5,7 @@ import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.LeadTimeDO;
 
 /**
  * This class is used for MasterService business logic related to Master module
@@ -117,6 +118,26 @@ public interface IMasterService {
 	 * @throws ApplicationException
 	 */
 	String exportListToPDF(String master_name) throws ApplicationException;
+
+	/**
+	 * This Method is used to validation on LeadTime and Save LeadTime Data in db
+	 * 
+	 * @param leadTimeDO
+	 *            : contains LeadTime Data provided by users
+	 * @throws ApplicationException
+	 * @throws Exception
+	 */
+	void createLeadTime(LeadTimeDO leadTimeDO) throws ApplicationException, Exception;
+
+	/**
+	 * For fetching LeadTime list with pagination and quick finder
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	Object getLeadTimeList(RequestBO requestFilter, int page, int limit) throws ApplicationException, Exception;
 
 	/**
 	 * This method used for retrieving CodeGroup by Id

@@ -24,6 +24,7 @@ import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.LeadTimeDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.user.UserDO;
@@ -530,6 +531,52 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	public Object getMasterById(String master_name, int master_id) throws Exception {
 		return masterDAO.validateEntityById(getMasterByType(master_name), master_id,
 				IResponseMessages.INVALID_MASTER_ID);
+	}
+
+	@Override
+	public void createLeadTime(LeadTimeDO leadTimeDO) throws ApplicationException, Exception {
+
+		int leadTimeId = leadTimeDO.getId();
+		
+		String process_unit_name = leadTimeDO.getProcess_unit_name();
+		
+
+		// validate code group id
+		masterDAO.validateEntityById(LeadTimeDO.class, leadTimeId, IResponseMessages.INVALID_LEAD_TIME_ID);
+
+		ProcessUnitDO process_unit = (ProcessUnitDO) masterDAO.validateEntityById(ProcessUnitDO.class,
+				process_unit_name, IResponseMessages.INVALID_PROCESS_UNIT_ID);
+		
+		String unit = process_unit.getUnit();
+		
+		leadTimeDO.setProcess_unit_name(unit);
+		
+
+	
+
+		UserDO loggedInUser = getLoggedInUser();
+		leadTimeDO.setCreated_by(loggedInUser);
+		leadTimeDO.setUpdated_by(loggedInUser);
+		leadTimeDO.setStatus(IConstants.STATUS_ACTIVE);
+		masterDAO.mergeEntity(leadTimeDO);
+
+	}
+
+	@Override
+	public Object getLeadTimeList(RequestBO requestFilter, int page, int limit) throws ApplicationException, Exception {
+
+		List<LeadTimeDO> leadTime = masterDAO.getLeadTimeList(requestFilter, page, limit);
+
+		if (leadTime != null && !leadTime.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getCodeGroupListSize(requestFilter);
+
+				return generatePaginationResponse(leadTime, listSize, page, limit);
+			}
+			return leadTime;
+		}
+
+		return null;
 	}
 
 	// @Override

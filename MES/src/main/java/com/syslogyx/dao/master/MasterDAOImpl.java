@@ -25,6 +25,7 @@ import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.LeadTimeDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.user.UserDO;
 
@@ -194,7 +195,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 				campaignRoot.get(IPropertyConstant.PRIORITY_LEVEL), campaignRoot.get(IPropertyConstant.CREATED),
 				campaignRoot.get(IPropertyConstant.UPDATED), campaignRoot.get(IPropertyConstant.STATUS),
 				fetch.get(IPropertyConstant.USERNAME), processUnitFetch.get(IPropertyConstant.UNIT),
-				processUnitFetch.get(IPropertyConstant.ID));
+				processUnitFetch.get(IPropertyConstant.PU_ID));
 
 		return createQuery.select(construct);
 	}
@@ -348,6 +349,79 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 			return conditions;
 		}
 		return null;
+	}
+
+	
+	public CriteriaQuery<LeadTimeDO> getLeadTimeCriteriaWithFilter(RequestBO requestFilter) {
+		
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<LeadTimeDO> createQuery = builder.createQuery(LeadTimeDO.class);
+		Root<LeadTimeDO> leadTimeRoot = createQuery.from(LeadTimeDO.class);
+		Join<LeadTimeDO, UserDO> fetch = leadTimeRoot.join(IPropertyConstant.UPDATED_BY);
+		Join<LeadTimeDO, ProcessUnitDO> afterUnitFetch = leadTimeRoot.join(IPropertyConstant.AFTER_PROCESS_UNIT);
+		Join<LeadTimeDO, ProcessUnitDO> beforeUnitFetch = leadTimeRoot.join(IPropertyConstant.BEFORE_PROCESS_UNIT);
+		
+		List<Predicate> conditions = getConditionsForLeadTime(requestFilter, builder, leadTimeRoot, afterUnitFetch,
+				beforeUnitFetch);
+		
+		if (conditions != null && !conditions.isEmpty()) {
+			createQuery.where(conditions.toArray(new Predicate[] {}));
+		}
+		
+		CompoundSelection<LeadTimeDO> construct = builder.construct(LeadTimeDO.class,
+				leadTimeRoot.get(IPropertyConstant.ID), fetch.get(IPropertyConstant.USERNAME),
+				leadTimeRoot.get(IPropertyConstant.CREATED), leadTimeRoot.get(IPropertyConstant.UPDATED),
+				leadTimeRoot.get(IPropertyConstant.STATUS), beforeUnitFetch.get(IPropertyConstant.UNIT),
+				beforeUnitFetch.get(IPropertyConstant.PU_ID), afterUnitFetch.get(IPropertyConstant.UNIT),
+				afterUnitFetch.get(IPropertyConstant.PU_ID));
+		
+		return createQuery.select(construct);
+		
+	}	
+
+	private List<Predicate> getConditionsForLeadTime(RequestBO requestFilter, CriteriaBuilder builder,
+			Root<LeadTimeDO> leadTimeRoot, Join<LeadTimeDO, ProcessUnitDO> afterUnitFetch,
+			Join<LeadTimeDO, ProcessUnitDO> beforeUnitFetch) {
+
+		if (requestFilter != null) {
+			List<Predicate> conditions = new ArrayList<>();
+
+			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
+				conditions.add(builder.or(
+						builder.like(afterUnitFetch.get(IPropertyConstant.UNIT),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(beforeUnitFetch.get(IPropertyConstant.UNIT),
+								"%" + requestFilter.getQuick_finder() + "%")));
+			}
+			
+			// add condition to restrict rows whose status is inactive
+			if (!requestFilter.isInclude_inactive_data()) {
+				conditions
+						.add(builder.notEqual(leadTimeRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
+			}
+			return conditions;
+		}
+		return null;
+
+	}
+
+	@Override
+	public List<LeadTimeDO> getLeadTimeList(RequestBO requestFilter, int page, int limit) {
+		
+		Query query = entityManager.createQuery(getLeadTimeCriteriaWithFilter(requestFilter));
+
+		if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+			int start_index = IConstants.VALUE_ZERO;
+			if (page > 1) {
+				page -= 1;
+				start_index = page * limit;
+			}
+
+			query.setFirstResult(start_index);
+			query.setMaxResults(limit);
+		}
+
+		return query.getResultList();
 	}
 
 }

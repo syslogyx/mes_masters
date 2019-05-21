@@ -1,7 +1,14 @@
 package com.syslogyx.controller;
 
+import javax.servlet.FilterChain;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.syslogyx.bo.BaseResponseBO;
 import com.syslogyx.bo.RequestBO;
+import com.syslogyx.config.JwtAuthenticationFilter;
 import com.syslogyx.constants.INetworkConstants;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.message.IResponseCodes;
@@ -19,6 +27,7 @@ import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.LeadTimeDO;
 import com.syslogyx.service.master.IMasterService;
 
 /**
@@ -28,11 +37,15 @@ import com.syslogyx.service.master.IMasterService;
  *
  */
 @RestController
+
 @RequestMapping(value = INetworkConstants.IURLConstants.API + INetworkConstants.IURLConstants.MASTERS)
 public class MasterController extends BaseController {
 
 	@Autowired
 	private IMasterService iMasterService;
+
+	@Autowired
+	private JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	/**
 	 * This method is used to save CodeGroup Data to db
@@ -186,6 +199,58 @@ public class MasterController extends BaseController {
 		}
 	}
 
+	/**
+	 * This method is used to save LeadTime Data to db
+	 * 
+	 * @param leadTimeDO
+	 *            : contains leadTime Data provided by users
+	 * 
+	 * @return: Return response
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.LEAD_TIME + INetworkConstants.IURLConstants.SAVE)
+	public ResponseEntity<BaseResponseBO> createLeadTime(@RequestBody LeadTimeDO leadTimeDO) {
+		try {
+
+			iMasterService.createLeadTime(leadTimeDO);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * for fetching leadTime list with pagination and quick finder
+	 * @param page
+	 * @param limit
+	 * @param requestFilter
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.LEAD_TIME + INetworkConstants.IURLConstants.LIST)
+	public ResponseEntity<BaseResponseBO> getLeadTimeList(
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.LIMIT, required = false, defaultValue = "-1") int limit,
+			@RequestBody RequestBO requestFilter) {
+		try {
+
+			Object leadTimeList = iMasterService.getLeadTimeList(requestFilter, page, limit);
+
+			if (leadTimeList != null)
+				return getResponseModel(leadTimeList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+
+			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+	
 	/**
 	 * Get Master's Entity according to the specified Master name and id
 	 * 
@@ -351,6 +416,10 @@ public class MasterController extends BaseController {
 	/**
 	 * For view Campaign table Data on particular Id
 	 * 
+	 * @param chain
+	 * @param res
+	 * @param req
+	 * 
 	 * @param camp_id
 	 * @return
 	 */
@@ -374,6 +443,24 @@ public class MasterController extends BaseController {
 	// return getResponseModel(null, IResponseCodes.SERVER_ERROR,
 	// IResponseMessages.SERVER_ERROR);
 	// }
+	// }
+
+	// @GetMapping(value = INetworkConstants.IURLConstants.LOGOUT)
+	// public ResponseEntity<BaseResponseBO> logoutPage (HttpServletRequest req,
+	// HttpServletResponse res) throws ApplicationException {
+	// try {
+	//
+	// String a=jwtAuthenticationFilter.logoutFilterInternal(req, res);
+	//
+	//
+	// return getResponseModel(a, IResponseCodes.SUCCESS,
+	// IResponseMessages.LIST_EXPORTED_SUCCESSFULLY);
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// return getResponseModel(null, IResponseCodes.SERVER_ERROR,
+	// IResponseMessages.SERVER_ERROR);
+	// }
+	//
 	// }
 
 }

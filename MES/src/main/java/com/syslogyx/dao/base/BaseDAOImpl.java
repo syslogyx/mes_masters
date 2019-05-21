@@ -4,9 +4,6 @@ import java.lang.reflect.Field;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
-
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -43,10 +40,10 @@ public class BaseDAOImpl implements IBaseDAO {
 				// validate the status of the entity, throw exception in case it is inactive
 				Field declaredField = classT.getDeclaredField(IPropertyConstant.STATUS);
 				int status = (int) declaredField.get(entity);
-
+				
 				if (status == IConstants.STATUS_INACTIVE)
 					throw new ApplicationException(IResponseCodes.INVALID_ENTITY, error_msg);
-			}
+			}	
 
 			return entity;
 		}

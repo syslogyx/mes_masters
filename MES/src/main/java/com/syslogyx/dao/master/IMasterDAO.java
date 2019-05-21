@@ -7,6 +7,7 @@ import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.dao.base.IBaseDAO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.LeadTimeDO;
 
 /**
  * This interface is used for communicating with db
@@ -58,6 +59,7 @@ public interface IMasterDAO extends IBaseDAO {
 
 	/**
 	 * For count number of rows in campaign table for pagination
+	 * 
 	 * @param requestFilter
 	 * @return
 	 */
@@ -80,5 +82,15 @@ public interface IMasterDAO extends IBaseDAO {
 	 * @return
 	 */
 	long getDPRTargetListSize(RequestBO requestFilter);
+
+	/**
+	 * for fetch LeadTime list from db
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	List<LeadTimeDO> getLeadTimeList(RequestBO requestFilter, int page, int limit);
 
 }
