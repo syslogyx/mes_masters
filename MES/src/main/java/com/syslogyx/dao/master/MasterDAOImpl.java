@@ -9,6 +9,7 @@ import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
@@ -146,6 +147,9 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 		if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
 			return getDPRTargetList(null, IConstants.DEFAULT, IConstants.DEFAULT);
+
+		if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
+			return getElongationList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
 		return null;
 	}
@@ -358,8 +362,8 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		CriteriaQuery<ElongationDO> createQuery = builder.createQuery(ElongationDO.class);
 		Root<ElongationDO> elongationRoot = createQuery.from(ElongationDO.class);
 		Join<ElongationDO, UserDO> updatedBy = elongationRoot.join(IPropertyConstant.UPDATED_BY);
-		Join<ElongationDO, ProcessUnitDO> unit = elongationRoot.join(IPropertyConstant.UNIT);
-		Join<ElongationDO, CRGradeDO> crGrade = elongationRoot.join(IPropertyConstant.CR_GRADE);
+		Join<ElongationDO, ProcessUnitDO> unit = elongationRoot.join(IPropertyConstant.UNIT, JoinType.LEFT);
+		Join<ElongationDO, CRGradeDO> crGrade = elongationRoot.join(IPropertyConstant.CR_GRADE, JoinType.LEFT);
 
 		// set the list of properties whose values are required to fetch
 		CompoundSelection<ElongationDO> construct = builder.construct(ElongationDO.class,
@@ -431,12 +435,15 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 	public long getElongationListSize(RequestBO requestFilter) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
-		Root<CodeGroupDO> codeGroupRoot = createQuery.from(CodeGroupDO.class);
+		Root<ElongationDO> elongationRoot = createQuery.from(ElongationDO.class);
+		Join<ElongationDO, ProcessUnitDO> unit = elongationRoot.join(IPropertyConstant.UNIT, JoinType.LEFT);
+		Join<ElongationDO, CRGradeDO> crGrade = elongationRoot.join(IPropertyConstant.CR_GRADE, JoinType.LEFT);
 
-		createQuery.select(builder.count(codeGroupRoot));
+		createQuery.select(builder.count(elongationRoot));
 
 		// prepare where conditions according to provided filter
-		List<Predicate> conditions = addCriteriaForCodeGroupFilter(requestFilter, builder, codeGroupRoot);
+		List<Predicate> conditions = addCriteriaForElongationFilter(requestFilter, builder, elongationRoot, unit,
+				crGrade);
 
 		// add the list of predicates in where clause
 		if (conditions != null && !conditions.isEmpty()) {

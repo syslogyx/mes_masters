@@ -86,14 +86,19 @@ public class ElongationDO {
 
 	}
 
-	public ElongationDO(int id, int unit_id, String unit_name, int cr_grade_id, String cr_grade_name, Date updated,
-			int status, String updated_by_name) {
+	public ElongationDO(int id, Integer unit_id, String unit_name, Integer cr_grade_id, String cr_grade_name,
+			Date updated, int status, String updated_by_name) {
 		super();
 		this.id = id;
 		this.updated = updated;
 		this.status = status;
-		this.unit_id = unit_id;
-		this.cr_grade_id = cr_grade_id;
+
+		if (unit_id != null)
+			this.unit_id = unit_id;
+
+		if (cr_grade_id != null)
+			this.cr_grade_id = cr_grade_id;
+
 		this.unit_name = unit_name;
 		this.cr_grade_name = cr_grade_name;
 		this.updated_by_name = updated_by_name;

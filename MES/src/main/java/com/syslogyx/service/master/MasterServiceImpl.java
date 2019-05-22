@@ -197,6 +197,11 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			// method call to set data rows
 			processExcelToExportingDataRows(sheet, mastersList, master_name);
 
+			// Set the Column width to adjust it's size according to the text size
+			for (int index = 0; index < headerList.size(); index++) {
+				sheet.autoSizeColumn(index);
+			}
+
 			String filename = Utils.getFilePath(IConstants.EXCEL_BASE_PATH, master_name);
 			return Utils.writeDataToWorkbook(workbook, filename);
 		} else {
@@ -249,6 +254,30 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
 			processExportingDPRTargetListExcel(sheet, mastersList);
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
+			processExportingElongationListExcel(sheet, mastersList);
+
+	}
+
+	/**
+	 * Set the Field value from DPRTargetDO Object to it's respective index number
+	 * in the excel sheet
+	 * 
+	 * @param sheet
+	 * @param elongations
+	 */
+	private void processExportingElongationListExcel(HSSFSheet sheet, List<ElongationDO> elongations) {
+		for (int index = 0; index < elongations.size(); index++) {
+			ElongationDO elongationDO = elongations.get(index);
+			HSSFRow row = sheet.createRow(index + 1);
+			row.createCell(0).setCellValue(index + 1);
+			row.createCell(1).setCellValue(elongationDO.getUnit_name());
+			row.createCell(2).setCellValue(elongationDO.getCr_grade_name());
+			row.createCell(3).setCellValue(elongationDO.getUpdated_by_name());
+			row.createCell(4).setCellValue(
+					Utils.getFormatedDate(elongationDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
+			row.createCell(5).setCellValue(getStatusString(elongationDO.getStatus()));
+		}
 	}
 
 	/**
@@ -270,7 +299,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			row.createCell(5).setCellValue(dprTargetDO.getInternal_target());
 			row.createCell(6).setCellValue(dprTargetDO.getUpdated_by_name());
 			row.createCell(7).setCellValue(
-					Utils.getFormatedDate(dprTargetDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+					Utils.getFormatedDate(dprTargetDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
 			row.createCell(8).setCellValue(getStatusString(dprTargetDO.getStatus()));
 		}
 	}
@@ -294,7 +323,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			row.createCell(5).setCellValue(campaignDO.getCapacity_max());
 			row.createCell(6).setCellValue(campaignDO.getUpdated_by_name());
 			row.createCell(7).setCellValue(
-					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
 			row.createCell(8).setCellValue(getPriorityString(campaignDO.getPriority_level()));
 			row.createCell(9).setCellValue(campaignDO.getHold_unit_name());
 			row.createCell(10).setCellValue(getStatusString(campaignDO.getStatus()));
@@ -318,7 +347,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			row.createCell(2).setCellValue(codeGroupDO.getGroup_desc());
 
 			row.createCell(3).setCellValue(
-					Utils.getFormatedDate(codeGroupDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+					Utils.getFormatedDate(codeGroupDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
 			row.createCell(4).setCellValue(codeGroupDO.getUpdated_by_name());
 			row.createCell(5).setCellValue(getStatusString(codeGroupDO.getStatus()));
 		}
@@ -366,6 +395,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
 			return new float[] { 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
+			return new float[] { 1, 1, 1, 1, 2, 1 };
+
 		return null;
 	}
 
@@ -386,6 +418,30 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
 			processExportingDPRTargetListPDF(table, mastersList);
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
+			processExportingElongationListPDF(table, mastersList);
+
+	}
+
+	/**
+	 * Set the Field value from Elongation Object to it's respective index number in
+	 * the PDF Table
+	 * 
+	 * @param table
+	 * @param elongationDOs
+	 */
+	private void processExportingElongationListPDF(PdfPTable table, List<ElongationDO> elongationDOs) {
+		for (int index = 0; index < elongationDOs.size(); index++) {
+			ElongationDO elongationDO = elongationDOs.get(index);
+
+			table.addCell(index + 1 + "");
+			table.addCell(elongationDO.getUnit_name());
+			table.addCell(elongationDO.getCr_grade_name());
+			table.addCell(elongationDO.getUpdated_by_name());
+			table.addCell(
+					Utils.getFormatedDate(elongationDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
+			table.addCell(getStatusString(elongationDO.getStatus()));
+		}
 	}
 
 	/**
@@ -407,7 +463,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			table.addCell(dprTargetDO.getInternal_target() + "");
 			table.addCell(dprTargetDO.getUpdated_by_name());
 			table.addCell(
-					Utils.getFormatedDate(dprTargetDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+					Utils.getFormatedDate(dprTargetDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
 			table.addCell(getStatusString(dprTargetDO.getStatus()));
 		}
 	}
@@ -432,7 +488,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			table.addCell(campaignDO.getCapacity_min() + "");
 			table.addCell(campaignDO.getUpdated_by_name());
 			table.addCell(
-					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
 			table.addCell(getPriorityString(campaignDO.getPriority_level()));
 			table.addCell(campaignDO.getHold_unit_name());
 			table.addCell(getStatusString(campaignDO.getStatus()));
@@ -454,7 +510,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			table.addCell(codeGroupDO.getGroup_code());
 			table.addCell(codeGroupDO.getGroup_desc());
 			table.addCell(
-					Utils.getFormatedDate(codeGroupDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+					Utils.getFormatedDate(codeGroupDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
 			table.addCell(codeGroupDO.getUpdated_by_name());
 			table.addCell(getStatusString(codeGroupDO.getStatus()));
 		}

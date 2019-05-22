@@ -29,8 +29,6 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.format.CellFormat;
-import org.apache.poi.ss.format.CellGeneralFormatter;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -96,7 +94,7 @@ public class Utils {
 	 */
 	public static String getCurrentDateString() {
 		try {
-			DateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS);
+			DateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A);
 			Date date = new Date();
 			return dateFormat.format(date);
 		} catch (Exception e) {
@@ -125,7 +123,7 @@ public class Utils {
 	 */
 	public static String getCurrentDateTime() {
 		try {
-			DateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS);
+			DateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A);
 			Date date = new Date();
 			return dateFormat.format(date);
 		} catch (Exception e) {
@@ -528,10 +526,8 @@ public class Utils {
 	}
 
 	/**
-	 * 
 	 * Prepare the Header row of PDF File according to the provided Header String
 	 * List
-	 * 
 	 * 
 	 * @param table
 	 * @param headerList

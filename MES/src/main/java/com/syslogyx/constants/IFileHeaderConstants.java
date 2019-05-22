@@ -37,6 +37,10 @@ public interface IFileHeaderConstants {
 	public String BUSINESS_PLAN_TARGET = "Business Plan Target";
 	public String INTERNAL_TARGET = "Internal Target";
 
+	// Elongation Headers
+	public String PROCESS_UNIT = "Process Unit";
+	public String CR_GRADE = "CR Grade";
+
 	/**
 	 * Prepare the List of Headers used in Code Group Excel and PDF
 	 * 
@@ -94,7 +98,27 @@ public interface IFileHeaderConstants {
 		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
 			return getDPRTargetHeaders();
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
+			return getElongationHeaders();
+
 		return null;
+	}
+
+	/**
+	 * Prepare the List of Headers used in Elongation Excel and PDF
+	 * 
+	 * @return
+	 */
+	public static List<String> getElongationHeaders() {
+		List<String> headers = new ArrayList<>();
+		headers.add(SR_NO);
+		headers.add(PROCESS_UNIT);
+		headers.add(CR_GRADE);
+		headers.add(UPDATED_BY);
+		headers.add(LAST_UPDATED);
+		headers.add(STATUS);
+
+		return headers;
 	}
 
 	/**
