@@ -374,7 +374,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		if (conditions != null && !conditions.isEmpty()) {
 			createQuery.where(conditions.toArray(new Predicate[] {}));
 		}
-
+		
 		Query query = entityManager.createQuery(createQuery.select(construct));
 
 		if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
