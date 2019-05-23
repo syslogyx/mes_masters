@@ -6,6 +6,7 @@ import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.LeadTimeDO;
+import com.syslogyx.model.masters.ElongationDO;
 
 /**
  * This class is used for MasterService business logic related to Master module
@@ -138,6 +139,26 @@ public interface IMasterService {
 	 * @return
 	 */
 	Object getLeadTimeList(RequestBO requestFilter, int page, int limit) throws ApplicationException, Exception;
+
+	/**
+	 * Validate the provided Elongation data and Store into DB
+	 * 
+	 * @param elongationDO
+	 * @throws Exception
+	 * @throws ApplicationException
+	 */
+	void createElongation(ElongationDO elongationDO) throws ApplicationException, Exception;
+
+	/**
+	 * Fetch the list of Elongation Master according to the Pagination and the Quick
+	 * Finder specified
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	Object getElongationList(RequestBO requestFilter, int page, int limit);
 
 	/**
 	 * This method used for retrieving CodeGroup by Id

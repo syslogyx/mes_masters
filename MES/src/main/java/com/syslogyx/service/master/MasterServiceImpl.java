@@ -21,10 +21,12 @@ import com.syslogyx.dao.master.IMasterDAO;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.message.IResponseCodes;
 import com.syslogyx.message.IResponseMessages;
+import com.syslogyx.model.masters.CRGradeDO;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.LeadTimeDO;
+import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.user.UserDO;
@@ -189,9 +191,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		if (mastersList != null && !mastersList.isEmpty()) {
 			HSSFWorkbook workbook = new HSSFWorkbook();
 			HSSFSheet sheet = workbook.createSheet(master_name);
-			
-			
-			
+
 			List<String> headerList = IFileHeaderConstants.getMastersHeaderList(master_name);
 
 			// method call to set the Header Row with Cell style and font
@@ -199,10 +199,12 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 			// method call to set data rows
 			processExcelToExportingDataRows(sheet, mastersList, master_name);
-			for(int index=0; index< mastersList.size(); index++) {
+
+			// Set the Column width to adjust it's size according to the text size
+			for (int index = 0; index < headerList.size(); index++) {
 				sheet.autoSizeColumn(index);
 			}
-			
+
 			String filename = Utils.getFilePath(IConstants.EXCEL_BASE_PATH, master_name);
 			return Utils.writeDataToWorkbook(workbook, filename);
 		} else {
@@ -258,12 +260,14 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.LEAD_TIME))
 			processExportingLeadTimeListExcel(sheet, mastersList);
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
+			processExportingElongationListExcel(sheet, mastersList);
+
 	}
-	
-	
+
 	/**
-	 * Set the Field value from LeadTimeDO Object to it's respective index number
-	 * in the excel sheet
+	 * Set the Field value from LeadTimeDO Object to it's respective index number in
+	 * the excel sheet
 	 * 
 	 * @param sheet
 	 * @param leadTimeList
@@ -278,10 +282,31 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			row.createCell(2).setCellValue(leadTimeDO.getAfter_process_unit_name());
 			row.createCell(3).setCellValue(leadTimeDO.getUpdated_by_name());
 			row.createCell(4).setCellValue(
-					Utils.getFormatedDate(leadTimeDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+					Utils.getFormatedDate(leadTimeDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
 			row.createCell(5).setCellValue(getStatusString(leadTimeDO.getStatus()));
 		}
 
+	}
+
+	/**
+	 * Set the Field value from DPRTargetDO Object to it's respective index number
+	 * in the excel sheet
+	 * 
+	 * @param sheet
+	 * @param elongations
+	 */
+	private void processExportingElongationListExcel(HSSFSheet sheet, List<ElongationDO> elongations) {
+		for (int index = 0; index < elongations.size(); index++) {
+			ElongationDO elongationDO = elongations.get(index);
+			HSSFRow row = sheet.createRow(index + 1);
+			row.createCell(0).setCellValue(index + 1);
+			row.createCell(1).setCellValue(elongationDO.getUnit_name());
+			row.createCell(2).setCellValue(elongationDO.getCr_grade_name());
+			row.createCell(3).setCellValue(elongationDO.getUpdated_by_name());
+			row.createCell(4).setCellValue(Utils.getFormatedDate(elongationDO.getUpdated(),
+					IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
+			row.createCell(5).setCellValue(getStatusString(elongationDO.getStatus()));
+		}
 	}
 
 	/**
@@ -303,7 +328,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			row.createCell(5).setCellValue(dprTargetDO.getInternal_target());
 			row.createCell(6).setCellValue(dprTargetDO.getUpdated_by_name());
 			row.createCell(7).setCellValue(
-					Utils.getFormatedDate(dprTargetDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+					Utils.getFormatedDate(dprTargetDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
 			row.createCell(8).setCellValue(getStatusString(dprTargetDO.getStatus()));
 		}
 	}
@@ -327,7 +352,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			row.createCell(5).setCellValue(campaignDO.getCapacity_max());
 			row.createCell(6).setCellValue(campaignDO.getUpdated_by_name());
 			row.createCell(7).setCellValue(
-					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
 			row.createCell(8).setCellValue(getPriorityString(campaignDO.getPriority_level()));
 			row.createCell(9).setCellValue(campaignDO.getHold_unit_name());
 			row.createCell(10).setCellValue(getStatusString(campaignDO.getStatus()));
@@ -351,7 +376,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			row.createCell(2).setCellValue(codeGroupDO.getGroup_desc());
 
 			row.createCell(3).setCellValue(
-					Utils.getFormatedDate(codeGroupDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+					Utils.getFormatedDate(codeGroupDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
 			row.createCell(4).setCellValue(codeGroupDO.getUpdated_by_name());
 			row.createCell(5).setCellValue(getStatusString(codeGroupDO.getStatus()));
 		}
@@ -371,7 +396,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 			// method call to set the PDF Header row
 			Utils.writeToPDFHeaderRow(table, headerList);
-			
+
 			// process to set the Data Rows according to the master name
 			processPDFToExportingDataRows(table, mastersList, master_name);
 
@@ -398,9 +423,12 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
 			return new float[] { 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-		
+
 		else if (master_name.equals(IConstants.MASTERS_NAME.LEAD_TIME))
 			return new float[] { 1, 1, 1, 1, 1, 1 };
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
+			return new float[] { 1, 1, 1, 1, 2, 1 };
 
 		return null;
 	}
@@ -425,8 +453,18 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.LEAD_TIME))
 			processExportingLeadTimeListPDF(table, mastersList);
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
+			processExportingElongationListPDF(table, mastersList);
+
 	}
 
+	/**
+	 * Set the Field value from lead time Object to it's respective index number in
+	 * the PDF Table
+	 * 
+	 * @param table
+	 * @param leadTimeList
+	 */
 	private void processExportingLeadTimeListPDF(PdfPTable table, List<LeadTimeDO> leadTimeList) {
 
 		for (int index = 0; index < leadTimeList.size(); index++) {
@@ -437,10 +475,31 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			table.addCell(leadTimeDO.getBefore_process_unit_name());
 			table.addCell(leadTimeDO.getUpdated_by_name());
 			table.addCell(
-					Utils.getFormatedDate(leadTimeDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+					Utils.getFormatedDate(leadTimeDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
 			table.addCell(getStatusString(leadTimeDO.getStatus()));
 		}
 
+	}
+
+	/**
+	 * Set the Field value from Elongation Object to it's respective index number in
+	 * the PDF Table
+	 * 
+	 * @param table
+	 * @param elongationDOs
+	 */
+	private void processExportingElongationListPDF(PdfPTable table, List<ElongationDO> elongationDOs) {
+		for (int index = 0; index < elongationDOs.size(); index++) {
+			ElongationDO elongationDO = elongationDOs.get(index);
+
+			table.addCell(index + 1 + "");
+			table.addCell(elongationDO.getUnit_name());
+			table.addCell(elongationDO.getCr_grade_name());
+			table.addCell(elongationDO.getUpdated_by_name());
+			table.addCell(Utils.getFormatedDate(elongationDO.getUpdated(),
+					IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
+			table.addCell(getStatusString(elongationDO.getStatus()));
+		}
 	}
 
 	/**
@@ -462,7 +521,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			table.addCell(dprTargetDO.getInternal_target() + "");
 			table.addCell(dprTargetDO.getUpdated_by_name());
 			table.addCell(
-					Utils.getFormatedDate(dprTargetDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+					Utils.getFormatedDate(dprTargetDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
 			table.addCell(getStatusString(dprTargetDO.getStatus()));
 		}
 	}
@@ -487,7 +546,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			table.addCell(campaignDO.getCapacity_min() + "");
 			table.addCell(campaignDO.getUpdated_by_name());
 			table.addCell(
-					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
 			table.addCell(getPriorityString(campaignDO.getPriority_level()));
 			table.addCell(campaignDO.getHold_unit_name());
 			table.addCell(getStatusString(campaignDO.getStatus()));
@@ -509,7 +568,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			table.addCell(codeGroupDO.getGroup_code());
 			table.addCell(codeGroupDO.getGroup_desc());
 			table.addCell(
-					Utils.getFormatedDate(codeGroupDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+					Utils.getFormatedDate(codeGroupDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
 			table.addCell(codeGroupDO.getUpdated_by_name());
 			table.addCell(getStatusString(codeGroupDO.getStatus()));
 		}
@@ -559,6 +618,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return CampaignDO.class;
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.LEAD_TIME))
 			return LeadTimeDO.class;
+		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.ELONGATION))
+			return ElongationDO.class;
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
@@ -598,7 +659,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		int after_process_unit_id = leadTimeDO.getAfter_process_unit_id();
 		int before_process_unit_id = leadTimeDO.getBefore_process_unit_id();
-		
+
 		// validate lead_time_id
 		masterDAO.validateEntityById(LeadTimeDO.class, leadTimeId, IResponseMessages.INVALID_LEAD_TIME_ID);
 
@@ -632,7 +693,52 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			}
 			return leadTime;
 		}
-		
+
+		return null;
+	}
+
+	@Override
+	public void createElongation(ElongationDO elongationDO) throws ApplicationException, Exception {
+		int elong_id = elongationDO.getId();
+		int cr_grade_id = elongationDO.getCr_grade_id();
+		int unit_id = elongationDO.getUnit_id();
+
+		// validate the elongation id in case of update scenario
+		masterDAO.validateEntityById(ElongationDO.class, elong_id, IResponseMessages.INVALID_ELONGATION_ID);
+
+		// validate and set the CR Grade id
+		CRGradeDO crGradeDO = (CRGradeDO) masterDAO.validateEntityById(CRGradeDO.class, cr_grade_id,
+				IResponseMessages.INVALID_CR_GRADE_ID);
+		elongationDO.setCr_grade(crGradeDO);
+
+		// validate and set the CR Grade id
+		ProcessUnitDO processUnitDO = (ProcessUnitDO) masterDAO.validateEntityById(ProcessUnitDO.class, unit_id,
+				IResponseMessages.INVALID_PROCESS_UNIT_ID);
+		elongationDO.setUnit(processUnitDO);
+
+		// set the required details
+		UserDO loggedInUser = getLoggedInUser();
+
+		elongationDO.setStatus(IConstants.STATUS_ACTIVE);
+		elongationDO.setCreated_by(loggedInUser);
+		elongationDO.setUpdated_by(loggedInUser);
+
+		masterDAO.mergeEntity(elongationDO);
+	}
+
+	@Override
+	public Object getElongationList(RequestBO requestFilter, int page, int limit) {
+		List<ElongationDO> elongations = masterDAO.getElongationList(requestFilter, page, limit);
+
+		if (elongations != null && !elongations.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getElongationListSize(requestFilter);
+
+				return generatePaginationResponse(elongations, listSize, page, limit);
+			}
+			return elongations;
+		}
+
 		return null;
 	}
 

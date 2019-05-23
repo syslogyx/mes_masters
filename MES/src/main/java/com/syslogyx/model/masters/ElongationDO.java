@@ -73,6 +73,37 @@ public class ElongationDO {
 	@Transient
 	private int cr_grade_id;
 
+	@Transient
+	private String unit_name;
+
+	@Transient
+	private String cr_grade_name;
+
+	@Transient
+	private String updated_by_name;
+
+	public ElongationDO() {
+
+	}
+
+	public ElongationDO(int id, Integer unit_id, String unit_name, Integer cr_grade_id, String cr_grade_name,
+			Date updated, int status, String updated_by_name) {
+		super();
+		this.id = id;
+		this.updated = updated;
+		this.status = status;
+
+		if (unit_id != null)
+			this.unit_id = unit_id;
+
+		if (cr_grade_id != null)
+			this.cr_grade_id = cr_grade_id;
+
+		this.unit_name = unit_name;
+		this.cr_grade_name = cr_grade_name;
+		this.updated_by_name = updated_by_name;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -151,6 +182,18 @@ public class ElongationDO {
 
 	public void setCr_grade_id(int cr_grade_id) {
 		this.cr_grade_id = cr_grade_id;
+	}
+
+	public String getUnit_name() {
+		return unit_name;
+	}
+
+	public String getCr_grade_name() {
+		return cr_grade_name;
+	}
+
+	public String getUpdated_by_name() {
+		return updated_by_name;
 	}
 
 }

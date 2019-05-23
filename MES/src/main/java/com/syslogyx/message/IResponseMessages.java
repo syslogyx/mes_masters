@@ -34,5 +34,7 @@ public interface IResponseMessages {
 	String INVALID_MASTER_ID = "Invalid Master Id.";
 	String INVALID_MASTER_NAME = "Invalid Master name.";
 	String INVALID_LEAD_TIME_ID = "Invalid Lead Time Id";
+	String INVALID_ELONGATION_ID = "Invalid Elongation Id.";
+	String INVALID_CR_GRADE_ID = "Invalid CR Grade Id.";
 
 }

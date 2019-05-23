@@ -1,14 +1,7 @@
 package com.syslogyx.controller;
 
-import javax.servlet.FilterChain;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.syslogyx.bo.BaseResponseBO;
 import com.syslogyx.bo.RequestBO;
-import com.syslogyx.config.JwtAuthenticationFilter;
 import com.syslogyx.constants.INetworkConstants;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.message.IResponseCodes;
@@ -28,6 +20,7 @@ import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.LeadTimeDO;
+import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.service.master.IMasterService;
 
 /**
@@ -43,9 +36,6 @@ public class MasterController extends BaseController {
 
 	@Autowired
 	private IMasterService iMasterService;
-
-	@Autowired
-	private JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	/**
 	 * This method is used to save CodeGroup Data to db
@@ -100,7 +90,7 @@ public class MasterController extends BaseController {
 	 * This method is used to save DPRTargetDO Data to db
 	 * 
 	 * @param dprTargetDO
-	 *            : contains codeGroup Data provided by users
+	 *            : contains DPRTargetDO Data provided by users
 	 * @return : Return response
 	 */
 	@PostMapping(value = INetworkConstants.IURLConstants.DPR_TARGET + INetworkConstants.IURLConstants.SAVE)
@@ -349,6 +339,56 @@ public class MasterController extends BaseController {
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * This method is used to save elongationDO Data to db
+	 * 
+	 * @param elongationDO
+	 *            : contains Elongation Data provided by users
+	 * @return : Return response
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.ELONGATION + INetworkConstants.IURLConstants.SAVE)
+	public ResponseEntity<BaseResponseBO> createElongation(@RequestBody ElongationDO elongationDO) {
+		try {
+
+			iMasterService.createElongation(elongationDO);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * This method is used for Fetching Elongation list with Pagination and Quick
+	 * filter
+	 * 
+	 * @param page
+	 * @param limit
+	 * @param requestFilter
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.ELONGATION + INetworkConstants.IURLConstants.LIST)
+	public ResponseEntity<BaseResponseBO> getElongationList(
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.LIMIT, required = false, defaultValue = "-1") int limit,
+			@RequestBody RequestBO requestFilter) {
+		try {
+
+			Object dprTargetList = iMasterService.getElongationList(requestFilter, page, limit);
+
+			if (dprTargetList != null)
+				return getResponseModel(dprTargetList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+
+			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);

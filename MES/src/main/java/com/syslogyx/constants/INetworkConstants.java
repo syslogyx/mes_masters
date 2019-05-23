@@ -33,6 +33,7 @@ public interface INetworkConstants {
 		public String DPR_TARGET = "dpr_target";
 		public String LOGOUT = "/logout";
 		public String LEAD_TIME = "/lead_time";
+		public String ELONGATION = "/elongation";
 	}
 
 	/**

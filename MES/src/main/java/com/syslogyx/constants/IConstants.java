@@ -17,8 +17,8 @@ public interface IConstants {
 	public int STATUS_INACTIVE = 0;
 	public int DEFAULT = -1;
 	public int VALUE_ZERO = 0;
-	public String EXCEL_BASE_PATH = "/home/alok/Desktop/excel/";
-	public String PDF_BASE_PATH = "/home/alok/Desktop/pdf/";
+	public String EXCEL_BASE_PATH = "/home/namrata/Desktop/excel/";
+	public String PDF_BASE_PATH = "/home/namrata/Desktop/pdf/";
 	public String EXTENSION_EXCEL = ".xls";
 	public String EXTENSION_PDF = ".pdf";
 	public int VALUE_ONE = 1;
@@ -31,7 +31,7 @@ public interface IConstants {
 	 */
 	public interface DATE_TIME_FORMAT {
 
-		String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+		String YYYY_MM_DD_HH_MM_SS_A = "yyyy-MM-dd HH:mm:ss a";
 
 	}
 
@@ -46,6 +46,7 @@ public interface IConstants {
 		public String CAMPAIGN = "campaign";
 		public String DPR_TARGET = "dpr_target";
 		public String LEAD_TIME = "lead_time";
+		public String ELONGATION = "elongation";
 	}
 
 	/**

@@ -22,8 +22,11 @@ import com.syslogyx.constants.IConstants;
 import com.syslogyx.constants.IPropertyConstant;
 import com.syslogyx.dao.base.BaseDAOImpl;
 import com.syslogyx.exception.ApplicationException;
+import com.syslogyx.model.masters.CRGradeDO;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
+import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.LeadTimeDO;
@@ -149,6 +152,9 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 		if (master_name.equals(IConstants.MASTERS_NAME.LEAD_TIME))
 			return getLeadTimeList(null, IConstants.DEFAULT, IConstants.DEFAULT);
+
+		if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
+			return getElongationList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
 		return null;
 	}
@@ -445,6 +451,104 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		Query query = entityManager.createQuery(createQuery);
 		return (long) query.getSingleResult();
 
+	}
+
+	@Override
+	public List<ElongationDO> getElongationList(RequestBO requestFilter, int page, int limit) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<ElongationDO> createQuery = builder.createQuery(ElongationDO.class);
+		Root<ElongationDO> elongationRoot = createQuery.from(ElongationDO.class);
+		Join<ElongationDO, UserDO> updatedBy = elongationRoot.join(IPropertyConstant.UPDATED_BY);
+		Join<ElongationDO, ProcessUnitDO> unit = elongationRoot.join(IPropertyConstant.UNIT, JoinType.LEFT);
+		Join<ElongationDO, CRGradeDO> crGrade = elongationRoot.join(IPropertyConstant.CR_GRADE, JoinType.LEFT);
+
+		// set the list of properties whose values are required to fetch
+		CompoundSelection<ElongationDO> construct = builder.construct(ElongationDO.class,
+				elongationRoot.get(IPropertyConstant.ID), unit.get(IPropertyConstant.ID),
+				unit.get(IPropertyConstant.UNIT), crGrade.get(IPropertyConstant.ID),
+				crGrade.get(IPropertyConstant.NAME), elongationRoot.get(IPropertyConstant.UPDATED),
+				elongationRoot.get(IPropertyConstant.STATUS), updatedBy.get(IPropertyConstant.USERNAME));
+
+		// prepare where conditions according to provided filter
+		List<Predicate> conditions = addCriteriaForElongationFilter(requestFilter, builder, elongationRoot, unit,
+				crGrade);
+
+		// add the list of predicates in where clause
+		if (conditions != null && !conditions.isEmpty()) {
+			createQuery.where(conditions.toArray(new Predicate[] {}));
+		}
+
+		Query query = entityManager.createQuery(createQuery.select(construct));
+
+		if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+			int start_index = IConstants.VALUE_ZERO;
+			if (page > 1) {
+				page -= 1;
+				start_index = page * limit;
+			}
+
+			query.setFirstResult(start_index);
+			query.setMaxResults(limit);
+		}
+
+		return query.getResultList();
+	}
+
+	/**
+	 * Prepare the List of Conditions based on the filters provided in the request
+	 * body
+	 * 
+	 * @param requestFilter
+	 * @param builder
+	 * @param elongationRoot
+	 * @param unit
+	 * @param crGrade
+	 * @return
+	 */
+	private List<Predicate> addCriteriaForElongationFilter(RequestBO requestFilter, CriteriaBuilder builder,
+			Root<ElongationDO> elongationRoot, Join<ElongationDO, ProcessUnitDO> unit,
+			Join<ElongationDO, CRGradeDO> crGrade) {
+		if (requestFilter != null) {
+			List<Predicate> conditions = new ArrayList<>();
+
+			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
+				conditions.add(builder.or(
+						builder.like(unit.get(IPropertyConstant.UNIT), "%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(crGrade.get(IPropertyConstant.NAME),
+								"%" + requestFilter.getQuick_finder() + "%")));
+			}
+
+			// add condition to restrict rows whose status is inactive
+			if (!requestFilter.isInclude_inactive_data()) {
+				conditions.add(
+						builder.notEqual(elongationRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
+			}
+			return conditions;
+		}
+		return null;
+	}
+
+	@Override
+	public long getElongationListSize(RequestBO requestFilter) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
+		Root<ElongationDO> elongationRoot = createQuery.from(ElongationDO.class);
+		Join<ElongationDO, ProcessUnitDO> unit = elongationRoot.join(IPropertyConstant.UNIT, JoinType.LEFT);
+		Join<ElongationDO, CRGradeDO> crGrade = elongationRoot.join(IPropertyConstant.CR_GRADE, JoinType.LEFT);
+
+		createQuery.select(builder.count(elongationRoot));
+
+		// prepare where conditions according to provided filter
+		List<Predicate> conditions = addCriteriaForElongationFilter(requestFilter, builder, elongationRoot, unit,
+				crGrade);
+
+		// add the list of predicates in where clause
+		if (conditions != null && !conditions.isEmpty()) {
+			createQuery.where(conditions.toArray(new Predicate[] {}));
+		}
+
+		Query query = entityManager.createQuery(createQuery);
+		return (long) query.getSingleResult();
 	}
 
 }
