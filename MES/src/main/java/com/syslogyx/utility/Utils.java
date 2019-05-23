@@ -474,6 +474,7 @@ public class Utils {
 
 		// Set the Style to the Cell
 		cellStyle.setAlignment(cellStyle.ALIGN_CENTER);
+
 		cellStyle.setWrapText(true);
 		cellStyle.setFont(cellFont);
 
@@ -482,7 +483,11 @@ public class Utils {
 
 			HSSFCell headerCell = rowhead.createCell(index);
 			headerCell.setCellValue(excelHeaders.get(index));
-
+			sheet.autoSizeColumn(0);
+			sheet.autoSizeColumn(1);
+			sheet.autoSizeColumn(2);
+			sheet.autoSizeColumn(3);
+			sheet.autoSizeColumn(index);
 			headerCell.setCellStyle(cellStyle);
 		}
 	}
@@ -553,6 +558,7 @@ public class Utils {
 	}
 
 	/**
+	 * For writing data to pdf
 	 * 
 	 * @param document
 	 * @param table

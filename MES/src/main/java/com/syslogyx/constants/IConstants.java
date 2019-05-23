@@ -45,6 +45,7 @@ public interface IConstants {
 		public String CODE_GROUP = "code_group";
 		public String CAMPAIGN = "campaign";
 		public String DPR_TARGET = "dpr_target";
+		public String LEAD_TIME = "lead_time";
 	}
 
 	/**

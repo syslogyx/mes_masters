@@ -9,6 +9,7 @@ import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
@@ -145,6 +146,9 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 		if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
 			return getDPRTargetList(null, IConstants.DEFAULT, IConstants.DEFAULT);
+
+		if (master_name.equals(IConstants.MASTERS_NAME.LEAD_TIME))
+			return getLeadTimeList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
 		return null;
 	}
@@ -352,33 +356,55 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 	}
 
 	
-	public CriteriaQuery<LeadTimeDO> getLeadTimeCriteriaWithFilter(RequestBO requestFilter) {
-		
+	@Override
+	public List<LeadTimeDO> getLeadTimeList(RequestBO requestFilter, int page, int limit) {
+
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<LeadTimeDO> createQuery = builder.createQuery(LeadTimeDO.class);
 		Root<LeadTimeDO> leadTimeRoot = createQuery.from(LeadTimeDO.class);
 		Join<LeadTimeDO, UserDO> fetch = leadTimeRoot.join(IPropertyConstant.UPDATED_BY);
-		Join<LeadTimeDO, ProcessUnitDO> afterUnitFetch = leadTimeRoot.join(IPropertyConstant.AFTER_PROCESS_UNIT);
-		Join<LeadTimeDO, ProcessUnitDO> beforeUnitFetch = leadTimeRoot.join(IPropertyConstant.BEFORE_PROCESS_UNIT);
-		
+		Join<LeadTimeDO, ProcessUnitDO> afterUnitFetch = leadTimeRoot.join(IPropertyConstant.AFTER_PROCESS_UNIT, JoinType.LEFT);
+		Join<LeadTimeDO, ProcessUnitDO> beforeUnitFetch = leadTimeRoot.join(IPropertyConstant.BEFORE_PROCESS_UNIT, JoinType.LEFT);
+
+		CompoundSelection<LeadTimeDO> construct = builder.construct(LeadTimeDO.class,
+				leadTimeRoot.get(IPropertyConstant.ID), beforeUnitFetch.get(IPropertyConstant.PU_ID),
+				beforeUnitFetch.get(IPropertyConstant.UNIT), afterUnitFetch.get(IPropertyConstant.PU_ID),
+				afterUnitFetch.get(IPropertyConstant.UNIT), fetch.get(IPropertyConstant.USERNAME),
+				leadTimeRoot.get(IPropertyConstant.UPDATED), leadTimeRoot.get(IPropertyConstant.STATUS));
+
 		List<Predicate> conditions = getConditionsForLeadTime(requestFilter, builder, leadTimeRoot, afterUnitFetch,
 				beforeUnitFetch);
-		
+
 		if (conditions != null && !conditions.isEmpty()) {
 			createQuery.where(conditions.toArray(new Predicate[] {}));
 		}
-		
-		CompoundSelection<LeadTimeDO> construct = builder.construct(LeadTimeDO.class,
-				leadTimeRoot.get(IPropertyConstant.ID), fetch.get(IPropertyConstant.USERNAME),
-				leadTimeRoot.get(IPropertyConstant.CREATED), leadTimeRoot.get(IPropertyConstant.UPDATED),
-				leadTimeRoot.get(IPropertyConstant.STATUS), beforeUnitFetch.get(IPropertyConstant.UNIT),
-				beforeUnitFetch.get(IPropertyConstant.PU_ID), afterUnitFetch.get(IPropertyConstant.UNIT),
-				afterUnitFetch.get(IPropertyConstant.PU_ID));
-		
-		return createQuery.select(construct);
-		
-	}	
 
+		Query query = entityManager.createQuery(createQuery.select(construct));
+
+		if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+			int start_index = IConstants.VALUE_ZERO;
+			if (page > 1) {
+				page -= 1;
+				start_index = page * limit;
+			}
+
+			query.setFirstResult(start_index);
+			query.setMaxResults(limit);
+		}
+
+		return query.getResultList();
+
+	}
+
+	/**
+	 * Prepare list of conditions to add in where clause according to the provided
+	 * filter
+	 * 
+	 * @param requestFilter
+	 * @param builder
+	 * @param leadTimeRoot
+	 * @return
+	 */
 	private List<Predicate> getConditionsForLeadTime(RequestBO requestFilter, CriteriaBuilder builder,
 			Root<LeadTimeDO> leadTimeRoot, Join<LeadTimeDO, ProcessUnitDO> afterUnitFetch,
 			Join<LeadTimeDO, ProcessUnitDO> beforeUnitFetch) {
@@ -393,7 +419,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 						builder.like(beforeUnitFetch.get(IPropertyConstant.UNIT),
 								"%" + requestFilter.getQuick_finder() + "%")));
 			}
-			
+
 			// add condition to restrict rows whose status is inactive
 			if (!requestFilter.isInclude_inactive_data()) {
 				conditions
@@ -406,22 +432,29 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 	}
 
 	@Override
-	public List<LeadTimeDO> getLeadTimeList(RequestBO requestFilter, int page, int limit) {
-		
-		Query query = entityManager.createQuery(getLeadTimeCriteriaWithFilter(requestFilter));
+	public long getLeadTimeListSize(RequestBO requestFilter) {
 
-		if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
-			int start_index = IConstants.VALUE_ZERO;
-			if (page > 1) {
-				page -= 1;
-				start_index = page * limit;
-			}
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
+		Root<LeadTimeDO> leadTimeRoot = createQuery.from(LeadTimeDO.class);
+		Join<LeadTimeDO, UserDO> fetch = leadTimeRoot.join(IPropertyConstant.UPDATED_BY);
+		Join<LeadTimeDO, ProcessUnitDO> afterUnitFetch = leadTimeRoot.join(IPropertyConstant.AFTER_PROCESS_UNIT);
+		Join<LeadTimeDO, ProcessUnitDO> beforeUnitFetch = leadTimeRoot.join(IPropertyConstant.BEFORE_PROCESS_UNIT);
 
-			query.setFirstResult(start_index);
-			query.setMaxResults(limit);
+		createQuery.select(builder.count(leadTimeRoot));
+
+		// prepare where conditions according to provided filter
+		List<Predicate> conditions = getConditionsForLeadTime(requestFilter, builder, leadTimeRoot, afterUnitFetch,
+				beforeUnitFetch);
+
+		// add the list of predicates in where clause
+		if (conditions != null && !conditions.isEmpty()) {
+			createQuery.where(conditions.toArray(new Predicate[] {}));
 		}
 
-		return query.getResultList();
+		Query query = entityManager.createQuery(createQuery);
+		return (long) query.getSingleResult();
+
 	}
 
 }

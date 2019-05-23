@@ -72,28 +72,35 @@ public class LeadTimeDO {
 
 	@Transient
 	private int before_process_unit_id;
-	
+
 	@Transient
-	private String process_unit_name;
+	private String after_process_unit_name;
+
+	@Transient
+	private String before_process_unit_name;
 
 	@Transient
 	private String updated_by_name;
-	
-	
 
 	public LeadTimeDO() {
-		
+
 	}
 
-	public LeadTimeDO(int id, String username, Date created, Date updated, int status, String unit, int pu_id) {
+	public LeadTimeDO(int id, Integer before_pu_id, String before_unit, Integer after_pu_id, String after_unit,
+			String username, Date updated, int status) {
 
 		this.id = id;
+
+		if (before_pu_id != null)
+			this.before_process_unit_id = before_pu_id;
+		this.before_process_unit_name = before_unit;
+
+		if (after_pu_id != null)
+			this.after_process_unit_id = after_pu_id;
+		this.after_process_unit_name = after_unit;
 		this.updated_by_name = username;
-		this.created = created;
 		this.updated = updated;
 		this.status = status;
-		
-
 	}
 
 	public int getId() {
@@ -184,14 +191,20 @@ public class LeadTimeDO {
 		this.updated_by_name = updated_by_name;
 	}
 
-	public String getProcess_unit_name() {
-		return process_unit_name;
+	public String getAfter_process_unit_name() {
+		return after_process_unit_name;
 	}
 
-	public void setProcess_unit_name(String process_unit_name) {
-		this.process_unit_name = process_unit_name;
+	public void setAfter_process_unit_name(String after_process_unit_name) {
+		this.after_process_unit_name = after_process_unit_name;
 	}
 
-	
-	
+	public String getBefore_process_unit_name() {
+		return before_process_unit_name;
+	}
+
+	public void setBefore_process_unit_name(String before_process_unit_name) {
+		this.before_process_unit_name = before_process_unit_name;
+	}
+
 }

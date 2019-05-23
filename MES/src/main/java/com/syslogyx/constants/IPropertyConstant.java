@@ -34,7 +34,7 @@ public interface IPropertyConstant {
 	
 
 	// ProcessUnit Constants
-	String PU_ID = "pu_id";
+	String PU_ID = "id";
 	String UNIT = "unit";
 	
 

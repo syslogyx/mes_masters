@@ -36,6 +36,10 @@ public interface IFileHeaderConstants {
 	public String PRODUCT = "Product";
 	public String BUSINESS_PLAN_TARGET = "Business Plan Target";
 	public String INTERNAL_TARGET = "Internal Target";
+	
+	//Lead Time Headers
+	public String AFTER_PROCESS_UNIT = "After Process Unit";
+	public String BEFORE_PROCESS_UNIT = "Before Process Unit";
 
 	/**
 	 * Prepare the List of Headers used in Code Group Excel and PDF
@@ -93,9 +97,13 @@ public interface IFileHeaderConstants {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
 			return getDPRTargetHeaders();
+		
+		else if (master_name.equals(IConstants.MASTERS_NAME.LEAD_TIME))
+			return getLeadTimeHeaders();
 
 		return null;
 	}
+
 
 	/**
 	 * Prepare the List of Headers used in DPR Target Excel and PDF
@@ -110,6 +118,25 @@ public interface IFileHeaderConstants {
 		headers.add(PRODUCT);
 		headers.add(BUSINESS_PLAN_TARGET);
 		headers.add(INTERNAL_TARGET);
+		headers.add(UPDATED_BY);
+		headers.add(LAST_UPDATED);
+		headers.add(STATUS);
+
+		return headers;
+	}
+	
+	/**
+	 * Prepare the List of Headers used in Lead Time Excel and PDF
+	 * 
+	 * @return
+	 */
+	public static List<String> getLeadTimeHeaders() {
+		
+		List<String> headers = new ArrayList<>();
+		
+		headers.add(SR_NO);
+		headers.add(AFTER_PROCESS_UNIT);
+		headers.add(BEFORE_PROCESS_UNIT);
 		headers.add(UPDATED_BY);
 		headers.add(LAST_UPDATED);
 		headers.add(STATUS);

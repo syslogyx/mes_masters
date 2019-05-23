@@ -153,6 +153,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		// for validate processUnit id from db
 		ProcessUnitDO hold_unit = (ProcessUnitDO) masterDAO.validateEntityById(ProcessUnitDO.class, hold_unit_id,
 				IResponseMessages.INVALID_PROCESS_UNIT_ID);
+
 		campaignDO.setHold_unit(hold_unit);
 
 		validatePriority(priority_level);
@@ -188,6 +189,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		if (mastersList != null && !mastersList.isEmpty()) {
 			HSSFWorkbook workbook = new HSSFWorkbook();
 			HSSFSheet sheet = workbook.createSheet(master_name);
+			
+			
+			
 			List<String> headerList = IFileHeaderConstants.getMastersHeaderList(master_name);
 
 			// method call to set the Header Row with Cell style and font
@@ -195,7 +199,10 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 			// method call to set data rows
 			processExcelToExportingDataRows(sheet, mastersList, master_name);
-
+			for(int index=0; index< mastersList.size(); index++) {
+				sheet.autoSizeColumn(index);
+			}
+			
 			String filename = Utils.getFilePath(IConstants.EXCEL_BASE_PATH, master_name);
 			return Utils.writeDataToWorkbook(workbook, filename);
 		} else {
@@ -247,6 +254,33 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
 			processExportingDPRTargetListExcel(sheet, mastersList);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.LEAD_TIME))
+			processExportingLeadTimeListExcel(sheet, mastersList);
+
+	}
+	
+	
+	/**
+	 * Set the Field value from LeadTimeDO Object to it's respective index number
+	 * in the excel sheet
+	 * 
+	 * @param sheet
+	 * @param leadTimeList
+	 */
+	private void processExportingLeadTimeListExcel(HSSFSheet sheet, List<LeadTimeDO> leadTimeList) {
+
+		for (int index = 0; index < leadTimeList.size(); index++) {
+			LeadTimeDO leadTimeDO = leadTimeList.get(index);
+			HSSFRow row = sheet.createRow(index + 1);
+			row.createCell(0).setCellValue(index + 1);
+			row.createCell(1).setCellValue(leadTimeDO.getBefore_process_unit_name());
+			row.createCell(2).setCellValue(leadTimeDO.getAfter_process_unit_name());
+			row.createCell(3).setCellValue(leadTimeDO.getUpdated_by_name());
+			row.createCell(4).setCellValue(
+					Utils.getFormatedDate(leadTimeDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+			row.createCell(5).setCellValue(getStatusString(leadTimeDO.getStatus()));
+		}
 
 	}
 
@@ -337,7 +371,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 			// method call to set the PDF Header row
 			Utils.writeToPDFHeaderRow(table, headerList);
-
+			
 			// process to set the Data Rows according to the master name
 			processPDFToExportingDataRows(table, mastersList, master_name);
 
@@ -360,10 +394,13 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return new float[] { 1, 1, 2, 2, 2, 1 };
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN))
-			return new float[] { 1, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1 };
+			return new float[] { 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1 };
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
 			return new float[] { 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+		
+		else if (master_name.equals(IConstants.MASTERS_NAME.LEAD_TIME))
+			return new float[] { 1, 1, 1, 1, 1, 1 };
 
 		return null;
 	}
@@ -384,6 +421,25 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
 			processExportingDPRTargetListPDF(table, mastersList);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.LEAD_TIME))
+			processExportingLeadTimeListPDF(table, mastersList);
+
+	}
+
+	private void processExportingLeadTimeListPDF(PdfPTable table, List<LeadTimeDO> leadTimeList) {
+
+		for (int index = 0; index < leadTimeList.size(); index++) {
+			LeadTimeDO leadTimeDO = leadTimeList.get(index);
+
+			table.addCell(index + 1 + "");
+			table.addCell(leadTimeDO.getAfter_process_unit_name());
+			table.addCell(leadTimeDO.getBefore_process_unit_name());
+			table.addCell(leadTimeDO.getUpdated_by_name());
+			table.addCell(
+					Utils.getFormatedDate(leadTimeDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS));
+			table.addCell(getStatusString(leadTimeDO.getStatus()));
+		}
 
 	}
 
@@ -501,6 +557,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return DPRTargetDO.class;
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.CAMPAIGN))
 			return CampaignDO.class;
+		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.LEAD_TIME))
+			return LeadTimeDO.class;
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
@@ -537,22 +595,21 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	public void createLeadTime(LeadTimeDO leadTimeDO) throws ApplicationException, Exception {
 
 		int leadTimeId = leadTimeDO.getId();
-		
-		String process_unit_name = leadTimeDO.getProcess_unit_name();
-		
 
-		// validate code group id
+		int after_process_unit_id = leadTimeDO.getAfter_process_unit_id();
+		int before_process_unit_id = leadTimeDO.getBefore_process_unit_id();
+		
+		// validate lead_time_id
 		masterDAO.validateEntityById(LeadTimeDO.class, leadTimeId, IResponseMessages.INVALID_LEAD_TIME_ID);
 
-		ProcessUnitDO process_unit = (ProcessUnitDO) masterDAO.validateEntityById(ProcessUnitDO.class,
-				process_unit_name, IResponseMessages.INVALID_PROCESS_UNIT_ID);
-		
-		String unit = process_unit.getUnit();
-		
-		leadTimeDO.setProcess_unit_name(unit);
-		
+		ProcessUnitDO after_process_unit = (ProcessUnitDO) masterDAO.validateEntityById(ProcessUnitDO.class,
+				after_process_unit_id, IResponseMessages.INVALID_PROCESS_UNIT_ID);
 
-	
+		ProcessUnitDO before_process_unit = (ProcessUnitDO) masterDAO.validateEntityById(ProcessUnitDO.class,
+				before_process_unit_id, IResponseMessages.INVALID_PROCESS_UNIT_ID);
+
+		leadTimeDO.setAfter_process_unit(after_process_unit);
+		leadTimeDO.setBefore_process_unit(before_process_unit);
 
 		UserDO loggedInUser = getLoggedInUser();
 		leadTimeDO.setCreated_by(loggedInUser);
@@ -569,13 +626,13 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		if (leadTime != null && !leadTime.isEmpty()) {
 			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
-				long listSize = masterDAO.getCodeGroupListSize(requestFilter);
+				long listSize = masterDAO.getLeadTimeListSize(requestFilter);
 
 				return generatePaginationResponse(leadTime, listSize, page, limit);
 			}
 			return leadTime;
 		}
-
+		
 		return null;
 	}
 

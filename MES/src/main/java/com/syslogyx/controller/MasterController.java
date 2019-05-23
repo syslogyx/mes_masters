@@ -224,6 +224,7 @@ public class MasterController extends BaseController {
 
 	/**
 	 * for fetching leadTime list with pagination and quick finder
+	 * 
 	 * @param page
 	 * @param limit
 	 * @param requestFilter
@@ -250,7 +251,7 @@ public class MasterController extends BaseController {
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
 	}
-	
+
 	/**
 	 * Get Master's Entity according to the specified Master name and id
 	 * 

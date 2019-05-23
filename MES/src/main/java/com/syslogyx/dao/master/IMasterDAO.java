@@ -83,8 +83,26 @@ public interface IMasterDAO extends IBaseDAO {
 	 */
 	long getDPRTargetListSize(RequestBO requestFilter);
 
+//	/**
+//	 * for fetch LeadTime list from db
+//	 * 
+//	 * @param requestFilter
+//	 * @param page
+//	 * @param limit
+//	 * @return
+//	 */
+//	List<LeadTimeDO> getLeadTimeList(RequestBO requestFilter, int page, int limit);
+
 	/**
-	 * for fetch LeadTime list from db
+	 * for count number of rows in LeadTime table from db
+	 * 
+	 * @param requestFilter
+	 * @return
+	 */
+	long getLeadTimeListSize(RequestBO requestFilter);
+
+	/**
+	 * Fetch the list of Lead Time according to the filter and Pagination provided
 	 * 
 	 * @param requestFilter
 	 * @param page

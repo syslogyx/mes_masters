@@ -36,7 +36,7 @@ public class BaseDAOImpl implements IBaseDAO {
 			if (entity == null)
 				throw new ApplicationException(IResponseCodes.INVALID_ENTITY, error_msg);
 			else {
-
+				
 				// validate the status of the entity, throw exception in case it is inactive
 				Field declaredField = classT.getDeclaredField(IPropertyConstant.STATUS);
 				int status = (int) declaredField.get(entity);
@@ -44,17 +44,17 @@ public class BaseDAOImpl implements IBaseDAO {
 				if (status == IConstants.STATUS_INACTIVE)
 					throw new ApplicationException(IResponseCodes.INVALID_ENTITY, error_msg);
 			}	
-
+			
 			return entity;
-		}
+		}	
 		return null;
-	}
-
+	}	
+		
 	@Override
 	public void mergeEntity(Object entity) {
 		entityManager.merge(entity);
 	}
-
+	
 	@Override
 	public Object getEntityById(Class<?> classT, Object entity_id) {
 		return entityManager.find(classT, entity_id);
