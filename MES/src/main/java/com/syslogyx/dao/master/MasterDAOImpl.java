@@ -156,7 +156,28 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 	@Override
 	public List<CampaignDO> getCampaignList(RequestBO requestFilter, int page, int limit) {
 
-		Query query = entityManager.createQuery(getCampaignCriteriaWithFilter(requestFilter));
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<CampaignDO> createQuery = builder.createQuery(CampaignDO.class);
+		Root<CampaignDO> campaignRoot = createQuery.from(CampaignDO.class);
+		Join<CampaignDO, UserDO> fetch = campaignRoot.join(IPropertyConstant.UPDATED_BY);
+		Join<CampaignDO, ProcessUnitDO> processUnitFetch = campaignRoot.join(IPropertyConstant.HOLD_UNIT);
+
+		CompoundSelection<CampaignDO> construct = builder.construct(CampaignDO.class,
+				campaignRoot.get(IPropertyConstant.ID), campaignRoot.get(IPropertyConstant.CAMPAIGN_ID),
+				campaignRoot.get(IPropertyConstant.ATTRIBUTE), campaignRoot.get(IPropertyConstant.AIM),
+				campaignRoot.get(IPropertyConstant.CAPACITY_MIN), campaignRoot.get(IPropertyConstant.CAPACITY_MAX),
+				campaignRoot.get(IPropertyConstant.PRIORITY_LEVEL), campaignRoot.get(IPropertyConstant.CREATED),
+				campaignRoot.get(IPropertyConstant.UPDATED), campaignRoot.get(IPropertyConstant.STATUS),
+				fetch.get(IPropertyConstant.USERNAME), processUnitFetch.get(IPropertyConstant.UNIT),
+				processUnitFetch.get(IPropertyConstant.PU_ID));
+
+		List<Predicate> conditions = getConditionsForCampaign(requestFilter, builder, campaignRoot, processUnitFetch);
+
+		if (conditions != null && !conditions.isEmpty()) {
+			createQuery.where(conditions.toArray(new Predicate[] {}));
+		}
+
+		Query query = entityManager.createQuery(createQuery.select(construct));
 
 		if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
 			int start_index = IConstants.VALUE_ZERO;
@@ -170,38 +191,6 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		}
 
 		return query.getResultList();
-	}
-
-	/**
-	 * for Quick Search and restrict status
-	 * 
-	 * @param requestFilter
-	 * @return
-	 */
-	private CriteriaQuery<CampaignDO> getCampaignCriteriaWithFilter(RequestBO requestFilter) {
-
-		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<CampaignDO> createQuery = builder.createQuery(CampaignDO.class);
-		Root<CampaignDO> campaignRoot = createQuery.from(CampaignDO.class);
-		Join<CampaignDO, UserDO> fetch = campaignRoot.join(IPropertyConstant.UPDATED_BY);
-		Join<CampaignDO, ProcessUnitDO> processUnitFetch = campaignRoot.join(IPropertyConstant.HOLD_UNIT);
-
-		List<Predicate> conditions = getConditionsForCampaign(requestFilter, builder, campaignRoot, processUnitFetch);
-
-		if (conditions != null && !conditions.isEmpty()) {
-			createQuery.where(conditions.toArray(new Predicate[] {}));
-		}
-
-		CompoundSelection<CampaignDO> construct = builder.construct(CampaignDO.class,
-				campaignRoot.get(IPropertyConstant.ID), campaignRoot.get(IPropertyConstant.CAMPAIGN_ID),
-				campaignRoot.get(IPropertyConstant.ATTRIBUTE), campaignRoot.get(IPropertyConstant.AIM),
-				campaignRoot.get(IPropertyConstant.CAPACITY_MIN), campaignRoot.get(IPropertyConstant.CAPACITY_MAX),
-				campaignRoot.get(IPropertyConstant.PRIORITY_LEVEL), campaignRoot.get(IPropertyConstant.CREATED),
-				campaignRoot.get(IPropertyConstant.UPDATED), campaignRoot.get(IPropertyConstant.STATUS),
-				fetch.get(IPropertyConstant.USERNAME), processUnitFetch.get(IPropertyConstant.UNIT),
-				processUnitFetch.get(IPropertyConstant.PU_ID));
-
-		return createQuery.select(construct);
 	}
 
 	/**
@@ -355,7 +344,6 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		return null;
 	}
 
-	
 	@Override
 	public List<LeadTimeDO> getLeadTimeList(RequestBO requestFilter, int page, int limit) {
 
@@ -363,8 +351,10 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		CriteriaQuery<LeadTimeDO> createQuery = builder.createQuery(LeadTimeDO.class);
 		Root<LeadTimeDO> leadTimeRoot = createQuery.from(LeadTimeDO.class);
 		Join<LeadTimeDO, UserDO> fetch = leadTimeRoot.join(IPropertyConstant.UPDATED_BY);
-		Join<LeadTimeDO, ProcessUnitDO> afterUnitFetch = leadTimeRoot.join(IPropertyConstant.AFTER_PROCESS_UNIT, JoinType.LEFT);
-		Join<LeadTimeDO, ProcessUnitDO> beforeUnitFetch = leadTimeRoot.join(IPropertyConstant.BEFORE_PROCESS_UNIT, JoinType.LEFT);
+		Join<LeadTimeDO, ProcessUnitDO> afterUnitFetch = leadTimeRoot.join(IPropertyConstant.AFTER_PROCESS_UNIT,
+				JoinType.LEFT);
+		Join<LeadTimeDO, ProcessUnitDO> beforeUnitFetch = leadTimeRoot.join(IPropertyConstant.BEFORE_PROCESS_UNIT,
+				JoinType.LEFT);
 
 		CompoundSelection<LeadTimeDO> construct = builder.construct(LeadTimeDO.class,
 				leadTimeRoot.get(IPropertyConstant.ID), beforeUnitFetch.get(IPropertyConstant.PU_ID),
