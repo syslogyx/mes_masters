@@ -54,6 +54,8 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		CriteriaQuery<CodeGroupDO> createQuery = builder.createQuery(CodeGroupDO.class);
 		Root<CodeGroupDO> codeGroupRoot = createQuery.from(CodeGroupDO.class);
 		Join<CodeGroupDO, UserDO> fetch = codeGroupRoot.join(IPropertyConstant.UPDATED_BY);
+		createQuery.select(codeGroupRoot).orderBy(builder.asc(codeGroupRoot.get("group_desc")));
+		// createQuery.select(codeGroupRoot).orderBy(builder.desc(codeGroupRoot.get("group_code")));
 
 		// set the list of properties whose values are required to fetch
 		CompoundSelection<CodeGroupDO> construct = builder.construct(CodeGroupDO.class,
@@ -361,6 +363,8 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 				JoinType.LEFT);
 		Join<LeadTimeDO, ProcessUnitDO> beforeUnitFetch = leadTimeRoot.join(IPropertyConstant.BEFORE_PROCESS_UNIT,
 				JoinType.LEFT);
+		createQuery.select(leadTimeRoot).orderBy(builder.asc(afterUnitFetch.get("unit")),
+				builder.desc(beforeUnitFetch.get("unit")));
 
 		CompoundSelection<LeadTimeDO> construct = builder.construct(LeadTimeDO.class,
 				leadTimeRoot.get(IPropertyConstant.ID), beforeUnitFetch.get(IPropertyConstant.PU_ID),
@@ -370,16 +374,17 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 		List<Predicate> conditions = getConditionsForLeadTime(requestFilter, builder, leadTimeRoot, afterUnitFetch,
 				beforeUnitFetch);
-
+		
 		if (conditions != null && !conditions.isEmpty()) {
 			createQuery.where(conditions.toArray(new Predicate[] {}));
 		}
-		
+
 		Query query = entityManager.createQuery(createQuery.select(construct));
 
 		if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
 			int start_index = IConstants.VALUE_ZERO;
 			if (page > 1) {
+
 				page -= 1;
 				start_index = page * limit;
 			}
