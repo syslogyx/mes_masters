@@ -11,6 +11,7 @@ import com.syslogyx.constants.IConstants;
 import com.syslogyx.constants.IPropertyConstant;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.message.IResponseCodes;
+import com.syslogyx.message.IResponseMessages;
 
 /**
  * The DAO interface for declaring the common methods which needs to access from
@@ -56,8 +57,11 @@ public class BaseDAOImpl implements IBaseDAO {
 	}
 	
 	@Override
-	public Object getEntityById(Class<?> classT, Object entity_id) {
-		return entityManager.find(classT, entity_id);
+	public Object getEntityById(Class<?> classT, Object entity_id) throws ApplicationException {
+		Object master_id = entityManager.find(classT, entity_id);
+		if(master_id == null)
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_MASTER_ID);
+		return master_id;
 	}
 
 	@Override

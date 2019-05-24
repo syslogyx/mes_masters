@@ -26,6 +26,8 @@ import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.LeadTimeDO;
+import com.syslogyx.model.masters.ProcessFamilyDO;
+import com.syslogyx.model.masters.ProcessTypeDO;
 import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
@@ -204,7 +206,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			for (int index = 0; index < headerList.size(); index++) {
 				sheet.autoSizeColumn(index);
 			}
-
+			
 			String filename = Utils.getFilePath(IConstants.EXCEL_BASE_PATH, master_name);
 			return Utils.writeDataToWorkbook(workbook, filename);
 		} else {
@@ -262,6 +264,34 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
 			processExportingElongationListExcel(sheet, mastersList);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_FAMILY))
+			processExportingProcessFamilyListExcel(sheet, mastersList);
+
+	}
+
+	/**
+	 * Set the field value from ProcessFamilyDO Object to it's respective index
+	 * number in the excel sheet
+	 * 
+	 * @param sheet
+	 * @param processFamilyList
+	 */
+	private void processExportingProcessFamilyListExcel(HSSFSheet sheet, List<ProcessFamilyDO> processFamilyList) {
+
+		for (int index = 0; index < processFamilyList.size(); index++) {
+			ProcessFamilyDO processFamilyDO = processFamilyList.get(index);
+			HSSFRow row = sheet.createRow(index + 1);
+			row.createCell(0).setCellValue(index + 1);
+			row.createCell(1).setCellValue(processFamilyDO.getProcess_family());
+			row.createCell(1).setCellValue(processFamilyDO.getProcess_type_name());
+			row.createCell(8).setCellValue(getPriorityString(processFamilyDO.getPriority()));
+			row.createCell(2).setCellValue(processFamilyDO.getBucket());
+			row.createCell(3).setCellValue(processFamilyDO.getUpdated_by_name());
+			row.createCell(4).setCellValue(Utils.getFormatedDate(processFamilyDO.getUpdated(),
+					IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
+			row.createCell(5).setCellValue(getStatusString(processFamilyDO.getStatus()));
+		}
 
 	}
 
@@ -430,6 +460,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
 			return new float[] { 1, 1, 1, 1, 2, 1 };
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_FAMILY))
+			return new float[] { 1, 2, 1, 1, 1, 1, 1, 1 };
+
 		return null;
 	}
 
@@ -456,6 +489,33 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
 			processExportingElongationListPDF(table, mastersList);
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_FAMILY))
+			processExportingProcessFamilyListPDF(table, mastersList);
+
+	}
+
+	/**
+	 * Set the field value from ProcessFamily object to it's respective index number
+	 * in the PDF Table
+	 * 
+	 * @param table
+	 * @param processFamilyList
+	 */
+	private void processExportingProcessFamilyListPDF(PdfPTable table, List<ProcessFamilyDO> processFamilyList) {
+
+		for (int index = 0; index < processFamilyList.size(); index++) {
+			ProcessFamilyDO processFamilyDO = processFamilyList.get(index);
+
+			table.addCell(index + 1 + "");
+			table.addCell(processFamilyDO.getProcess_family());
+			table.addCell(processFamilyDO.getProcess_type_name());
+			table.addCell(getPriorityString(processFamilyDO.getPriority()));
+			table.addCell(processFamilyDO.getBucket());
+			table.addCell(processFamilyDO.getUpdated_by_name());
+			table.addCell(Utils.getFormatedDate(processFamilyDO.getUpdated(),
+					IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
+			table.addCell(getStatusString(processFamilyDO.getStatus()));
+		}
 	}
 
 	/**
@@ -620,6 +680,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return LeadTimeDO.class;
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.ELONGATION))
 			return ElongationDO.class;
+		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.PROCESS_FAMILY))
+			return ProcessFamilyDO.class;
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
@@ -742,52 +804,62 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		return null;
 	}
 
-	// @Override
-	// public CampaignDO getCampaignId(int camp_id) throws ApplicationException {
-	//
-	// CampaignDO campaignDO = iCampaignDAO.findById(camp_id);
-	//
-	// if (campaignDO == null || campaignDO.getStatus() ==
-	// IConstants.STATUS_INACTIVE)
-	// throw new ApplicationException(IResponseCodes.INVALID_ENTITY,
-	// IResponseMessages.INVALID_CAMPAIGN_ID);
-	//
-	// return campaignDO;
-	// }
+	@Override
+	public void createProcessFamily(ProcessFamilyDO processFamilyDO) throws ApplicationException, Exception {
 
-	// @Override
-	// public void updateCampaignStatus(int camp_id, int status) throws
-	// ApplicationException {
-	//
-	// CampaignDO campaignDO = iCampaignDAO.findById(camp_id);
-	//
-	// if (campaignDO == null)
-	// throw new ApplicationException(IResponseCodes.INVALID_ENTITY,
-	// IResponseMessages.INVALID_CAMPAIGN_ID);
-	//
-	// int presentStatus = campaignDO.getStatus();
-	// // For validate Status
-	// validateStatus(status);
-	//
-	// // for validate update status
-	// validateOldStatus(status, presentStatus);
-	//
-	// campaignDO.setStatus(status);
-	// iCampaignDAO.save(campaignDO);
-	//
-	// }
+		int processFamily_id = processFamilyDO.getId();
+		int process_type_id = processFamilyDO.getProcess_type_id();
+		int priority_level = processFamilyDO.getPriority();
 
-	// @Override
-	// public CodeGroupDO getCodeGroupId(int code_group_id) throws
-	// ApplicationException {
-	//
-	// CodeGroupDO codeGroupDO = iCodeGroupDAO.findById(code_group_id);
-	// if (codeGroupDO == null || codeGroupDO.getStatus() ==
-	// IConstants.STATUS_INACTIVE)
-	// throw new ApplicationException(IResponseCodes.INVALID_ENTITY,
-	// IResponseMessages.INVALID_GROUP_CODE_ID);
-	//
-	// return codeGroupDO;
-	//
-	// }
+		// validate ProcessFamily id in case of update scenario
+		masterDAO.validateEntityById(ProcessFamilyDO.class, processFamily_id,
+				IResponseMessages.INVALID_PROCESS_FAMILY_ID);
+
+		// validate and Set ProcessType id
+		ProcessTypeDO processTypeDO = (ProcessTypeDO) masterDAO.validateEntityById(ProcessTypeDO.class, process_type_id,
+				IResponseMessages.INVALID_PROCESS_TYPE_ID);
+		processFamilyDO.setProcess_type(processTypeDO);
+
+		validatePriority(priority_level);
+
+		UserDO loggedInUser = getLoggedInUser();
+		processFamilyDO.setStatus(IConstants.STATUS_ACTIVE);
+		processFamilyDO.setCreated_by(loggedInUser);
+		processFamilyDO.setUpdated_by(loggedInUser);
+
+		masterDAO.mergeEntity(processFamilyDO);
+	}
+
+	@Override
+	public void createProcessType(ProcessTypeDO processTypeDO) throws ApplicationException, Exception {
+
+		int process_type_id = processTypeDO.getId();
+
+		// Valide ProcessType id in case of update scenario
+		masterDAO.validateEntityById(ProcessTypeDO.class, process_type_id, IResponseMessages.INVALID_PROCESS_TYPE_ID);
+
+		UserDO loggedInUser = getLoggedInUser();
+		processTypeDO.setCreated_by(loggedInUser);
+		processTypeDO.setUpdated_by(loggedInUser);
+		processTypeDO.setStatus(IConstants.STATUS_ACTIVE);
+		masterDAO.mergeEntity(processTypeDO);
+
+	}
+
+	@Override
+	public Object getProcessFamilyList(RequestBO requestFilter, int page, int limit) {
+		List<ProcessFamilyDO> processFamily = masterDAO.getProcessFamilyList(requestFilter, page, limit);
+
+		if (processFamily != null && !processFamily.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getProcessFamilyListSize(requestFilter);
+
+				return generatePaginationResponse(processFamily, listSize, page, limit);
+			}
+			return processFamily;
+		}
+
+		return null;
+	}
+
 }

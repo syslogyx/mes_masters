@@ -12,6 +12,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +23,17 @@ import com.syslogyx.constants.IConstants;
 import com.syslogyx.constants.IPropertyConstant;
 import com.syslogyx.dao.base.BaseDAOImpl;
 import com.syslogyx.exception.ApplicationException;
+import com.syslogyx.message.IResponseCodes;
+import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.model.masters.CRGradeDO;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
-import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.LeadTimeDO;
+import com.syslogyx.model.masters.ProcessFamilyDO;
+import com.syslogyx.model.masters.ProcessTypeDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.user.UserDO;
 
@@ -141,24 +145,27 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 	}
 
 	@Override
-	public List findMastersList(String master_name) {
+	public List findMastersList(String master_name) throws ApplicationException {
 
 		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP))
 			return getCodeGroupList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
-		if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN))
+		else if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN))
 			return getCampaignList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
-		if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
+		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
 			return getDPRTargetList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
-		if (master_name.equals(IConstants.MASTERS_NAME.LEAD_TIME))
+		else if (master_name.equals(IConstants.MASTERS_NAME.LEAD_TIME))
 			return getLeadTimeList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
-		if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
+		else if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
 			return getElongationList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
-		return null;
+		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_FAMILY))
+			return getProcessFamilyList(null, IConstants.DEFAULT, IConstants.DEFAULT);
+
+		throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
 
 	@Override
@@ -167,38 +174,33 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<CampaignDO> createQuery = builder.createQuery(CampaignDO.class);
 		Root<CampaignDO> campaignRoot = createQuery.from(CampaignDO.class);
-		Join<CampaignDO, UserDO> fetch = campaignRoot.join(IPropertyConstant.UPDATED_BY);
-		Join<CampaignDO, ProcessUnitDO> processUnitFetch = campaignRoot.join(IPropertyConstant.HOLD_UNIT);
 
-		CompoundSelection<CampaignDO> construct = builder.construct(CampaignDO.class,
-				campaignRoot.get(IPropertyConstant.ID), campaignRoot.get(IPropertyConstant.CAMPAIGN_ID),
-				campaignRoot.get(IPropertyConstant.ATTRIBUTE), campaignRoot.get(IPropertyConstant.AIM),
-				campaignRoot.get(IPropertyConstant.CAPACITY_MIN), campaignRoot.get(IPropertyConstant.CAPACITY_MAX),
-				campaignRoot.get(IPropertyConstant.PRIORITY_LEVEL), campaignRoot.get(IPropertyConstant.CREATED),
-				campaignRoot.get(IPropertyConstant.UPDATED), campaignRoot.get(IPropertyConstant.STATUS),
-				fetch.get(IPropertyConstant.USERNAME), processUnitFetch.get(IPropertyConstant.UNIT),
-				processUnitFetch.get(IPropertyConstant.PU_ID));
+		Object[] queryResults = getConditionsForCampaign(requestFilter, builder, campaignRoot, true);
 
-		List<Predicate> conditions = getConditionsForCampaign(requestFilter, builder, campaignRoot, processUnitFetch);
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
 
-		if (conditions != null && !conditions.isEmpty()) {
-			createQuery.where(conditions.toArray(new Predicate[] {}));
-		}
-
-		Query query = entityManager.createQuery(createQuery.select(construct));
-
-		if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
-			int start_index = IConstants.VALUE_ZERO;
-			if (page > 1) {
-				page -= 1;
-				start_index = page * limit;
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
 			}
 
-			query.setFirstResult(start_index);
-			query.setMaxResults(limit);
-		}
+			Query query = entityManager
+					.createQuery(createQuery.select((Selection<? extends CampaignDO>) queryResults[1]));
 
-		return query.getResultList();
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				int start_index = IConstants.VALUE_ZERO;
+				if (page > 1) {
+					page -= 1;
+					start_index = page * limit;
+				}
+
+				query.setFirstResult(start_index);
+				query.setMaxResults(limit);
+			}
+
+			return query.getResultList();
+		}
+		return null;
 	}
 
 	/**
@@ -207,11 +209,16 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 	 * @param requestFilter
 	 * @param builder
 	 * @param campaignRoot
-	 * @param processUnitFetch
 	 * @return
 	 */
-	private List<Predicate> getConditionsForCampaign(RequestBO requestFilter, CriteriaBuilder builder,
-			Root<CampaignDO> campaignRoot, Join<CampaignDO, ProcessUnitDO> processUnitFetch) {
+	private Object[] getConditionsForCampaign(RequestBO requestFilter, CriteriaBuilder builder,
+			Root<CampaignDO> campaignRoot, boolean prepareContruct) {
+
+		Object[] resultSet = new Object[2];
+
+		Join<CampaignDO, UserDO> fetch = campaignRoot.join(IPropertyConstant.UPDATED_BY);
+		Join<CampaignDO, ProcessUnitDO> processUnitFetch = campaignRoot.join(IPropertyConstant.HOLD_UNIT);
+
 		if (requestFilter != null) {
 			List<Predicate> conditions = new ArrayList<>();
 
@@ -232,9 +239,24 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 				conditions
 						.add(builder.notEqual(campaignRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
 			}
-			return conditions;
+
+			resultSet[0] = conditions;
 		}
-		return null;
+
+		// add construct in case if the identifier is true to fetch the limited details
+		// from list
+		if (prepareContruct) {
+			CompoundSelection<CampaignDO> construct = builder.construct(CampaignDO.class,
+					campaignRoot.get(IPropertyConstant.ID), campaignRoot.get(IPropertyConstant.CAMPAIGN_ID),
+					campaignRoot.get(IPropertyConstant.ATTRIBUTE), campaignRoot.get(IPropertyConstant.AIM),
+					campaignRoot.get(IPropertyConstant.CAPACITY_MIN), campaignRoot.get(IPropertyConstant.CAPACITY_MAX),
+					campaignRoot.get(IPropertyConstant.PRIORITY_LEVEL), campaignRoot.get(IPropertyConstant.CREATED),
+					campaignRoot.get(IPropertyConstant.UPDATED), campaignRoot.get(IPropertyConstant.STATUS),
+					fetch.get(IPropertyConstant.USERNAME), processUnitFetch.get(IPropertyConstant.UNIT),
+					processUnitFetch.get(IPropertyConstant.PU_ID));
+			resultSet[1] = construct;
+		}
+		return resultSet;
 	}
 
 	@Override
@@ -242,17 +264,22 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
 		Root<CampaignDO> campaignRoot = createQuery.from(CampaignDO.class);
-		Join<CampaignDO, ProcessUnitDO> processUnitFetch = campaignRoot.join(IPropertyConstant.HOLD_UNIT);
 
 		createQuery.select(builder.count(campaignRoot));
 
-		List<Predicate> conditions = getConditionsForCampaign(requestFilter, builder, campaignRoot, processUnitFetch);
+		Object[] queryResults = getConditionsForCampaign(requestFilter, builder, campaignRoot, false);
 
-		if (conditions != null && !conditions.isEmpty()) {
-			createQuery.where(conditions.toArray(new Predicate[] {}));
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+
+			Query query = entityManager.createQuery(createQuery);
+			return (long) query.getSingleResult();
 		}
-		Query query = entityManager.createQuery(createQuery);
-		return (long) query.getSingleResult();
+		return IConstants.VALUE_ZERO;
 	}
 
 	@Override
@@ -374,7 +401,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 		List<Predicate> conditions = getConditionsForLeadTime(requestFilter, builder, leadTimeRoot, afterUnitFetch,
 				beforeUnitFetch);
-		
+
 		if (conditions != null && !conditions.isEmpty()) {
 			createQuery.where(conditions.toArray(new Predicate[] {}));
 		}
@@ -554,6 +581,109 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 		Query query = entityManager.createQuery(createQuery);
 		return (long) query.getSingleResult();
+	}
+
+	@Override
+	public List<ProcessFamilyDO> getProcessFamilyList(RequestBO requestFilter, int page, int limit) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<ProcessFamilyDO> createQuery = builder.createQuery(ProcessFamilyDO.class);
+		Root<ProcessFamilyDO> processFamilyRoot = createQuery.from(ProcessFamilyDO.class);
+		Join<ProcessFamilyDO, UserDO> fetch = processFamilyRoot.join(IPropertyConstant.UPDATED_BY);
+		Join<ProcessFamilyDO, ProcessTypeDO> processTypeFetch = processFamilyRoot.join(IPropertyConstant.PROCESS_TYPE, JoinType.LEFT);
+
+		// set the list of properties whose values are required to fetch
+		CompoundSelection<ProcessFamilyDO> construct = builder.construct(ProcessFamilyDO.class,
+				processFamilyRoot.get(IPropertyConstant.ID), processFamilyRoot.get(IPropertyConstant.PROCESS_FAMILY),
+				processFamilyRoot.get(IPropertyConstant.PRIORITY), processFamilyRoot.get(IPropertyConstant.BUCKET),
+				processFamilyRoot.get(IPropertyConstant.UPDATED), processFamilyRoot.get(IPropertyConstant.STATUS),
+				processTypeFetch.get(IPropertyConstant.ID), processTypeFetch.get(IPropertyConstant.NAME),
+				fetch.get(IPropertyConstant.USERNAME));
+
+		// prepare where conditions according to provided filter
+		List<Predicate> conditions = addConditionsForProcessFamily(requestFilter, builder, processFamilyRoot,
+				processTypeFetch);
+
+		if (conditions != null && !conditions.isEmpty()) {
+			createQuery.where(conditions.toArray(new Predicate[] {}));
+		}
+
+		Query query = entityManager.createQuery(createQuery.select(construct));
+
+		if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+			int start_index = IConstants.VALUE_ZERO;
+			if (page > 1) {
+				page -= 1;
+				start_index = page * limit;
+			}
+
+			query.setFirstResult(start_index);
+			query.setMaxResults(limit);
+		}
+
+		return query.getResultList();
+	}
+
+	/**
+	 * Prepare the List of Conditions based on the filters provided in the request
+	 * body
+	 * 
+	 * @param requestFilter
+	 * @param builder
+	 * @param processFamilyRoot
+	 * @param processTypeFetch
+	 * @return
+	 */
+	private List<Predicate> addConditionsForProcessFamily(RequestBO requestFilter, CriteriaBuilder builder,
+			Root<ProcessFamilyDO> processFamilyRoot, Join<ProcessFamilyDO, ProcessTypeDO> processTypeFetch) {
+
+		if (requestFilter != null) {
+			List<Predicate> conditions = new ArrayList<>();
+
+			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
+				conditions.add(builder.or(
+						builder.like(processFamilyRoot.get(IPropertyConstant.PROCESS_FAMILY),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(processTypeFetch.get(IPropertyConstant.NAME),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(processFamilyRoot.get(IPropertyConstant.BUCKET),
+								"%" + requestFilter.getQuick_finder() + "%")));
+			}
+
+			// add condition to restrict rows whose status is inactive
+			if (!requestFilter.isInclude_inactive_data()) {
+				conditions.add(
+						builder.notEqual(processFamilyRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
+			}
+			return conditions;
+		}
+		return null;
+
+	}
+
+	@Override
+	public long getProcessFamilyListSize(RequestBO requestFilter) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
+		Root<ProcessFamilyDO> processFamilyRoot = createQuery.from(ProcessFamilyDO.class);
+		Join<ProcessFamilyDO, ProcessTypeDO> processTypeFetch = processFamilyRoot.join(IPropertyConstant.PROCESS_TYPE,
+				JoinType.LEFT);
+
+		createQuery.select(builder.count(processFamilyRoot));
+
+		// prepare where conditions according to provided filter
+		List<Predicate> conditions = addConditionsForProcessFamily(requestFilter, builder, processFamilyRoot,
+				processTypeFetch);
+
+		// add the list of predicates in where clause
+		if (conditions != null && !conditions.isEmpty()) {
+			createQuery.where(conditions.toArray(new Predicate[] {}));
+		}
+
+		Query query = entityManager.createQuery(createQuery);
+		return (long) query.getSingleResult();
+
 	}
 
 }

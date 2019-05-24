@@ -34,6 +34,8 @@ public interface INetworkConstants {
 		public String LOGOUT = "/logout";
 		public String LEAD_TIME = "/lead_time";
 		public String ELONGATION = "/elongation";
+		public String PROCESS_FAMILY = "/process_family";
+		public String PROCESS_TYPE = "/process_type";
 	}
 
 	/**

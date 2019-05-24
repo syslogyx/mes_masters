@@ -51,8 +51,9 @@ public interface IBaseDAO {
 	 *            : Name of the Entity class
 	 * @param entity_id
 	 *            : Primary key Unique id of the Entity
+	 * @throws ApplicationException 
 	 */
-	Object getEntityById(Class<?> classT, Object entity_id);
+	Object getEntityById(Class<?> classT, Object entity_id) throws ApplicationException;
 
 	/**
 	 * Merge the Provided Entity in DB
@@ -61,4 +62,12 @@ public interface IBaseDAO {
 	 */
 	void mergeEntity(Object entity);
 
+	
+	
+	
+	
+	
+	
+	
+	
 }

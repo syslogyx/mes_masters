@@ -20,6 +20,8 @@ import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.LeadTimeDO;
+import com.syslogyx.model.masters.ProcessFamilyDO;
+import com.syslogyx.model.masters.ProcessTypeDO;
 import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.service.master.IMasterService;
 
@@ -396,112 +398,72 @@ public class MasterController extends BaseController {
 	}
 
 	/**
-	 * This method is used for retrieving codeGroup by id and response all data in
+	 * For store Process Family data to db
 	 * 
-	 * @param code_group_id
+	 * @param leadTimeDO
 	 * @return
 	 */
-	// @GetMapping(value = INetworkConstants.IURLConstants.CODE_GROUP +
-	// INetworkConstants.IURLConstants.VIEW + "/{"
-	// + INetworkConstants.IPathVariableConstants.CODE_GROUP_ID + "}")
-	// public ResponseEntity<BaseResponseBO> getCodeGroupId(
-	// @PathVariable(name = INetworkConstants.IPathVariableConstants.CODE_GROUP_ID)
-	// int code_group_id) {
-	//
-	// try {
-	// CodeGroupDO codeGroupDO = iMasterService.getCodeGroupId(code_group_id);
-	//
-	// return getResponseModel(codeGroupDO, IResponseCodes.SUCCESS,
-	// IResponseMessages.SUCCESS);
-	// } catch (ApplicationException e) {
-	// e.printStackTrace();
-	// return getResponseModel(null, e.getCode(), e.getMessage());
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// return getResponseModel(null, IResponseCodes.SERVER_ERROR,
-	// IResponseMessages.SERVER_ERROR);
-	// }
-	//
-	// }
+	@PostMapping(value = INetworkConstants.IURLConstants.PROCESS_FAMILY + INetworkConstants.IURLConstants.SAVE)
+	public ResponseEntity<BaseResponseBO> createProcessFamily(@RequestBody ProcessFamilyDO processFamilyDO) {
+		try {
+
+			iMasterService.createProcessFamily(processFamilyDO);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
 
 	/**
-	 * For Update Campaign status
+	 * For fetching Process Family list with Pagination and Quick filter
 	 * 
-	 * @param camp_id
-	 * @param status
+	 * @param page
+	 * @param limit
+	 * @param requestFilter
 	 * @return
 	 */
-	// @GetMapping(value = INetworkConstants.IURLConstants.CAMPAIGN +
-	// INetworkConstants.IURLConstants.STATUS + "/{"
-	// + INetworkConstants.IPathVariableConstants.CAMP_ID + "}")
-	// public ResponseEntity<BaseResponseBO> updateCampaignStatus(
-	// @PathVariable(name = INetworkConstants.IPathVariableConstants.CAMP_ID) int
-	// camp_id,
-	// @RequestParam(name = INetworkConstants.IRequestParamConstants.STATUS) int
-	// status) {
-	//
-	// try {
-	// iMasterService.updateCampaignStatus(camp_id, status);
-	// return getResponseModel(null, IResponseCodes.SUCCESS,
-	// IResponseMessages.STATUS_UPDATE);
-	// } catch (ApplicationException e) {
-	// e.printStackTrace();
-	// return getResponseModel(null, e.getCode(), e.getMessage());
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// return getResponseModel(null, IResponseCodes.SERVER_ERROR,
-	// IResponseMessages.SERVER_ERROR);
-	// }
-	// }
+	@PostMapping(value = INetworkConstants.IURLConstants.PROCESS_FAMILY + INetworkConstants.IURLConstants.LIST)
+	public ResponseEntity<BaseResponseBO> getProcessFamilyList(
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.LIMIT, required = false, defaultValue = "-1") int limit,
+			@RequestBody RequestBO requestFilter) {
+		try {
+
+			Object processFamilytList = iMasterService.getProcessFamilyList(requestFilter, page, limit);
+
+			if (processFamilytList != null)
+				return getResponseModel(processFamilytList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+
+			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
 
 	/**
-	 * For view Campaign table Data on particular Id
+	 * For store Product Type data to db
 	 * 
-	 * @param chain
-	 * @param res
-	 * @param req
-	 * 
-	 * @param camp_id
+	 * @param processTypeDO
 	 * @return
 	 */
-	// @GetMapping(value = INetworkConstants.IURLConstants.CAMPAIGN +
-	// INetworkConstants.IURLConstants.VIEW + "/{"
-	// + INetworkConstants.IPathVariableConstants.CAMP_ID + "}")
-	// public ResponseEntity<BaseResponseBO> getCampaignId(
-	// @PathVariable(name = INetworkConstants.IPathVariableConstants.CAMP_ID) int
-	// camp_id) {
-	//
-	// try {
-	// CampaignDO campaignDO = iMasterService.getCampaignId(camp_id);
-	//
-	// return getResponseModel(campaignDO, IResponseCodes.SUCCESS,
-	// IResponseMessages.SUCCESS);
-	// } catch (ApplicationException e) {
-	// e.printStackTrace();
-	// return getResponseModel(null, e.getCode(), e.getMessage());
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// return getResponseModel(null, IResponseCodes.SERVER_ERROR,
-	// IResponseMessages.SERVER_ERROR);
-	// }
-	// }
+	@PostMapping(value = INetworkConstants.IURLConstants.PROCESS_TYPE + INetworkConstants.IURLConstants.SAVE)
+	public ResponseEntity<BaseResponseBO> createProcessType(@RequestBody ProcessTypeDO processTypeDO) {
+		try {
 
-	// @GetMapping(value = INetworkConstants.IURLConstants.LOGOUT)
-	// public ResponseEntity<BaseResponseBO> logoutPage (HttpServletRequest req,
-	// HttpServletResponse res) throws ApplicationException {
-	// try {
-	//
-	// String a=jwtAuthenticationFilter.logoutFilterInternal(req, res);
-	//
-	//
-	// return getResponseModel(a, IResponseCodes.SUCCESS,
-	// IResponseMessages.LIST_EXPORTED_SUCCESSFULLY);
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// return getResponseModel(null, IResponseCodes.SERVER_ERROR,
-	// IResponseMessages.SERVER_ERROR);
-	// }
-	//
-	// }
+			iMasterService.createProcessType(processTypeDO);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
 
 }

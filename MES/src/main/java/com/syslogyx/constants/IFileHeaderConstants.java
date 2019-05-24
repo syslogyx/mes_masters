@@ -36,14 +36,19 @@ public interface IFileHeaderConstants {
 	public String PRODUCT = "Product";
 	public String BUSINESS_PLAN_TARGET = "Business Plan Target";
 	public String INTERNAL_TARGET = "Internal Target";
-	
-	//Lead Time Headers
+
+	// Lead Time Headers
 	public String AFTER_PROCESS_UNIT = "After Process Unit";
 	public String BEFORE_PROCESS_UNIT = "Before Process Unit";
 
 	// Elongation Headers
 	public String PROCESS_UNIT = "Process Unit";
 	public String CR_GRADE = "CR Grade";
+
+	// Process Family Headers
+	public String PROCESS_FAMILY = "Process Family";
+	public String PROCESS_TYPE = "Process Type";
+	public String BUCKET = "Bucket";
 
 	/**
 	 * Prepare the List of Headers used in Code Group Excel and PDF
@@ -101,16 +106,37 @@ public interface IFileHeaderConstants {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
 			return getDPRTargetHeaders();
-		
+
 		else if (master_name.equals(IConstants.MASTERS_NAME.LEAD_TIME))
 			return getLeadTimeHeaders();
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
 			return getElongationHeaders();
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_FAMILY))
+			return getProcessFamilyHeaders();
+
 		return null;
 	}
 
+	/**
+	 * Prepare the list of Headers used in ProcessFamily Excel and PDF
+	 * 
+	 * @return
+	 */
+	public static List<String> getProcessFamilyHeaders() {
+		List<String> headers = new ArrayList<>();
+		headers.add(SR_NO);
+		headers.add(PROCESS_FAMILY);
+		headers.add(PROCESS_TYPE);
+		headers.add(PRIORITY_LEVEL);
+		headers.add(BUCKET);
+		headers.add(UPDATED_BY);
+		headers.add(LAST_UPDATED);
+		headers.add(STATUS);
+
+		return headers;
+	}
 
 	/**
 	 * Prepare the List of Headers used in Elongation Excel and PDF
@@ -148,16 +174,16 @@ public interface IFileHeaderConstants {
 
 		return headers;
 	}
-	
+
 	/**
 	 * Prepare the List of Headers used in Lead Time Excel and PDF
 	 * 
 	 * @return
 	 */
 	public static List<String> getLeadTimeHeaders() {
-		
+
 		List<String> headers = new ArrayList<>();
-		
+
 		headers.add(SR_NO);
 		headers.add(AFTER_PROCESS_UNIT);
 		headers.add(BEFORE_PROCESS_UNIT);

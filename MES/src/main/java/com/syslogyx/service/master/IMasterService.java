@@ -6,6 +6,8 @@ import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.LeadTimeDO;
+import com.syslogyx.model.masters.ProcessFamilyDO;
+import com.syslogyx.model.masters.ProcessTypeDO;
 import com.syslogyx.model.masters.ElongationDO;
 
 /**
@@ -161,29 +163,34 @@ public interface IMasterService {
 	Object getElongationList(RequestBO requestFilter, int page, int limit);
 
 	/**
-	 * This method used for retrieving CodeGroup by Id
+	 * For store Process Family data to db
 	 * 
-	 * @param code_group_id
-	 * @return
+	 * @param processFamilyDO
+	 *            : contains ProcessFamily data provided by user
 	 * @throws ApplicationException
+	 * @throws Exception
 	 */
-	// CodeGroupDO getCodeGroupId(int code_group_id) throws ApplicationException;
+	void createProcessFamily(ProcessFamilyDO processFamilyDO) throws ApplicationException, Exception;
 
 	/**
-	 * For retrieving Campaign by id and update status
+	 * for store Process Type data to db
 	 * 
-	 * @param camp_id
-	 * @param status
+	 * @param processTypeDO
+	 *            : contains ProcessType data provided by user
+	 * @throws ApplicationException
+	 * @throws Exception
 	 */
-	// void updateCampaignStatus(int camp_id, int status) throws
-	// ApplicationException;
+	void createProcessType(ProcessTypeDO processTypeDO) throws ApplicationException, Exception;
 
 	/**
-	 * For Retrieving Campaign by Id
+	 * Fetch the list of Process Family Master according to the Pagination and Quick
+	 * Finder Specified
 	 * 
-	 * @param camp_id
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
 	 * @return
 	 */
-	// CampaignDO getCampaignId(int camp_id) throws ApplicationException;
+	Object getProcessFamilyList(RequestBO requestFilter, int page, int limit);
 
 }

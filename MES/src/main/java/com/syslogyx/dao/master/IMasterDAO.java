@@ -4,10 +4,12 @@ import java.util.List;
 
 import com.syslogyx.bo.RequestBO;
 import com.syslogyx.dao.base.IBaseDAO;
+import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.LeadTimeDO;
+import com.syslogyx.model.masters.ProcessFamilyDO;
 import com.syslogyx.model.masters.ElongationDO;
 
 /**
@@ -45,8 +47,9 @@ public interface IMasterDAO extends IBaseDAO {
 	 *            : identifier for returning the list accordingly
 	 * @param class1
 	 * @return
+	 * @throws ApplicationException 
 	 */
-	List<CodeGroupDO> findMastersList(String master_name);
+	List<CodeGroupDO> findMastersList(String master_name) throws ApplicationException;
 
 	/**
 	 * For Retrieving Campaign table data for Pagination
@@ -84,7 +87,6 @@ public interface IMasterDAO extends IBaseDAO {
 	 */
 	long getDPRTargetListSize(RequestBO requestFilter);
 
-
 	/**
 	 * for count number of rows in LeadTime table from db
 	 * 
@@ -120,5 +122,23 @@ public interface IMasterDAO extends IBaseDAO {
 	 * @return
 	 */
 	long getElongationListSize(RequestBO requestFilter);
+
+	/**
+	 * Fetch the ProcessFamily list according to the Filter and Pagination
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	List<ProcessFamilyDO> getProcessFamilyList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Fetch the Process Family List Size according to the Filter
+	 * 
+	 * @param requestFilter
+	 * @return
+	 */
+	long getProcessFamilyListSize(RequestBO requestFilter);
 
 }

@@ -75,6 +75,34 @@ public class ProcessFamilyDO {
 	@Transient
 	private int process_type_id;
 
+	@Transient
+	private String process_type_name;
+
+	@Transient
+	private String updated_by_name;
+
+	public ProcessFamilyDO() {
+
+	}
+
+	public ProcessFamilyDO(int id, String process_family, int priority, String bucket, Date updated, int status,
+			Integer process_type_id, String process_type_name, String updated_by_name) {
+
+		this.id = id;
+		this.process_family = process_family;
+		this.priority = priority;
+		this.bucket = bucket;
+		this.updated = updated;
+		this.status = status;
+
+		if (process_type_id != null)
+			this.process_type_id = process_type_id;
+
+		this.process_type_name = process_type_name;
+		this.updated_by_name = updated_by_name;
+
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -161,6 +189,22 @@ public class ProcessFamilyDO {
 
 	public void setProcess_type_id(int process_type_id) {
 		this.process_type_id = process_type_id;
+	}
+
+	public String getProcess_type_name() {
+		return process_type_name;
+	}
+
+	public void setProcess_type_name(String name) {
+		this.process_type_name = name;
+	}
+
+	public String getUpdated_by_name() {
+		return updated_by_name;
+	}
+
+	public void setUpdated_by_name(String updated_by_name) {
+		this.updated_by_name = updated_by_name;
 	}
 
 }
