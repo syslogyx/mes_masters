@@ -178,8 +178,9 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		Object[] queryResults = getConditionsForCampaign(requestFilter, builder, campaignRoot, true);
 
 		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
-			List<Predicate> conditions = (List<Predicate>) queryResults[0];
-
+			
+			List<Predicate> conditions= (List<Predicate>) queryResults[0];
+			
 			if (conditions != null && !conditions.isEmpty()) {
 				createQuery.where(conditions.toArray(new Predicate[] {}));
 			}
@@ -193,11 +194,11 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 					page -= 1;
 					start_index = page * limit;
 				}
-
+				
 				query.setFirstResult(start_index);
 				query.setMaxResults(limit);
 			}
-
+			
 			return query.getResultList();
 		}
 		return null;

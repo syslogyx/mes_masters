@@ -830,21 +830,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		masterDAO.mergeEntity(processFamilyDO);
 	}
 
-	@Override
-	public void createProcessType(ProcessTypeDO processTypeDO) throws ApplicationException, Exception {
-
-		int process_type_id = processTypeDO.getId();
-
-		// Valide ProcessType id in case of update scenario
-		masterDAO.validateEntityById(ProcessTypeDO.class, process_type_id, IResponseMessages.INVALID_PROCESS_TYPE_ID);
-
-		UserDO loggedInUser = getLoggedInUser();
-		processTypeDO.setCreated_by(loggedInUser);
-		processTypeDO.setUpdated_by(loggedInUser);
-		processTypeDO.setStatus(IConstants.STATUS_ACTIVE);
-		masterDAO.mergeEntity(processTypeDO);
-
-	}
+	
 
 	@Override
 	public Object getProcessFamilyList(RequestBO requestFilter, int page, int limit) {

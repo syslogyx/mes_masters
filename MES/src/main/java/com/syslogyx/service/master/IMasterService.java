@@ -173,16 +173,6 @@ public interface IMasterService {
 	void createProcessFamily(ProcessFamilyDO processFamilyDO) throws ApplicationException, Exception;
 
 	/**
-	 * for store Process Type data to db
-	 * 
-	 * @param processTypeDO
-	 *            : contains ProcessType data provided by user
-	 * @throws ApplicationException
-	 * @throws Exception
-	 */
-	void createProcessType(ProcessTypeDO processTypeDO) throws ApplicationException, Exception;
-
-	/**
 	 * Fetch the list of Process Family Master according to the Pagination and Quick
 	 * Finder Specified
 	 * 

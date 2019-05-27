@@ -445,25 +445,4 @@ public class MasterController extends BaseController {
 		}
 	}
 
-	/**
-	 * For store Product Type data to db
-	 * 
-	 * @param processTypeDO
-	 * @return
-	 */
-	@PostMapping(value = INetworkConstants.IURLConstants.PROCESS_TYPE + INetworkConstants.IURLConstants.SAVE)
-	public ResponseEntity<BaseResponseBO> createProcessType(@RequestBody ProcessTypeDO processTypeDO) {
-		try {
-
-			iMasterService.createProcessType(processTypeDO);
-			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
-		} catch (ApplicationException e) {
-			e.printStackTrace();
-			return getResponseModel(null, e.getCode(), e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
-		}
-	}
-
 }

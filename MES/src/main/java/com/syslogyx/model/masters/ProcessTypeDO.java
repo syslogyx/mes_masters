@@ -38,22 +38,22 @@ public class ProcessTypeDO {
 	@SequenceGenerator(name = "processT_Sequence", sequenceName = "PROCESST_SEQ", allocationSize = 1)
 	@Column(name = "pt_id")
 	private int id;
-
+	
 	@Column(name = "name")
 	private String name;
-
+	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by", updatable = false)
 	private UserDO created_by;
-
+	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "updated_by")
 	private UserDO updated_by;
-
+	
 	@CreatedDate
 	@Column(name = "created", updatable = false)
 	private Date created;
-
+	
 	@LastModifiedDate
 	@Column(name = "updated")
 	private Date updated;
