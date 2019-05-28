@@ -19,10 +19,9 @@ import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.LeadTimeDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
-import com.syslogyx.model.masters.ProcessTypeDO;
-import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.service.master.IMasterService;
 
 /**
@@ -400,7 +399,7 @@ public class MasterController extends BaseController {
 	/**
 	 * For store Process Family data to db
 	 * 
-	 * @param leadTimeDO
+	 * @param processFamilyDO
 	 * @return
 	 */
 	@PostMapping(value = INetworkConstants.IURLConstants.PROCESS_FAMILY + INetworkConstants.IURLConstants.SAVE)
