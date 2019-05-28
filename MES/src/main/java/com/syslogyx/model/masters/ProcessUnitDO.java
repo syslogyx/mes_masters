@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -79,6 +80,15 @@ public class ProcessUnitDO {
 
 	@Column(name = "status")
 	public int status;
+
+	@Transient
+	private int process_family_id;
+
+	@Transient
+	private int process_family_name;
+
+	@Transient
+	private int updated_by_name;
 
 	public int getId() {
 		return id;
@@ -182,6 +192,22 @@ public class ProcessUnitDO {
 
 	public void setUpdated(Date updated) {
 		this.updated = updated;
+	}
+
+	public int getProcess_family_id() {
+		return process_family_id;
+	}
+
+	public void setProcess_family_id(int process_family_id) {
+		this.process_family_id = process_family_id;
+	}
+
+	public int getProcess_family_name() {
+		return process_family_name;
+	}
+
+	public int getUpdated_by_name() {
+		return updated_by_name;
 	}
 
 }

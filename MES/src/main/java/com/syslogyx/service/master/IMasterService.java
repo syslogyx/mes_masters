@@ -8,6 +8,7 @@ import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.LeadTimeDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
 import com.syslogyx.model.masters.ProcessTypeDO;
+import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ElongationDO;
 
 /**
@@ -182,5 +183,15 @@ public interface IMasterService {
 	 * @return
 	 */
 	Object getProcessFamilyList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Validate and Store the Process Unit related data
+	 * 
+	 * @param processUnitDO
+	 *            : Object containing process unit details input by user
+	 * @throws ApplicationException
+	 * @throws Exception
+	 */
+	void createProcessUnit(ProcessUnitDO processUnitDO) throws ApplicationException, Exception;
 
 }

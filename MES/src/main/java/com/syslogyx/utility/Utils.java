@@ -501,7 +501,7 @@ public class Utils {
 			fileOut = new FileOutputStream(filepath + IConstants.EXTENSION_EXCEL);
 			workbook.write(fileOut);
 			fileOut.close();
-			
+
 			return filepath + IConstants.EXTENSION_EXCEL;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -570,6 +570,29 @@ public class Utils {
 		} catch (FileNotFoundException | DocumentException e) {
 			e.printStackTrace();
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.UNABLE_TO_EXORT_PDF);
+		}
+	}
+
+	/**
+	 * Validate the Date value by the required format
+	 * 
+	 * @param date_time
+	 * @param format
+	 * @throws ApplicationException
+	 */
+	public static void validateDateFormat(String date_time, String format) throws ApplicationException {
+		if (date_time != null && !date_time.isEmpty()) {
+			SimpleDateFormat sdf = new SimpleDateFormat(format);
+			sdf.setLenient(false);
+
+			try {
+				// if not valid, it will throw ParseException
+				Date date = sdf.parse(date_time);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new ApplicationException(IResponseCodes.INVALID_DATA, IResponseMessages.INALID_DATETIME_FORMAT);
+			}
 		}
 	}
 

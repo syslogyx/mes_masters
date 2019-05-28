@@ -22,5 +22,6 @@ public interface IResponseCodes {
 	int EXISTING_ENTITY = 1001;
 	int INVALID_ENTITY = 1002;
 	int INVALID_STATUS = 1003;
+	int INVALID_DATA = 1004;
 
 }

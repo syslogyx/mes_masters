@@ -25,10 +25,10 @@ import com.syslogyx.model.masters.CRGradeDO;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.LeadTimeDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
 import com.syslogyx.model.masters.ProcessTypeDO;
-import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.user.UserDO;
@@ -206,7 +206,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			for (int index = 0; index < headerList.size(); index++) {
 				sheet.autoSizeColumn(index);
 			}
-			
+
 			String filename = Utils.getFilePath(IConstants.EXCEL_BASE_PATH, master_name);
 			return Utils.writeDataToWorkbook(workbook, filename);
 		} else {
@@ -830,8 +830,6 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		masterDAO.mergeEntity(processFamilyDO);
 	}
 
-	
-
 	@Override
 	public Object getProcessFamilyList(RequestBO requestFilter, int page, int limit) {
 		List<ProcessFamilyDO> processFamily = masterDAO.getProcessFamilyList(requestFilter, page, limit);
@@ -846,6 +844,55 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		}
 
 		return null;
+	}
+
+	@Override
+	public void createProcessUnit(ProcessUnitDO processUnitDO) throws ApplicationException, Exception {
+
+		int process_unit_id = processUnitDO.getId();
+		int process_family_id = processUnitDO.getProcess_family_id();
+		int osp_identifier = processUnitDO.getOsp_identifier();
+		String const_setup_time = processUnitDO.getConst_setup_time();
+		String unit = processUnitDO.getUnit();
+
+		// validate the process unit id in update scenario
+		masterDAO.validateEntityById(ProcessUnitDO.class, process_unit_id, IResponseMessages.INVALID_PROCESS_UNIT_ID);
+
+		// validate the group code if already exists in database or not
+		ProcessUnitDO existingUnit = (ProcessUnitDO) masterDAO.getEntityByPropertyName(ProcessUnitDO.class,
+				IPropertyConstant.UNIT, unit);
+
+		if (existingUnit != null && existingUnit.getId() != process_unit_id)
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.EXISTING_PROCESS_UNIT);
+
+		// validate and Set Process family
+		ProcessFamilyDO processFamilyDO = (ProcessFamilyDO) masterDAO.validateEntityById(ProcessFamilyDO.class,
+				process_family_id, IResponseMessages.INVALID_PROCESS_FAMILY_ID);
+		processUnitDO.setProcess_family(processFamilyDO);
+
+		// validate OSP
+		validateOSPIdentifier(osp_identifier);
+
+		// validate the time format
+		Utils.validateDateFormat(const_setup_time, IConstants.DATE_TIME_FORMAT.HH_MM_SS);
+
+		UserDO loggedInUser = getLoggedInUser();
+		processUnitDO.setStatus(IConstants.STATUS_ACTIVE);
+		processUnitDO.setCreated_by(loggedInUser);
+		processUnitDO.setUpdated_by(loggedInUser);
+
+		masterDAO.mergeEntity(processUnitDO);
+	}
+
+	/**
+	 * Validate the value of OSP Identifier
+	 * 
+	 * @param osp_identifier
+	 * @throws ApplicationException
+	 */
+	private void validateOSPIdentifier(int osp_identifier) throws ApplicationException {
+		if (osp_identifier != IConstants.OSP_IDENTIFIER.YES && osp_identifier != IConstants.OSP_IDENTIFIER.NO)
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_OSP_IDENTIFIER);
 	}
 
 }

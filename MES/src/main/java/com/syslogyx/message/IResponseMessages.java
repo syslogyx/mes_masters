@@ -36,7 +36,10 @@ public interface IResponseMessages {
 	String INVALID_LEAD_TIME_ID = "Invalid Lead Time Id";
 	String INVALID_ELONGATION_ID = "Invalid Elongation Id.";
 	String INVALID_CR_GRADE_ID = "Invalid CR Grade Id.";
-	String INVALID_PROCESS_FAMILY_ID = "Invalid Process Family Id";
-	String INVALID_PROCESS_TYPE_ID = "/Invalide ProcessType Id";
+	String INVALID_PROCESS_FAMILY_ID = "Invalid Process Family Id.";
+	String INVALID_PROCESS_TYPE_ID = "Invalide Process Type Id.";
+	String INVALID_OSP_IDENTIFIER = "Invalid OSP Identifier.";
+	String INALID_DATETIME_FORMAT = "Invalid Date / Time Format.";
+	String EXISTING_PROCESS_UNIT = "This Process Unit already exists.";
 
 }

@@ -32,6 +32,7 @@ public interface IConstants {
 	public interface DATE_TIME_FORMAT {
 
 		String YYYY_MM_DD_HH_MM_SS_A = "yyyy-MM-dd HH:mm:ss a";
+		String HH_MM_SS = "HH:mm:ss";
 
 	}
 
