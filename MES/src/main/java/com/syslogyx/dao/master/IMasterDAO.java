@@ -8,9 +8,10 @@ import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.LeadTimeDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
-import com.syslogyx.model.masters.ElongationDO;
+import com.syslogyx.model.masters.ProcessUnitDO;
 
 /**
  * This interface is used for communicating with db
@@ -47,7 +48,7 @@ public interface IMasterDAO extends IBaseDAO {
 	 *            : identifier for returning the list accordingly
 	 * @param class1
 	 * @return
-	 * @throws ApplicationException 
+	 * @throws ApplicationException
 	 */
 	List<CodeGroupDO> findMastersList(String master_name) throws ApplicationException;
 
@@ -140,5 +141,23 @@ public interface IMasterDAO extends IBaseDAO {
 	 * @return
 	 */
 	long getProcessFamilyListSize(RequestBO requestFilter);
+
+	/**
+	 * Fetch the ProcessUnit list according to the Filter and Pagination
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	List<ProcessUnitDO> getProcessUnitList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Fetch the Process Unit List Size according to the Filter
+	 * 
+	 * @param requestFilter
+	 * @return
+	 */
+	long getProcessUnitListSize(RequestBO requestFilter);
 
 }

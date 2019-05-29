@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.syslogyx.bo.RequestBO;
 import com.syslogyx.constants.IConstants;
@@ -268,6 +270,35 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_FAMILY))
 			processExportingProcessFamilyListExcel(sheet, mastersList);
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_UNIT))
+			processExportingProcessUnitListExcel(sheet, mastersList);
+
+	}
+
+	/**
+	 * Set the field value from ProcessUnitDO Object to it's respective index number
+	 * in the excel sheet
+	 * 
+	 * @param sheet
+	 * @param processUnitList
+	 */
+	private void processExportingProcessUnitListExcel(HSSFSheet sheet, List<ProcessUnitDO> processUnitList) {
+		for (int index = 0; index < processUnitList.size(); index++) {
+			ProcessUnitDO processUnitDO = processUnitList.get(index);
+			HSSFRow row = sheet.createRow(index + 1);
+			row.createCell(0).setCellValue(index + 1);
+			row.createCell(1).setCellValue(processUnitDO.getUnit());
+			row.createCell(2).setCellValue(processUnitDO.getProcess_family_name());
+			row.createCell(3).setCellValue(processUnitDO.getCost_center());
+			row.createCell(4).setCellValue(processUnitDO.getCapacity());
+			row.createCell(5).setCellValue(processUnitDO.getConst_setup_time());
+			row.createCell(6).setCellValue(processUnitDO.getYield());
+			row.createCell(7).setCellValue(getOSPString(processUnitDO.getOsp_identifier()));
+			row.createCell(8).setCellValue(processUnitDO.getUpdated_by_name());
+			row.createCell(9).setCellValue(Utils.getFormatedDate(processUnitDO.getUpdated(),
+					IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
+			row.createCell(10).setCellValue(getStatusString(processUnitDO.getStatus()));
+		}
 	}
 
 	/**
@@ -284,13 +315,13 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			HSSFRow row = sheet.createRow(index + 1);
 			row.createCell(0).setCellValue(index + 1);
 			row.createCell(1).setCellValue(processFamilyDO.getProcess_family());
-			row.createCell(1).setCellValue(processFamilyDO.getProcess_type_name());
-			row.createCell(8).setCellValue(getPriorityString(processFamilyDO.getPriority()));
-			row.createCell(2).setCellValue(processFamilyDO.getBucket());
-			row.createCell(3).setCellValue(processFamilyDO.getUpdated_by_name());
-			row.createCell(4).setCellValue(Utils.getFormatedDate(processFamilyDO.getUpdated(),
+			row.createCell(2).setCellValue(processFamilyDO.getProcess_type_name());
+			row.createCell(3).setCellValue(getPriorityString(processFamilyDO.getPriority()));
+			row.createCell(4).setCellValue(processFamilyDO.getBucket());
+			row.createCell(5).setCellValue(Utils.getFormatedDate(processFamilyDO.getUpdated(),
 					IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
-			row.createCell(5).setCellValue(getStatusString(processFamilyDO.getStatus()));
+			row.createCell(6).setCellValue(processFamilyDO.getUpdated_by_name());
+			row.createCell(7).setCellValue(getStatusString(processFamilyDO.getStatus()));
 		}
 
 	}
@@ -443,8 +474,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	 * @param table
 	 * @param master_name
 	 * @return
+	 * @throws ApplicationException
 	 */
-	private float[] setPDFwidth(String master_name) {
+	private float[] setPDFwidth(String master_name) throws ApplicationException {
 		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP))
 			return new float[] { 1, 1, 2, 2, 2, 1 };
 
@@ -463,7 +495,11 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_FAMILY))
 			return new float[] { 1, 2, 1, 1, 1, 1, 1, 1 };
 
-		return null;
+		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_UNIT))
+			return new float[] { 1, 1, 2, 1, 1, 1.5f, 1, 1, 1, 2, 1 };
+
+		else
+			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
 
 	/**
@@ -492,6 +528,42 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_FAMILY))
 			processExportingProcessFamilyListPDF(table, mastersList);
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_UNIT))
+			processExportingProcessUnitListPDF(table, mastersList);
+
+	}
+
+	/**
+	 * Set the field value from ProcessUnitDO object to it's respective index number
+	 * in the PDF Table
+	 * 
+	 * @param table
+	 * @param processUnitList
+	 */
+	private void processExportingProcessUnitListPDF(PdfPTable table, List<ProcessUnitDO> processUnitList) {
+		for (int index = 0; index < processUnitList.size(); index++) {
+			ProcessUnitDO processUnitDO = processUnitList.get(index);
+
+			table.addCell(new Phrase(index + 1 + "", FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(new Phrase(processUnitDO.getUnit(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(
+					new Phrase(processUnitDO.getProcess_family_name(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(new Phrase(processUnitDO.getCost_center(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(new Phrase(processUnitDO.getCapacity(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(
+					new Phrase(processUnitDO.getConst_setup_time(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(new Phrase(processUnitDO.getYield(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(new Phrase(getOSPString(processUnitDO.getOsp_identifier()),
+					FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(
+					new Phrase(processUnitDO.getUpdated_by_name(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(new Phrase(
+					Utils.getFormatedDate(processUnitDO.getUpdated(),
+							IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
+					FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(new Phrase(getStatusString(processUnitDO.getStatus()),
+					FontFactory.getFont(FontFactory.HELVETICA, 7)));
+		}
 	}
 
 	/**
@@ -681,6 +753,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.ELONGATION))
 			return ElongationDO.class;
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.PROCESS_FAMILY))
+			return ProcessFamilyDO.class;
+		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.PROCESS_UNIT))
 			return ProcessFamilyDO.class;
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
@@ -893,6 +967,22 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	private void validateOSPIdentifier(int osp_identifier) throws ApplicationException {
 		if (osp_identifier != IConstants.OSP_IDENTIFIER.YES && osp_identifier != IConstants.OSP_IDENTIFIER.NO)
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.INVALID_OSP_IDENTIFIER);
+	}
+
+	@Override
+	public Object getProcessUnitList(RequestBO requestFilter, int page, int limit) {
+		List<ProcessUnitDO> processUnit = masterDAO.getProcessUnitList(requestFilter, page, limit);
+
+		if (processUnit != null && !processUnit.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getProcessUnitListSize(requestFilter);
+
+				return generatePaginationResponse(processUnit, listSize, page, limit);
+			}
+			return processUnit;
+		}
+
+		return null;
 	}
 
 }

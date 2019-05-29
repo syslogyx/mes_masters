@@ -30,9 +30,10 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPRow;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -537,13 +538,14 @@ public class Utils {
 	public static void writeToPDFHeaderRow(PdfPTable table, List<String> headerList) {
 
 		for (int index = 0; index < headerList.size(); index++) {
-			table.addCell(headerList.get(index));
+			table.addCell(new Phrase(headerList.get(index), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8)));
+			// table.addCell(headerList.get(index));
 		}
 
 		PdfPRow headerRows = table.getRow(IConstants.VALUE_ZERO);
 		for (int index = 0; index < headerRows.getCells().length; index++) {
-			headerRows.getCells()[index].setBackgroundColor(BaseColor.GRAY);
-			headerRows.getCells()[index].setFixedHeight(50);
+			// headerRows.getCells()[index].setBackgroundColor(BaseColor.GRAY);
+			headerRows.getCells()[index].setFixedHeight(30);
 		}
 
 		table.setWidthPercentage(100);

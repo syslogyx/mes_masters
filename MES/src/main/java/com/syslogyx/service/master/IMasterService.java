@@ -5,11 +5,10 @@ import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
+import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.LeadTimeDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
-import com.syslogyx.model.masters.ProcessTypeDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
-import com.syslogyx.model.masters.ElongationDO;
 
 /**
  * This class is used for MasterService business logic related to Master module
@@ -193,5 +192,16 @@ public interface IMasterService {
 	 * @throws Exception
 	 */
 	void createProcessUnit(ProcessUnitDO processUnitDO) throws ApplicationException, Exception;
+
+	/**
+	 * Fetch the list of Process Unit Master according to the Pagination and Quick
+	 * Finder Specified
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	Object getProcessUnitList(RequestBO requestFilter, int page, int limit);
 
 }

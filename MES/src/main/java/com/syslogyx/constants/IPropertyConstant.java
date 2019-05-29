@@ -1,7 +1,5 @@
 package com.syslogyx.constants;
 
-import javax.persistence.metamodel.SingularAttribute;
-
 /**
  * Constant to define all properties in Entity
  * 
@@ -35,9 +33,6 @@ public interface IPropertyConstant {
 	String CAPACITY_MAX = "capacity_max";
 	String PRIORITY_LEVEL = "priority_level";
 
-	// ProcessUnit Constants
-	String PU_ID = "id";
-
 	// DPR Target Constants
 	String PRODUCT = "product";
 	String BUSINESS_PLAN_TARGET = "business_plan_target";
@@ -46,16 +41,21 @@ public interface IPropertyConstant {
 	String PRODUCT_FORM = "product_form";
 	String AFTER_PROCESS_UNIT = "after_process_unit";
 	String BEFORE_PROCESS_UNIT = "before_process_unit";
-	
-	//Process Type Constants
+
+	// Process Type Constants
 	String PT_ID = "id";
-	
-	//Process Family Constants
+
+	// Process Family Constants
 	String PROCESS_FAMILY = "process_family";
 	String PROCESS_TYPE = "process_type";
 	String BUCKET = "bucket";
 	String PRIORITY = "priority";
-	
-	
+
+	// Process Unit Constants
+	String COST_CENTER = "cost_center";
+	String CAPACITY = "capacity";
+	String YIELD = "yield";
+	String CONST_SETUP_TIME = "const_setup_time";
+	String OSP_IDENTIFIER = "osp_identifier";
 
 }

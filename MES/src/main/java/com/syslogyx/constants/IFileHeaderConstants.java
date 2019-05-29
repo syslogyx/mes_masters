@@ -50,6 +50,13 @@ public interface IFileHeaderConstants {
 	public String PROCESS_TYPE = "Process Type";
 	public String BUCKET = "Bucket";
 
+	// Process Unit Headers
+	public String COST_CENTER = "Cost Center";
+	public String CAPACITY = "Capacity";
+	public String CONST_SETUP_TIME = "Const. Setup Time";
+	public String YEILD = "Yeild";
+	public String OSP_IDENTIFIER = "OSP Identifier";
+
 	/**
 	 * Prepare the List of Headers used in Code Group Excel and PDF
 	 * 
@@ -116,7 +123,32 @@ public interface IFileHeaderConstants {
 		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_FAMILY))
 			return getProcessFamilyHeaders();
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_UNIT))
+			return getProcessUnitHeaders();
+
 		return null;
+	}
+
+	/**
+	 * Prepare the list of Headers used in Process Unit Excel and PDF
+	 * 
+	 * @return
+	 */
+	public static List<String> getProcessUnitHeaders() {
+		List<String> headers = new ArrayList<>();
+		headers.add(SR_NO);
+		headers.add(PROCESS_UNIT);
+		headers.add(PROCESS_FAMILY);
+		headers.add(COST_CENTER);
+		headers.add(CAPACITY);
+		headers.add(CONST_SETUP_TIME);
+		headers.add(YEILD);
+		headers.add(OSP_IDENTIFIER);
+		headers.add(UPDATED_BY);
+		headers.add(LAST_UPDATED);
+		headers.add(STATUS);
+
+		return headers;
 	}
 
 	/**

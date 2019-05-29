@@ -100,5 +100,26 @@ public class BaseService {
 		}
 		return null;
 	}
+	
+	/**
+	 * Return the Text of OSP according to it's value
+	 * 
+	 * @param osp
+	 *            : osp value in integer
+	 * @return
+	 */
+	public String getOSPString(int osp) {
+		switch (osp) {
+		case IConstants.OSP_IDENTIFIER.YES:
+			return "YES";
+
+		case IConstants.OSP_IDENTIFIER.NO:
+			return "NO";
+
+		default:
+			break;
+		}
+		return null;
+	}
 
 }

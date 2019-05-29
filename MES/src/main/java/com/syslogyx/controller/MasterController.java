@@ -370,34 +370,6 @@ public class MasterController extends BaseController {
 	}
 
 	/**
-	 * This method is used for Fetching Elongation list with Pagination and Quick
-	 * filter
-	 * 
-	 * @param page
-	 * @param limit
-	 * @param requestFilter
-	 * @return
-	 */
-	@PostMapping(value = INetworkConstants.IURLConstants.ELONGATION + INetworkConstants.IURLConstants.LIST)
-	public ResponseEntity<BaseResponseBO> getElongationList(
-			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
-			@RequestParam(name = INetworkConstants.IRequestParamConstants.LIMIT, required = false, defaultValue = "-1") int limit,
-			@RequestBody RequestBO requestFilter) {
-		try {
-
-			Object dprTargetList = iMasterService.getElongationList(requestFilter, page, limit);
-
-			if (dprTargetList != null)
-				return getResponseModel(dprTargetList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
-
-			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
-		}
-	}
-
-	/**
 	 * For store Process Family data to db
 	 * 
 	 * @param processFamilyDO
@@ -461,6 +433,33 @@ public class MasterController extends BaseController {
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * For fetching Process Unit list with Pagination and Quick filter
+	 * 
+	 * @param page
+	 * @param limit
+	 * @param requestFilter
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.PROCESS_UNIT + INetworkConstants.IURLConstants.LIST)
+	public ResponseEntity<BaseResponseBO> getProcessUnitList(
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.LIMIT, required = false, defaultValue = "-1") int limit,
+			@RequestBody RequestBO requestFilter) {
+		try {
+
+			Object processUnitList = iMasterService.getProcessUnitList(requestFilter, page, limit);
+
+			if (processUnitList != null)
+				return getResponseModel(processUnitList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+
+			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);

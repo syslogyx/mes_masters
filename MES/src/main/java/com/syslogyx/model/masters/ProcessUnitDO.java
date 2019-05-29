@@ -85,10 +85,29 @@ public class ProcessUnitDO {
 	private int process_family_id;
 
 	@Transient
-	private int process_family_name;
+	private String process_family_name;
 
 	@Transient
-	private int updated_by_name;
+	private String updated_by_name;
+
+	public ProcessUnitDO(int id, String unit, String cost_center, String capacity, String const_setup_time,
+			String yield, int osp_identifier, Date updated, int status, String updated_by_name,
+			Integer process_family_id, String process_family_name) {
+		this.id = id;
+		this.unit = unit;
+		this.cost_center = cost_center;
+		this.capacity = capacity;
+		this.const_setup_time = const_setup_time;
+		this.yield = yield;
+		this.osp_identifier = osp_identifier;
+		this.updated = updated;
+		this.status = status;
+		this.updated_by_name = updated_by_name;
+
+		if (process_family_id != null)
+			this.process_family_id = process_family_id;
+		this.process_family_name = process_family_name;
+	}
 
 	public int getId() {
 		return id;
@@ -202,11 +221,11 @@ public class ProcessUnitDO {
 		this.process_family_id = process_family_id;
 	}
 
-	public int getProcess_family_name() {
+	public String getProcess_family_name() {
 		return process_family_name;
 	}
 
-	public int getUpdated_by_name() {
+	public String getUpdated_by_name() {
 		return updated_by_name;
 	}
 
