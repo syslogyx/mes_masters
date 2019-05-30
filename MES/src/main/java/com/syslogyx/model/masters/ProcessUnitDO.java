@@ -90,6 +90,9 @@ public class ProcessUnitDO {
 	@Transient
 	private String updated_by_name;
 
+	public ProcessUnitDO() {
+	}
+
 	public ProcessUnitDO(int id, String unit, String cost_center, String capacity, String const_setup_time,
 			String yield, int osp_identifier, Date updated, int status, String updated_by_name,
 			Integer process_family_id, String process_family_name) {
