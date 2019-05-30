@@ -13,7 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -22,34 +21,20 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.syslogyx.model.user.UserDO;
 
-/**
- * This Class store Product Definition Data
- * 
- * @author namrata
- *
- */
 @Entity
-@Table(name = "product_definition")
+@Table(name = "product_form")
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductDefDO {
+public class ProductFormDO {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "productDef_Sequence")
-	@SequenceGenerator(name = "productDef_Sequence", sequenceName = "PRODUCTDEF_SEQ", allocationSize = 1)
-	@Column(name = "pd_id")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "productform_Sequence")
+	@SequenceGenerator(name = "productform_Sequence", sequenceName = "PRODUCTFORM_SEQ", allocationSize = 1)
+	@Column(name = "pf_id")
 	private int id;
 
-	@Column(name = "product")
-	private String product;
-
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "product_type_id")
-	private ProductTypeDO product_type;
-
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "product_form_id")
-	private ProductFormDO product_form;
+	@Column(name = "name")
+	private String name;
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by", updatable = false)
@@ -70,12 +55,6 @@ public class ProductDefDO {
 	@Column(name = "status")
 	public int status;
 
-	@Transient
-	private int product_type_id;
-
-	@Transient
-	private int product_form_id;
-	
 	public int getId() {
 		return id;
 	}
@@ -84,28 +63,12 @@ public class ProductDefDO {
 		this.id = id;
 	}
 
-	public String getProduct() {
-		return product;
+	public String getName() {
+		return name;
 	}
 
-	public void setProduct(String product) {
-		this.product = product;
-	}
-
-	public ProductFormDO getProduct_form() {
-		return product_form;
-	}
-
-	public void setProduct_form(ProductFormDO product_form) {
-		this.product_form = product_form;
-	}
-
-	public ProductTypeDO getProduct_type() {
-		return product_type;
-	}
-
-	public void setProduct_type(ProductTypeDO product_type) {
-		this.product_type = product_type;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public UserDO getCreated_by() {
@@ -147,21 +110,7 @@ public class ProductDefDO {
 	public void setStatus(int status) {
 		this.status = status;
 	}
-
-	public int getProduct_type_id() {
-		return product_type_id;
-	}
-
-	public void setProduct_type_id(int product_type_id) {
-		this.product_type_id = product_type_id;
-	}
-
-	public int getProduct_form_id() {
-		return product_form_id;
-	}
-
-	public void setProduct_form_id(int product_form_id) {
-		this.product_form_id = product_form_id;
-	}
+	
+	
 
 }

@@ -1,5 +1,7 @@
 package com.syslogyx.constants;
 
+import javax.persistence.metamodel.SingularAttribute;
+
 /**
  * Constant to define all properties in Entity
  * 
@@ -57,5 +59,11 @@ public interface IPropertyConstant {
 	String YIELD = "yield";
 	String CONST_SETUP_TIME = "const_setup_time";
 	String OSP_IDENTIFIER = "osp_identifier";
+	
+	//Lead Time Constants
+	String IDEAL_TIME_MIN = "ideal_time_min";
+	String HANDLE_TIME_MIN = "handle_time_min";
+	String IDEAL_TIME_MAX = "ideal_time_max";
+	String HANDLE_TIME_MAX = "handle_time_max";
 
 }

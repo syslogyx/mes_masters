@@ -48,6 +48,18 @@ public class LeadTimeDO {
 	@JoinColumn(name = "before_process_unit_id")
 	private ProcessUnitDO before_process_unit;
 
+	@Column(name = "idle_time_min")
+	private String ideal_time_min;
+
+	@Column(name = "idle_time_max")
+	private String ideal_time_max;
+
+	@Column(name = "handle_time_min")
+	private String handle_time_min;
+
+	@Column(name = "handle_time_max")
+	private String handle_time_max;
+
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by", updatable = false)
 	private UserDO created_by;
@@ -86,13 +98,19 @@ public class LeadTimeDO {
 
 	}
 
-	public LeadTimeDO(int id, Integer before_pu_id, String before_unit, Integer after_pu_id, String after_unit,
+	public LeadTimeDO(int id, String ideal_time_min, String ideal_time_max, String handle_time_min,
+			String handle_time_max, Integer before_pu_id, String before_unit, Integer after_pu_id, String after_unit,
 			String username, Date updated, int status) {
 
 		this.id = id;
+		this.ideal_time_min = ideal_time_min;
+		this.ideal_time_max = ideal_time_max;
+		this.handle_time_min = handle_time_min;
+		this.handle_time_max = handle_time_max;
 
 		if (before_pu_id != null)
 			this.before_process_unit_id = before_pu_id;
+		
 		this.before_process_unit_name = before_unit;
 
 		if (after_pu_id != null)
@@ -205,6 +223,38 @@ public class LeadTimeDO {
 
 	public void setBefore_process_unit_name(String before_process_unit_name) {
 		this.before_process_unit_name = before_process_unit_name;
+	}
+
+	public String getIdle_time_min() {
+		return ideal_time_min;
+	}
+
+	public void setIdle_time_min(String idle_time_min) {
+		this.ideal_time_min = idle_time_min;
+	}
+
+	public String getIdle_time_max() {
+		return ideal_time_max;
+	}
+
+	public void setIdle_time_max(String idle_time_max) {
+		this.ideal_time_max = idle_time_max;
+	}
+
+	public String getHandle_time_min() {
+		return handle_time_min;
+	}
+
+	public void setHandle_time_min(String handle_time_min) {
+		this.handle_time_min = handle_time_min;
+	}
+
+	public String getHandle_time_max() {
+		return handle_time_max;
+	}
+
+	public void setHandle_time_max(String handle_time_max) {
+		this.handle_time_max = handle_time_max;
 	}
 
 }

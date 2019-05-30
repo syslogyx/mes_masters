@@ -41,5 +41,8 @@ public interface IResponseMessages {
 	String INVALID_OSP_IDENTIFIER = "Invalid OSP Identifier.";
 	String INALID_DATETIME_FORMAT = "Invalid Date / Time Format.";
 	String EXISTING_PROCESS_UNIT = "This Process Unit already exists.";
+	String INVALID_PRODUCT_DEFINATION_ID = "Invalid Product Defination Id";
+	String INVALID_PRODUCT_TYPE_ID = "Invalid Product Type Id";
+	String INVALID_PRODUCT_FORM_ID = "Invalid Product Form Id";
 
 }

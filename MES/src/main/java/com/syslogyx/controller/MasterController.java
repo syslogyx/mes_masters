@@ -23,6 +23,7 @@ import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.LeadTimeDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
+import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.service.master.IMasterService;
 
 /**
@@ -460,6 +461,28 @@ public class MasterController extends BaseController {
 				return getResponseModel(processUnitList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
 
 			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * This method is used to save ProductDef to the db
+	 * 
+	 * @param productDefDO:
+	 *            Containts Product Data provided by users
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.PRODUCT + INetworkConstants.IURLConstants.SAVE)
+	public ResponseEntity<BaseResponseBO> createProduct(@RequestBody ProductDefDO productDefDO) {
+		try {
+
+			iMasterService.createProduct(productDefDO);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);

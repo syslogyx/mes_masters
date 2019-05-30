@@ -9,6 +9,7 @@ import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.LeadTimeDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
+import com.syslogyx.model.masters.ProductDefDO;
 
 /**
  * This class is used for MasterService business logic related to Master module
@@ -203,5 +204,15 @@ public interface IMasterService {
 	 * @return
 	 */
 	Object getProcessUnitList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Validate and Store the Product related data
+	 * 
+	 * @param productDefDO
+	 *            : Object containing product details input by user
+	 * @throws ApplicationException
+	 * @throws Exception
+	 */
+	void createProduct(ProductDefDO productDefDO) throws ApplicationException, Exception;
 
 }

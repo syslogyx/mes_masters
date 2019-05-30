@@ -56,6 +56,12 @@ public interface IFileHeaderConstants {
 	public String CONST_SETUP_TIME = "Const. Setup Time";
 	public String YEILD = "Yeild";
 	public String OSP_IDENTIFIER = "OSP Identifier";
+	
+	//Lead Time Headers
+	public String IDEAL_TIME_MIN = "Ideal Time Min";
+	public String IDEAL_TIME_MAX = "Ideal Time Max";
+	public String HANDLE_TIME_MIN = "Handle Time Min";
+	public String HANDLE_TIME_MAX = "Handle Time Max";
 
 	/**
 	 * Prepare the List of Headers used in Code Group Excel and PDF
@@ -219,6 +225,10 @@ public interface IFileHeaderConstants {
 		headers.add(SR_NO);
 		headers.add(AFTER_PROCESS_UNIT);
 		headers.add(BEFORE_PROCESS_UNIT);
+		headers.add(IDEAL_TIME_MIN);
+		headers.add(IDEAL_TIME_MAX);
+		headers.add(HANDLE_TIME_MIN);
+		headers.add(HANDLE_TIME_MAX);
 		headers.add(UPDATED_BY);
 		headers.add(LAST_UPDATED);
 		headers.add(STATUS);

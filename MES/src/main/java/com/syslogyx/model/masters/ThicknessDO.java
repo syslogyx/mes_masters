@@ -45,11 +45,11 @@ public class ThicknessDO {
 	@Column(name = "thickness_max")
 	private float thickness_max;
 
-	@Column(name = "total_plus")
-	private float total_plus;
+	@Column(name = "tolerance_plus")
+	private float tolerance_plus;
 
-	@Column(name = "total_minus")
-	private float total_minus;
+	@Column(name = "tolerance_minus")
+	private float tolerance_minus;
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by", updatable = false)
@@ -134,20 +134,22 @@ public class ThicknessDO {
 		this.thickness_max = thickness_max;
 	}
 
-	public float getTotal_plus() {
-		return total_plus;
+	public float getTolerance_plus() {
+		return tolerance_plus;
 	}
 
-	public void setTotal_plus(float total_plus) {
-		this.total_plus = total_plus;
+	public void setTolerance_plus(float tolerance_plus) {
+		this.tolerance_plus = tolerance_plus;
 	}
 
-	public float getTotal_minus() {
-		return total_minus;
+	public float getTolerance_minus() {
+		return tolerance_minus;
 	}
 
-	public void setTotal_minus(float total_minus) {
-		this.total_minus = total_minus;
+	public void setTolerance_minus(float tolerance_minus) {
+		this.tolerance_minus = tolerance_minus;
 	}
+
+	
 
 }

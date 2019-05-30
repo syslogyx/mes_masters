@@ -33,6 +33,8 @@ import com.syslogyx.model.masters.ProcessFamilyDO;
 import com.syslogyx.model.masters.ProcessTypeDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
+import com.syslogyx.model.masters.ProductFormDO;
+import com.syslogyx.model.masters.ProductTypeDO;
 import com.syslogyx.model.user.UserDO;
 import com.syslogyx.service.BaseService;
 import com.syslogyx.utility.Utils;
@@ -341,10 +343,14 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			row.createCell(0).setCellValue(index + 1);
 			row.createCell(1).setCellValue(leadTimeDO.getBefore_process_unit_name());
 			row.createCell(2).setCellValue(leadTimeDO.getAfter_process_unit_name());
-			row.createCell(3).setCellValue(leadTimeDO.getUpdated_by_name());
-			row.createCell(4).setCellValue(
+			row.createCell(3).setCellValue(leadTimeDO.getIdle_time_min());
+			row.createCell(4).setCellValue(leadTimeDO.getIdle_time_max());
+			row.createCell(5).setCellValue(leadTimeDO.getHandle_time_min());
+			row.createCell(6).setCellValue(leadTimeDO.getHandle_time_max());
+			row.createCell(7).setCellValue(leadTimeDO.getUpdated_by_name());
+			row.createCell(8).setCellValue(
 					Utils.getFormatedDate(leadTimeDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
-			row.createCell(5).setCellValue(getStatusString(leadTimeDO.getStatus()));
+			row.createCell(9).setCellValue(getStatusString(leadTimeDO.getStatus()));
 		}
 
 	}
@@ -487,7 +493,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return new float[] { 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.LEAD_TIME))
-			return new float[] { 1, 1, 1, 1, 1, 1 };
+			return new float[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.ELONGATION))
 			return new float[] { 1, 1, 1, 1, 2, 1 };
@@ -605,6 +611,10 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			table.addCell(index + 1 + "");
 			table.addCell(leadTimeDO.getAfter_process_unit_name());
 			table.addCell(leadTimeDO.getBefore_process_unit_name());
+			table.addCell(leadTimeDO.getIdle_time_min());
+			table.addCell(leadTimeDO.getIdle_time_max());
+			table.addCell(leadTimeDO.getHandle_time_min());
+			table.addCell(leadTimeDO.getHandle_time_max());
 			table.addCell(leadTimeDO.getUpdated_by_name());
 			table.addCell(
 					Utils.getFormatedDate(leadTimeDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
@@ -795,6 +805,10 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		int after_process_unit_id = leadTimeDO.getAfter_process_unit_id();
 		int before_process_unit_id = leadTimeDO.getBefore_process_unit_id();
+		String idle_time_min = leadTimeDO.getIdle_time_min();
+		String idle_time_max = leadTimeDO.getIdle_time_max();
+		String handle_time_min = leadTimeDO.getHandle_time_min();
+		String handle_time_max = leadTimeDO.getHandle_time_max();
 
 		// validate lead_time_id
 		masterDAO.validateEntityById(LeadTimeDO.class, leadTimeId, IResponseMessages.INVALID_LEAD_TIME_ID);
@@ -807,6 +821,11 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		leadTimeDO.setAfter_process_unit(after_process_unit);
 		leadTimeDO.setBefore_process_unit(before_process_unit);
+
+		Utils.validateDateFormat(idle_time_min, IConstants.DATE_TIME_FORMAT.HH_MM_SS);
+		Utils.validateDateFormat(idle_time_max, IConstants.DATE_TIME_FORMAT.HH_MM_SS);
+		Utils.validateDateFormat(handle_time_min, IConstants.DATE_TIME_FORMAT.HH_MM_SS);
+		Utils.validateDateFormat(handle_time_max, IConstants.DATE_TIME_FORMAT.HH_MM_SS);
 
 		UserDO loggedInUser = getLoggedInUser();
 		leadTimeDO.setCreated_by(loggedInUser);
@@ -983,6 +1002,36 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		}
 
 		return null;
+	}
+
+	@Override
+	public void createProduct(ProductDefDO productDefDO) throws ApplicationException, Exception {
+
+		int product_id = productDefDO.getId();
+		int product_type_id = productDefDO.getProduct_type_id();
+		int product_form_id = productDefDO.getProduct_form_id();
+		
+		// validate the product_id in update scenario
+		masterDAO.validateEntityById(ProductDefDO.class, product_id, IResponseMessages.INVALID_PRODUCT_DEFINATION_ID);
+		
+		// validate and Set Product Type
+		ProductTypeDO productTypeDO = (ProductTypeDO) masterDAO.validateEntityById(ProductTypeDO.class,
+				product_type_id, IResponseMessages.INVALID_PRODUCT_TYPE_ID);
+		
+		// validate and Set Product Form
+		ProductFormDO productFormDO = (ProductFormDO) masterDAO.validateEntityById(ProductFormDO.class,
+				product_form_id, IResponseMessages.INVALID_PRODUCT_FORM_ID);
+		
+		productDefDO.setProduct_type(productTypeDO);
+		productDefDO.setProduct_form(productFormDO);
+		
+		UserDO loggedInUser = getLoggedInUser();
+		productDefDO.setStatus(IConstants.STATUS_ACTIVE);
+		productDefDO.setCreated_by(loggedInUser);
+		productDefDO.setUpdated_by(loggedInUser);
+
+		masterDAO.mergeEntity(productDefDO);
+		
 	}
 
 }

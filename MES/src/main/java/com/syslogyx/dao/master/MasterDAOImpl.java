@@ -58,7 +58,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		CriteriaQuery<CodeGroupDO> createQuery = builder.createQuery(CodeGroupDO.class);
 		Root<CodeGroupDO> codeGroupRoot = createQuery.from(CodeGroupDO.class);
 		Join<CodeGroupDO, UserDO> fetch = codeGroupRoot.join(IPropertyConstant.UPDATED_BY);
-		createQuery.select(codeGroupRoot).orderBy(builder.asc(codeGroupRoot.get("group_desc")));
+		createQuery.select(codeGroupRoot).orderBy(builder.asc(codeGroupRoot.get(IPropertyConstant.GROUP_DESC)));
 		// createQuery.select(codeGroupRoot).orderBy(builder.desc(codeGroupRoot.get("group_code")));
 
 		// set the list of properties whose values are required to fetch
@@ -383,6 +383,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		return null;
 	}
 
+	
 	@Override
 	public List<LeadTimeDO> getLeadTimeList(RequestBO requestFilter, int page, int limit) {
 
@@ -394,11 +395,16 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 				JoinType.LEFT);
 		Join<LeadTimeDO, ProcessUnitDO> beforeUnitFetch = leadTimeRoot.join(IPropertyConstant.BEFORE_PROCESS_UNIT,
 				JoinType.LEFT);
-		createQuery.select(leadTimeRoot).orderBy(builder.asc(afterUnitFetch.get("unit")),
-				builder.desc(beforeUnitFetch.get("unit")));
+		
+		createQuery.select(leadTimeRoot).orderBy(builder.asc(leadTimeRoot.get(IPropertyConstant.ID)));
+		
+//		createQuery.select(leadTimeRoot).orderBy(builder.asc(afterUnitFetch.get("unit")),
+//				builder.desc(beforeUnitFetch.get("unit")));
 
 		CompoundSelection<LeadTimeDO> construct = builder.construct(LeadTimeDO.class,
-				leadTimeRoot.get(IPropertyConstant.ID), beforeUnitFetch.get(IPropertyConstant.ID),
+				leadTimeRoot.get(IPropertyConstant.ID), leadTimeRoot.get(IPropertyConstant.IDEAL_TIME_MIN),
+				leadTimeRoot.get(IPropertyConstant.IDEAL_TIME_MAX), leadTimeRoot.get(IPropertyConstant.HANDLE_TIME_MIN),
+				leadTimeRoot.get(IPropertyConstant.HANDLE_TIME_MAX), beforeUnitFetch.get(IPropertyConstant.ID),
 				beforeUnitFetch.get(IPropertyConstant.UNIT), afterUnitFetch.get(IPropertyConstant.ID),
 				afterUnitFetch.get(IPropertyConstant.UNIT), fetch.get(IPropertyConstant.USERNAME),
 				leadTimeRoot.get(IPropertyConstant.UPDATED), leadTimeRoot.get(IPropertyConstant.STATUS));
@@ -449,6 +455,14 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 						builder.like(afterUnitFetch.get(IPropertyConstant.UNIT),
 								"%" + requestFilter.getQuick_finder() + "%"),
 						builder.like(beforeUnitFetch.get(IPropertyConstant.UNIT),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(leadTimeRoot.get(IPropertyConstant.IDEAL_TIME_MIN),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(leadTimeRoot.get(IPropertyConstant.IDEAL_TIME_MAX),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(leadTimeRoot.get(IPropertyConstant.HANDLE_TIME_MIN),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(leadTimeRoot.get(IPropertyConstant.HANDLE_TIME_MAX),
 								"%" + requestFilter.getQuick_finder() + "%")));
 			}
 
@@ -469,8 +483,8 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
 		Root<LeadTimeDO> leadTimeRoot = createQuery.from(LeadTimeDO.class);
-		Join<LeadTimeDO, ProcessUnitDO> afterUnitFetch = leadTimeRoot.join(IPropertyConstant.AFTER_PROCESS_UNIT);
-		Join<LeadTimeDO, ProcessUnitDO> beforeUnitFetch = leadTimeRoot.join(IPropertyConstant.BEFORE_PROCESS_UNIT);
+		Join<LeadTimeDO, ProcessUnitDO> afterUnitFetch = leadTimeRoot.join(IPropertyConstant.AFTER_PROCESS_UNIT, JoinType.LEFT);
+		Join<LeadTimeDO, ProcessUnitDO> beforeUnitFetch = leadTimeRoot.join(IPropertyConstant.BEFORE_PROCESS_UNIT, JoinType.LEFT);
 
 		createQuery.select(builder.count(leadTimeRoot));
 
