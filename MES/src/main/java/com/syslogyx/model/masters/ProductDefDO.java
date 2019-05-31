@@ -74,8 +74,42 @@ public class ProductDefDO {
 	private int product_type_id;
 
 	@Transient
+	private String product_type_name;
+
+	@Transient
 	private int product_form_id;
-	
+
+	@Transient
+	private String product_form_name;
+
+	@Transient
+	private String updated_by_name;
+
+	public ProductDefDO() {
+
+	}
+
+	public ProductDefDO(int id, String product, String updated_by_id, Date updated, int status, Integer product_type_id,
+			String product_type_name, Integer product_form_id, String product_form_name) {
+
+		this.id = id;
+		this.product = product;
+		this.updated_by_name = updated_by_id;
+		this.updated = updated;
+		this.status = status;
+
+		if (product_type_id != null)
+			this.product_type_id = product_type_id;
+
+		this.product_type_name = product_type_name;
+
+		if (product_form_id != null)
+			this.product_form_id = product_form_id;
+
+		this.product_form_name = product_form_name;
+
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -162,6 +196,30 @@ public class ProductDefDO {
 
 	public void setProduct_form_id(int product_form_id) {
 		this.product_form_id = product_form_id;
+	}
+
+	public String getProduct_type_name() {
+		return product_type_name;
+	}
+
+	public void setProduct_type_name(String product_type_name) {
+		this.product_type_name = product_type_name;
+	}
+
+	public String getProduct_form_name() {
+		return product_form_name;
+	}
+
+	public void setProduct_form_name(String product_form_name) {
+		this.product_form_name = product_form_name;
+	}
+
+	public String getUpdated_by_name() {
+		return updated_by_name;
+	}
+
+	public void setUpdated_by_name(String updated_by_name) {
+		this.updated_by_name = updated_by_name;
 	}
 
 }

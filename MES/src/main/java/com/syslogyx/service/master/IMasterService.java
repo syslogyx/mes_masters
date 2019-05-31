@@ -1,5 +1,6 @@
 package com.syslogyx.service.master;
 
+import com.itextpdf.text.DocumentException;
 import com.syslogyx.bo.RequestBO;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.masters.CampaignDO;
@@ -120,8 +121,9 @@ public interface IMasterService {
 	 * @param master_name
 	 * @return
 	 * @throws ApplicationException
+	 * @throws DocumentException 
 	 */
-	String exportListToPDF(String master_name) throws ApplicationException;
+	String exportListToPDF(String master_name) throws ApplicationException, DocumentException;
 
 	/**
 	 * This Method is used to validation on LeadTime and Save LeadTime Data in db
@@ -214,5 +216,16 @@ public interface IMasterService {
 	 * @throws Exception
 	 */
 	void createProduct(ProductDefDO productDefDO) throws ApplicationException, Exception;
+
+	/**
+	 * Fetch the list of Product Definition Master according to the Pagination and
+	 * Quick Finder Specified
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	Object getProductList(RequestBO requestFilter, int page, int limit);
 
 }

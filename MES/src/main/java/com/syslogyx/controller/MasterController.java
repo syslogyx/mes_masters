@@ -489,4 +489,32 @@ public class MasterController extends BaseController {
 		}
 	}
 
+	/**
+	 * Fetch the Product Definition List according to the Pagination and Quick
+	 * Finder
+	 * 
+	 * @param page
+	 * @param limit
+	 * @param requestFilter
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.PRODUCT + INetworkConstants.IURLConstants.LIST)
+	public ResponseEntity<BaseResponseBO> getProductList(
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.LIMIT, required = false, defaultValue = "-1") int limit,
+			@RequestBody RequestBO requestFilter) {
+		try {
+
+			Object productList = iMasterService.getProductList(requestFilter, page, limit);
+
+			if (productList != null)
+				return getResponseModel(productList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+
+			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
 }

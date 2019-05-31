@@ -12,6 +12,7 @@ import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.LeadTimeDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
+import com.syslogyx.model.masters.ProductDefDO;
 
 /**
  * This interface is used for communicating with db
@@ -159,5 +160,23 @@ public interface IMasterDAO extends IBaseDAO {
 	 * @return
 	 */
 	long getProcessUnitListSize(RequestBO requestFilter);
+
+	/**
+	 * Fetch the Product Definition list according to the filter and Pagination
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	List<ProductDefDO> getProductList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Fetch the Product Definition List Size according to the Filter
+	 * 
+	 * @param requestFilter
+	 * @return
+	 */
+	long getProductSize(RequestBO requestFilter);
 
 }

@@ -1,6 +1,5 @@
 package com.syslogyx.constants;
 
-import javax.persistence.metamodel.SingularAttribute;
 
 /**
  * Constant to define all properties in Entity
@@ -46,6 +45,7 @@ public interface IPropertyConstant {
 
 	// Process Type Constants
 	String PT_ID = "id";
+	
 
 	// Process Family Constants
 	String PROCESS_FAMILY = "process_family";
@@ -65,5 +65,8 @@ public interface IPropertyConstant {
 	String HANDLE_TIME_MIN = "handle_time_min";
 	String IDEAL_TIME_MAX = "ideal_time_max";
 	String HANDLE_TIME_MAX = "handle_time_max";
+	
+	//Product Definition Constants
+	String PRODUCT_TYPE = "product_type";
 
 }

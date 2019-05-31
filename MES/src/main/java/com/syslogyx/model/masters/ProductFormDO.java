@@ -21,6 +21,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.syslogyx.model.user.UserDO;
 
+/**
+ * This class store Product Form data
+ * 
+ * @author Palash
+ *
+ */
 @Entity
 @Table(name = "product_form")
 @EntityListeners(AuditingEntityListener.class)
@@ -110,7 +116,5 @@ public class ProductFormDO {
 	public void setStatus(int status) {
 		this.status = status;
 	}
-	
-	
 
 }

@@ -35,6 +35,8 @@ import com.syslogyx.model.masters.ProcessFamilyDO;
 import com.syslogyx.model.masters.ProcessTypeDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
+import com.syslogyx.model.masters.ProductFormDO;
+import com.syslogyx.model.masters.ProductTypeDO;
 import com.syslogyx.model.user.UserDO;
 
 /**
@@ -167,6 +169,9 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_UNIT))
 			return getProcessUnitList(null, IConstants.DEFAULT, IConstants.DEFAULT);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.PRODUCT))
+			return getProductList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
 		throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
@@ -383,7 +388,6 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		return null;
 	}
 
-	
 	@Override
 	public List<LeadTimeDO> getLeadTimeList(RequestBO requestFilter, int page, int limit) {
 
@@ -395,11 +399,11 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 				JoinType.LEFT);
 		Join<LeadTimeDO, ProcessUnitDO> beforeUnitFetch = leadTimeRoot.join(IPropertyConstant.BEFORE_PROCESS_UNIT,
 				JoinType.LEFT);
-		
+
 		createQuery.select(leadTimeRoot).orderBy(builder.asc(leadTimeRoot.get(IPropertyConstant.ID)));
-		
-//		createQuery.select(leadTimeRoot).orderBy(builder.asc(afterUnitFetch.get("unit")),
-//				builder.desc(beforeUnitFetch.get("unit")));
+
+		// createQuery.select(leadTimeRoot).orderBy(builder.asc(afterUnitFetch.get("unit")),
+		// builder.desc(beforeUnitFetch.get("unit")));
 
 		CompoundSelection<LeadTimeDO> construct = builder.construct(LeadTimeDO.class,
 				leadTimeRoot.get(IPropertyConstant.ID), leadTimeRoot.get(IPropertyConstant.IDEAL_TIME_MIN),
@@ -483,8 +487,10 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
 		Root<LeadTimeDO> leadTimeRoot = createQuery.from(LeadTimeDO.class);
-		Join<LeadTimeDO, ProcessUnitDO> afterUnitFetch = leadTimeRoot.join(IPropertyConstant.AFTER_PROCESS_UNIT, JoinType.LEFT);
-		Join<LeadTimeDO, ProcessUnitDO> beforeUnitFetch = leadTimeRoot.join(IPropertyConstant.BEFORE_PROCESS_UNIT, JoinType.LEFT);
+		Join<LeadTimeDO, ProcessUnitDO> afterUnitFetch = leadTimeRoot.join(IPropertyConstant.AFTER_PROCESS_UNIT,
+				JoinType.LEFT);
+		Join<LeadTimeDO, ProcessUnitDO> beforeUnitFetch = leadTimeRoot.join(IPropertyConstant.BEFORE_PROCESS_UNIT,
+				JoinType.LEFT);
 
 		createQuery.select(builder.count(leadTimeRoot));
 
@@ -809,6 +815,121 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		createQuery.select(builder.count(processUnitRoot));
 
 		Object[] queryResults = getConditionsForProcessUnit(requestFilter, builder, processUnitRoot, false);
+
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+
+			Query query = entityManager.createQuery(createQuery);
+			return (long) query.getSingleResult();
+		}
+		return IConstants.VALUE_ZERO;
+	}
+
+	@Override
+	public List<ProductDefDO> getProductList(RequestBO requestFilter, int page, int limit) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<ProductDefDO> createQuery = builder.createQuery(ProductDefDO.class);
+		Root<ProductDefDO> productRoot = createQuery.from(ProductDefDO.class);
+
+		Object[] queryResults = getConditionsForProductDefinition(requestFilter, builder, productRoot, true);
+
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+
+			Query query = entityManager
+					.createQuery(createQuery.select((Selection<? extends ProductDefDO>) queryResults[1]));
+
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				int start_index = IConstants.VALUE_ZERO;
+				if (page > 1) {
+					page -= 1;
+					start_index = page * limit;
+				}
+
+				query.setFirstResult(start_index);
+				query.setMaxResults(limit);
+			}
+
+			return query.getResultList();
+		}
+		return null;
+	}
+
+	/**
+	 * Add filters to the Product Definition and Prepare the construct with list of
+	 * fields required in the response
+	 * 
+	 * @param requestFilter
+	 * @param builder
+	 * @param productRoot
+	 * @param prepareContruct
+	 * @return
+	 */
+	private Object[] getConditionsForProductDefinition(RequestBO requestFilter, CriteriaBuilder builder,
+			Root<ProductDefDO> productRoot, boolean prepareContruct) {
+
+		Object[] resultSet = new Object[2];
+
+		Join<ProductDefDO, UserDO> userFetch = productRoot.join(IPropertyConstant.UPDATED_BY);
+		Join<ProductDefDO, ProductTypeDO> productTypeFetch = productRoot.join(IPropertyConstant.PRODUCT_TYPE,
+				JoinType.LEFT);
+		Join<ProductDefDO, ProductFormDO> processFormFetch = productRoot.join(IPropertyConstant.PRODUCT_FORM,
+				JoinType.LEFT);
+
+		if (requestFilter != null) {
+			List<Predicate> conditions = new ArrayList<>();
+
+			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
+				conditions.add(builder.or(
+						builder.like(productRoot.get(IPropertyConstant.PRODUCT),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(productRoot.get(IPropertyConstant.PROCESS_TYPE),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(productRoot.get(IPropertyConstant.PRODUCT_FORM),
+								"%" + requestFilter.getQuick_finder() + "%")));
+			}
+
+			// add condition to restrict rows whose status is inactive
+			if (!requestFilter.isInclude_inactive_data()) {
+				conditions.add(builder.notEqual(productRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
+			}
+
+			resultSet[0] = conditions;
+		}
+
+		// add construct in case if the identifier is true to fetch the limited details
+		// from list
+		if (prepareContruct) {
+			CompoundSelection<ProductDefDO> construct = builder.construct(ProductDefDO.class,
+					productRoot.get(IPropertyConstant.ID), productRoot.get(IPropertyConstant.PRODUCT),
+					userFetch.get(IPropertyConstant.USERNAME), productRoot.get(IPropertyConstant.UPDATED),
+					productRoot.get(IPropertyConstant.STATUS), productTypeFetch.get(IPropertyConstant.ID),
+					productTypeFetch.get(IPropertyConstant.NAME), processFormFetch.get(IPropertyConstant.ID),
+					processFormFetch.get(IPropertyConstant.NAME));
+			resultSet[1] = construct;
+		}
+		return resultSet;
+	}
+
+	@Override
+	public long getProductSize(RequestBO requestFilter) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
+		Root<ProductDefDO> productRoot = createQuery.from(ProductDefDO.class);
+
+		createQuery.select(builder.count(productRoot));
+
+		Object[] queryResults = getConditionsForProductDefinition(requestFilter, builder, productRoot, false);
 
 		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
 			List<Predicate> conditions = (List<Predicate>) queryResults[0];

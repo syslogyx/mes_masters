@@ -62,6 +62,10 @@ public interface IFileHeaderConstants {
 	public String IDEAL_TIME_MAX = "Ideal Time Max";
 	public String HANDLE_TIME_MIN = "Handle Time Min";
 	public String HANDLE_TIME_MAX = "Handle Time Max";
+	
+	//Product Definition Headers
+	public String PRODUCT_TYPE = "Product Type";
+	public String PRODUCT_FORM = "Product Form";
 
 	/**
 	 * Prepare the List of Headers used in Code Group Excel and PDF
@@ -131,8 +135,25 @@ public interface IFileHeaderConstants {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_UNIT))
 			return getProcessUnitHeaders();
+		
+		else if (master_name.equals(IConstants.MASTERS_NAME.PRODUCT))
+			return getProductHeaders();
 
 		return null;
+	}
+
+	public static List<String> getProductHeaders() {
+		List<String> headers = new ArrayList<>();
+		headers.add(SR_NO);
+		headers.add(PRODUCT);
+		headers.add(PRODUCT_TYPE);
+		headers.add(PRODUCT_FORM);
+		headers.add(UPDATED_BY);
+		headers.add(LAST_UPDATED);
+		headers.add(STATUS);
+		
+
+		return headers;
 	}
 
 	/**

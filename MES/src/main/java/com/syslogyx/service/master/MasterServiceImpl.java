@@ -10,9 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Font.FontFamily;
 import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.syslogyx.bo.RequestBO;
@@ -275,6 +280,31 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_UNIT))
 			processExportingProcessUnitListExcel(sheet, mastersList);
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.PRODUCT))
+			processExportingProductListExcel(sheet, mastersList);
+	}
+
+	/**
+	 * Set the field value from ProductDefDO object to it's respected index number
+	 * in excel sheet
+	 * 
+	 * @param sheet
+	 * @param productDefinitionList
+	 */
+	private void processExportingProductListExcel(HSSFSheet sheet, List<ProductDefDO> productDefinitionList) {
+
+		for (int index = 0; index < productDefinitionList.size(); index++) {
+			ProductDefDO productDefDO = productDefinitionList.get(index);
+			HSSFRow row = sheet.createRow(index + 1);
+			row.createCell(0).setCellValue(index + 1);
+			row.createCell(1).setCellValue(productDefDO.getProduct());
+			row.createCell(2).setCellValue(productDefDO.getProduct_type_name());
+			row.createCell(3).setCellValue(productDefDO.getProduct_form_name());
+			row.createCell(4).setCellValue(productDefDO.getUpdated_by_name());
+			row.createCell(5).setCellValue(Utils.getFormatedDate(productDefDO.getUpdated(),
+					IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
+			row.createCell(6).setCellValue(getStatusString(productDefDO.getStatus()));
+		}
 	}
 
 	/**
@@ -454,7 +484,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		List mastersList = masterDAO.findMastersList(master_name);
 
 		if (mastersList != null && !mastersList.isEmpty()) {
-			Document document = new Document();
+			Document document = new Document(PageSize.A4);
 
 			PdfPTable table = new PdfPTable(setPDFwidth(master_name));
 
@@ -504,6 +534,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_UNIT))
 			return new float[] { 1, 1, 2, 1, 1, 1.5f, 1, 1, 1, 2, 1 };
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.PRODUCT))
+			return new float[] { 1, 1, 1, 1, 1, 1, 1 };
+
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
@@ -537,6 +570,37 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_UNIT))
 			processExportingProcessUnitListPDF(table, mastersList);
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.PRODUCT))
+			processExportingProductListPDF(table, mastersList);
+
+	}
+
+	/**
+	 * Set the field value from ProductDefDO object to it's respective index number
+	 * in the PDF Table
+	 * 
+	 * @param table
+	 * @param productDefinitionList
+	 */
+	private void processExportingProductListPDF(PdfPTable table, List<ProductDefDO> productDefinitionList) {
+
+		for (int index = 0; index < productDefinitionList.size(); index++) {
+			ProductDefDO productDefDO = productDefinitionList.get(index);
+
+			table.addCell(new Phrase(index + 1 + "", FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(new Phrase(productDefDO.getProduct(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(
+					new Phrase(productDefDO.getProduct_type_name(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(
+					new Phrase(productDefDO.getProduct_form_name(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(new Phrase(productDefDO.getUpdated_by_name(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(new Phrase(
+					Utils.getFormatedDate(productDefDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
+					FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(new Phrase(getStatusString(productDefDO.getStatus()),
+					FontFactory.getFont(FontFactory.HELVETICA, 7)));
+
+		}
 	}
 
 	/**
@@ -593,6 +657,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			table.addCell(Utils.getFormatedDate(processFamilyDO.getUpdated(),
 					IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
 			table.addCell(getStatusString(processFamilyDO.getStatus()));
+
 		}
 	}
 
@@ -766,6 +831,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return ProcessFamilyDO.class;
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.PROCESS_UNIT))
 			return ProcessFamilyDO.class;
+		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.PRODUCT))
+			return ProductDefDO.class;
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
@@ -1010,28 +1077,53 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		int product_id = productDefDO.getId();
 		int product_type_id = productDefDO.getProduct_type_id();
 		int product_form_id = productDefDO.getProduct_form_id();
-		
+		String product = productDefDO.getProduct();
+
 		// validate the product_id in update scenario
 		masterDAO.validateEntityById(ProductDefDO.class, product_id, IResponseMessages.INVALID_PRODUCT_DEFINATION_ID);
-		
+
+		// validate the Product Name if already exists in database or not
+		ProductDefDO existingProduct = (ProductDefDO) masterDAO.getEntityByPropertyName(ProductDefDO.class,
+				IPropertyConstant.PRODUCT, product);
+
+		if (existingProduct != null && existingProduct.getId() != product_id)
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.EXISTING_PRODUCT);
+
 		// validate and Set Product Type
-		ProductTypeDO productTypeDO = (ProductTypeDO) masterDAO.validateEntityById(ProductTypeDO.class,
-				product_type_id, IResponseMessages.INVALID_PRODUCT_TYPE_ID);
-		
+		ProductTypeDO productTypeDO = (ProductTypeDO) masterDAO.validateEntityById(ProductTypeDO.class, product_type_id,
+				IResponseMessages.INVALID_PRODUCT_TYPE_ID);
+
 		// validate and Set Product Form
-		ProductFormDO productFormDO = (ProductFormDO) masterDAO.validateEntityById(ProductFormDO.class,
-				product_form_id, IResponseMessages.INVALID_PRODUCT_FORM_ID);
-		
+		ProductFormDO productFormDO = (ProductFormDO) masterDAO.validateEntityById(ProductFormDO.class, product_form_id,
+				IResponseMessages.INVALID_PRODUCT_FORM_ID);
+
 		productDefDO.setProduct_type(productTypeDO);
 		productDefDO.setProduct_form(productFormDO);
-		
+
 		UserDO loggedInUser = getLoggedInUser();
 		productDefDO.setStatus(IConstants.STATUS_ACTIVE);
 		productDefDO.setCreated_by(loggedInUser);
 		productDefDO.setUpdated_by(loggedInUser);
 
 		masterDAO.mergeEntity(productDefDO);
-		
+
+	}
+
+	@Override
+	public Object getProductList(RequestBO requestFilter, int page, int limit) {
+
+		List<ProductDefDO> productList = masterDAO.getProductList(requestFilter, page, limit);
+
+		if (productList != null && !productList.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getProductSize(requestFilter);
+
+				return generatePaginationResponse(productList, listSize, page, limit);
+			}
+			return productList;
+		}
+
+		return null;
 	}
 
 }

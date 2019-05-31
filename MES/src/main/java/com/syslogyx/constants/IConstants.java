@@ -50,6 +50,7 @@ public interface IConstants {
 		public String ELONGATION = "elongation";
 		public String PROCESS_FAMILY = "process_family";
 		public String PROCESS_UNIT = "process_unit";
+		public String PRODUCT = "product";
 	}
 
 	/**
