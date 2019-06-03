@@ -306,7 +306,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 				dprTargetRoot.get(IPropertyConstant.INTERNAL_TARGET), dprTargetRoot.get(IPropertyConstant.YEAR),
 				dprTargetRoot.get(IPropertyConstant.UPDATED), dprTargetRoot.get(IPropertyConstant.STATUS),
 				unitJoin.get(IPropertyConstant.ID), productJoin.get(IPropertyConstant.ID),
-				productJoin.get(IPropertyConstant.PRODUCT_FORM), unitJoin.get(IPropertyConstant.UNIT),
+				productJoin.get(IPropertyConstant.PRODUCT), unitJoin.get(IPropertyConstant.UNIT),
 				fetch.get(IPropertyConstant.USERNAME));
 
 		// prepare where conditions according to provided filter

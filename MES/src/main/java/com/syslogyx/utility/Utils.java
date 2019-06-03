@@ -32,6 +32,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPRow;
@@ -538,7 +539,7 @@ public class Utils {
 	public static void writeToPDFHeaderRow(PdfPTable table, List<String> headerList) {
 
 		for (int index = 0; index < headerList.size(); index++) {
-			table.addCell(new Phrase(headerList.get(index), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8)));
+			table.addCell(new Phrase(headerList.get(index), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8, Font.BOLD)));
 			// table.addCell(headerList.get(index));
 		}
 

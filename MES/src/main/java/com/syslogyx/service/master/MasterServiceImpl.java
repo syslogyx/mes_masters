@@ -14,11 +14,10 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
-import com.itextpdf.text.Font.FontFamily;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.syslogyx.bo.RequestBO;
 import com.syslogyx.constants.IConstants;
@@ -587,18 +586,17 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		for (int index = 0; index < productDefinitionList.size(); index++) {
 			ProductDefDO productDefDO = productDefinitionList.get(index);
 
-			table.addCell(new Phrase(index + 1 + "", FontFactory.getFont(FontFactory.HELVETICA, 7)));
-			table.addCell(new Phrase(productDefDO.getProduct(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
-			table.addCell(
-					new Phrase(productDefDO.getProduct_type_name(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
-			table.addCell(
-					new Phrase(productDefDO.getProduct_form_name(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
-			table.addCell(new Phrase(productDefDO.getUpdated_by_name(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			Font font = FontFactory.getFont(FontFactory.HELVETICA, 7);
+
+			table.addCell(new Phrase(index + 1 + "", font));
+			table.addCell(new Phrase(productDefDO.getProduct(), font));
+			table.addCell(new Phrase(productDefDO.getProduct_type_name(), font));
+			table.addCell(new Phrase(productDefDO.getProduct_form_name(), font));
+			table.addCell(new Phrase(productDefDO.getUpdated_by_name(), font));
 			table.addCell(new Phrase(
 					Utils.getFormatedDate(productDefDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
-					FontFactory.getFont(FontFactory.HELVETICA, 7)));
-			table.addCell(new Phrase(getStatusString(productDefDO.getStatus()),
-					FontFactory.getFont(FontFactory.HELVETICA, 7)));
+					font));
+			table.addCell(new Phrase(getStatusString(productDefDO.getStatus()), font));
 
 		}
 	}
@@ -613,26 +611,20 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	private void processExportingProcessUnitListPDF(PdfPTable table, List<ProcessUnitDO> processUnitList) {
 		for (int index = 0; index < processUnitList.size(); index++) {
 			ProcessUnitDO processUnitDO = processUnitList.get(index);
+			Font font = FontFactory.getFont(FontFactory.HELVETICA, 7);
 
-			table.addCell(new Phrase(index + 1 + "", FontFactory.getFont(FontFactory.HELVETICA, 7)));
-			table.addCell(new Phrase(processUnitDO.getUnit(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
-			table.addCell(
-					new Phrase(processUnitDO.getProcess_family_name(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
-			table.addCell(new Phrase(processUnitDO.getCost_center(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
-			table.addCell(new Phrase(processUnitDO.getCapacity(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
-			table.addCell(
-					new Phrase(processUnitDO.getConst_setup_time(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
-			table.addCell(new Phrase(processUnitDO.getYield(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
-			table.addCell(new Phrase(getOSPString(processUnitDO.getOsp_identifier()),
-					FontFactory.getFont(FontFactory.HELVETICA, 7)));
-			table.addCell(
-					new Phrase(processUnitDO.getUpdated_by_name(), FontFactory.getFont(FontFactory.HELVETICA, 7)));
-			table.addCell(new Phrase(
-					Utils.getFormatedDate(processUnitDO.getUpdated(),
-							IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
-					FontFactory.getFont(FontFactory.HELVETICA, 7)));
-			table.addCell(new Phrase(getStatusString(processUnitDO.getStatus()),
-					FontFactory.getFont(FontFactory.HELVETICA, 7)));
+			table.addCell(new Phrase(index + 1 + "", font));
+			table.addCell(new Phrase(processUnitDO.getUnit(), font));
+			table.addCell(new Phrase(processUnitDO.getProcess_family_name(), font));
+			table.addCell(new Phrase(processUnitDO.getCost_center(), font));
+			table.addCell(new Phrase(processUnitDO.getCapacity(), font));
+			table.addCell(new Phrase(processUnitDO.getConst_setup_time(), font));
+			table.addCell(new Phrase(processUnitDO.getYield(), font));
+			table.addCell(new Phrase(getOSPString(processUnitDO.getOsp_identifier()), font));
+			table.addCell(new Phrase(processUnitDO.getUpdated_by_name(), font));
+			table.addCell(new Phrase(Utils.getFormatedDate(processUnitDO.getUpdated(),
+					IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A), font));
+			table.addCell(new Phrase(getStatusString(processUnitDO.getStatus()), font));
 		}
 	}
 
@@ -647,16 +639,17 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		for (int index = 0; index < processFamilyList.size(); index++) {
 			ProcessFamilyDO processFamilyDO = processFamilyList.get(index);
+			Font font = FontFactory.getFont(FontFactory.HELVETICA, 7);
 
-			table.addCell(index + 1 + "");
-			table.addCell(processFamilyDO.getProcess_family());
-			table.addCell(processFamilyDO.getProcess_type_name());
-			table.addCell(getPriorityString(processFamilyDO.getPriority()));
-			table.addCell(processFamilyDO.getBucket());
-			table.addCell(processFamilyDO.getUpdated_by_name());
-			table.addCell(Utils.getFormatedDate(processFamilyDO.getUpdated(),
-					IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
-			table.addCell(getStatusString(processFamilyDO.getStatus()));
+			table.addCell(new Phrase(index + 1 + "", font));
+			table.addCell(new Phrase(processFamilyDO.getProcess_family(), font));
+			table.addCell(new Phrase(processFamilyDO.getProcess_type_name(), font));
+			table.addCell(new Phrase(getPriorityString(processFamilyDO.getPriority()), font));
+			table.addCell(new Phrase(processFamilyDO.getBucket(), font));
+			table.addCell(new Phrase(processFamilyDO.getUpdated_by_name(), font));
+			table.addCell(new Phrase(Utils.getFormatedDate(processFamilyDO.getUpdated(),
+					IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A), font));
+			table.addCell(new Phrase(getStatusString(processFamilyDO.getStatus()), font));
 
 		}
 	}
@@ -672,18 +665,20 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		for (int index = 0; index < leadTimeList.size(); index++) {
 			LeadTimeDO leadTimeDO = leadTimeList.get(index);
+			Font font = FontFactory.getFont(FontFactory.HELVETICA, 7);
 
-			table.addCell(index + 1 + "");
-			table.addCell(leadTimeDO.getAfter_process_unit_name());
-			table.addCell(leadTimeDO.getBefore_process_unit_name());
-			table.addCell(leadTimeDO.getIdle_time_min());
-			table.addCell(leadTimeDO.getIdle_time_max());
-			table.addCell(leadTimeDO.getHandle_time_min());
-			table.addCell(leadTimeDO.getHandle_time_max());
-			table.addCell(leadTimeDO.getUpdated_by_name());
-			table.addCell(
-					Utils.getFormatedDate(leadTimeDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
-			table.addCell(getStatusString(leadTimeDO.getStatus()));
+			table.addCell(new Phrase(index + 1 + "", font));
+			table.addCell(new Phrase(leadTimeDO.getAfter_process_unit_name(), font));
+			table.addCell(new Phrase(leadTimeDO.getBefore_process_unit_name(), font));
+			table.addCell(new Phrase(leadTimeDO.getIdle_time_min(), font));
+			table.addCell(new Phrase(leadTimeDO.getIdle_time_max(), font));
+			table.addCell(new Phrase(leadTimeDO.getHandle_time_min(), font));
+			table.addCell(new Phrase(leadTimeDO.getHandle_time_max(), font));
+			table.addCell(new Phrase(leadTimeDO.getUpdated_by_name(), font));
+			table.addCell(new Phrase(
+					Utils.getFormatedDate(leadTimeDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
+					font));
+			table.addCell(new Phrase(getStatusString(leadTimeDO.getStatus()), font));
 		}
 
 	}
@@ -698,14 +693,16 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	private void processExportingElongationListPDF(PdfPTable table, List<ElongationDO> elongationDOs) {
 		for (int index = 0; index < elongationDOs.size(); index++) {
 			ElongationDO elongationDO = elongationDOs.get(index);
+			Font font = FontFactory.getFont(FontFactory.HELVETICA, 7);
 
-			table.addCell(index + 1 + "");
-			table.addCell(elongationDO.getUnit_name());
-			table.addCell(elongationDO.getCr_grade_name());
-			table.addCell(elongationDO.getUpdated_by_name());
-			table.addCell(Utils.getFormatedDate(elongationDO.getUpdated(),
-					IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
-			table.addCell(getStatusString(elongationDO.getStatus()));
+			table.addCell(new Phrase(index + 1 + "", font));
+			table.addCell(new Phrase(elongationDO.getUnit_name(), font));
+			table.addCell(new Phrase(elongationDO.getCr_grade_name(), font));
+			table.addCell(new Phrase(elongationDO.getUpdated_by_name(), font));
+			table.addCell(new Phrase(
+					Utils.getFormatedDate(elongationDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
+					font));
+			table.addCell(new Phrase(getStatusString(elongationDO.getStatus()), font));
 		}
 	}
 
@@ -719,17 +716,19 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	private void processExportingDPRTargetListPDF(PdfPTable table, List<DPRTargetDO> dprTargetList) {
 		for (int index = 0; index < dprTargetList.size(); index++) {
 			DPRTargetDO dprTargetDO = dprTargetList.get(index);
+			Font font = FontFactory.getFont(FontFactory.HELVETICA, 7);
 
-			table.addCell(index + 1 + "");
-			table.addCell(dprTargetDO.getYear());
-			table.addCell(dprTargetDO.getUnit_name());
-			table.addCell(dprTargetDO.getProduct_name());
-			table.addCell(dprTargetDO.getBusiness_plan_target() + "");
-			table.addCell(dprTargetDO.getInternal_target() + "");
-			table.addCell(dprTargetDO.getUpdated_by_name());
-			table.addCell(
-					Utils.getFormatedDate(dprTargetDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
-			table.addCell(getStatusString(dprTargetDO.getStatus()));
+			table.addCell(new Phrase(index + 1 + "", font));
+			table.addCell(new Phrase(dprTargetDO.getYear(), font));
+			table.addCell(new Phrase(dprTargetDO.getUnit_name(), font));
+			table.addCell(new Phrase(dprTargetDO.getProduct_name(), font));
+			table.addCell(new Phrase(dprTargetDO.getBusiness_plan_target() + "", font));
+			table.addCell(new Phrase(dprTargetDO.getInternal_target() + "", font));
+			table.addCell(new Phrase(dprTargetDO.getUpdated_by_name(), font));
+			table.addCell(new Phrase(
+					Utils.getFormatedDate(dprTargetDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
+					font));
+			table.addCell(new Phrase(getStatusString(dprTargetDO.getStatus()), font));
 		}
 	}
 
@@ -744,19 +743,21 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		for (int index = 0; index < campaignList.size(); index++) {
 			CampaignDO campaignDO = campaignList.get(index);
+			Font font = FontFactory.getFont(FontFactory.HELVETICA, 7);
 
-			table.addCell(index + 1 + "");
-			table.addCell(campaignDO.getCampaign_id());
-			table.addCell(campaignDO.getAttribute());
-			table.addCell(campaignDO.getAim());
-			table.addCell(campaignDO.getCapacity_max() + "");
-			table.addCell(campaignDO.getCapacity_min() + "");
-			table.addCell(campaignDO.getUpdated_by_name());
-			table.addCell(
-					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
-			table.addCell(getPriorityString(campaignDO.getPriority_level()));
-			table.addCell(campaignDO.getHold_unit_name());
-			table.addCell(getStatusString(campaignDO.getStatus()));
+			table.addCell(new Phrase(index + 1 + "", font));
+			table.addCell(new Phrase(campaignDO.getCampaign_id(), font));
+			table.addCell(new Phrase(campaignDO.getAttribute(), font));
+			table.addCell(new Phrase(campaignDO.getAim(), font));
+			table.addCell(new Phrase(campaignDO.getCapacity_max() + "", font));
+			table.addCell(new Phrase(campaignDO.getCapacity_min() + "", font));
+			table.addCell(new Phrase(campaignDO.getUpdated_by_name(), font));
+			table.addCell(new Phrase(
+					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
+					font));
+			table.addCell(new Phrase(getPriorityString(campaignDO.getPriority_level()), font));
+			table.addCell(new Phrase(campaignDO.getHold_unit_name(), font));
+			table.addCell(new Phrase(getStatusString(campaignDO.getStatus()), font));
 		}
 	}
 
@@ -770,14 +771,16 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	private void processExportingCodeGroupListPDF(PdfPTable table, List<CodeGroupDO> codeGroupList) {
 		for (int index = 0; index < codeGroupList.size(); index++) {
 			CodeGroupDO codeGroupDO = codeGroupList.get(index);
+			Font font = FontFactory.getFont(FontFactory.HELVETICA, 7);
 
-			table.addCell(index + 1 + "");
-			table.addCell(codeGroupDO.getGroup_code());
-			table.addCell(codeGroupDO.getGroup_desc());
-			table.addCell(
-					Utils.getFormatedDate(codeGroupDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
-			table.addCell(codeGroupDO.getUpdated_by_name());
-			table.addCell(getStatusString(codeGroupDO.getStatus()));
+			table.addCell(new Phrase(index + 1 + "", font));
+			table.addCell(new Phrase(codeGroupDO.getGroup_code(), font));
+			table.addCell(new Phrase(codeGroupDO.getGroup_desc(), font));
+			table.addCell(new Phrase(
+					Utils.getFormatedDate(codeGroupDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
+					font));
+			table.addCell(new Phrase(codeGroupDO.getUpdated_by_name(), font));
+			table.addCell(new Phrase(getStatusString(codeGroupDO.getStatus()), font));
 		}
 	}
 

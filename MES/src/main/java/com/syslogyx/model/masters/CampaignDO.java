@@ -95,7 +95,7 @@ public class CampaignDO {
 	}
 
 	public CampaignDO(int id, String campaign_id, String attribute, String aim, float capacity_min, float capacity_max,
-			int priority_level, Date created, Date updated, int status, String username, String unit, int pu_id) {
+			int priority_level, Date created, Date updated, int status, String username, String unit, Integer pu_id) {
 
 		this.id = id;
 		this.campaign_id = campaign_id;
@@ -109,7 +109,9 @@ public class CampaignDO {
 		this.status = status;
 		this.updated_by_name = username;
 		this.hold_unit_name = unit;
-		this.hold_unit_id = pu_id;
+
+		if (pu_id != null)
+			this.hold_unit_id = pu_id;
 	}
 
 	public int getId() {
