@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,6 +16,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -37,6 +39,8 @@ import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.masters.ProductFormDO;
 import com.syslogyx.model.masters.ProductTypeDO;
+import com.syslogyx.model.masters.ShelfLifeDO;
+import com.syslogyx.model.masters.ShrinkageDO;
 import com.syslogyx.model.user.UserDO;
 
 /**
@@ -172,6 +176,12 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.PRODUCT))
 			return getProductList(null, IConstants.DEFAULT, IConstants.DEFAULT);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.SHELF_LIFE))
+			return getShelfLifeList(null, IConstants.DEFAULT, IConstants.DEFAULT);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.SHRINKAGE))
+			return getShrinkAgeList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
 		throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
@@ -406,8 +416,8 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		// builder.desc(beforeUnitFetch.get("unit")));
 
 		CompoundSelection<LeadTimeDO> construct = builder.construct(LeadTimeDO.class,
-				leadTimeRoot.get(IPropertyConstant.ID), leadTimeRoot.get(IPropertyConstant.IDEAL_TIME_MIN),
-				leadTimeRoot.get(IPropertyConstant.IDEAL_TIME_MAX), leadTimeRoot.get(IPropertyConstant.HANDLE_TIME_MIN),
+				leadTimeRoot.get(IPropertyConstant.ID), leadTimeRoot.get(IPropertyConstant.IDLE_TIME_MIN),
+				leadTimeRoot.get(IPropertyConstant.IDLE_TIME_MAX), leadTimeRoot.get(IPropertyConstant.HANDLE_TIME_MIN),
 				leadTimeRoot.get(IPropertyConstant.HANDLE_TIME_MAX), beforeUnitFetch.get(IPropertyConstant.ID),
 				beforeUnitFetch.get(IPropertyConstant.UNIT), afterUnitFetch.get(IPropertyConstant.ID),
 				afterUnitFetch.get(IPropertyConstant.UNIT), fetch.get(IPropertyConstant.USERNAME),
@@ -460,9 +470,9 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 								"%" + requestFilter.getQuick_finder() + "%"),
 						builder.like(beforeUnitFetch.get(IPropertyConstant.UNIT),
 								"%" + requestFilter.getQuick_finder() + "%"),
-						builder.like(leadTimeRoot.get(IPropertyConstant.IDEAL_TIME_MIN),
+						builder.like(leadTimeRoot.get(IPropertyConstant.IDLE_TIME_MIN),
 								"%" + requestFilter.getQuick_finder() + "%"),
-						builder.like(leadTimeRoot.get(IPropertyConstant.IDEAL_TIME_MAX),
+						builder.like(leadTimeRoot.get(IPropertyConstant.IDLE_TIME_MAX),
 								"%" + requestFilter.getQuick_finder() + "%"),
 						builder.like(leadTimeRoot.get(IPropertyConstant.HANDLE_TIME_MIN),
 								"%" + requestFilter.getQuick_finder() + "%"),
@@ -759,8 +769,8 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 			Root<ProcessUnitDO> processUnitRoot, boolean prepareContruct) {
 		Object[] resultSet = new Object[2];
 
-		Join<CampaignDO, UserDO> updatedBy = processUnitRoot.join(IPropertyConstant.UPDATED_BY);
-		Join<CampaignDO, ProcessFamilyDO> processFamily = processUnitRoot.join(IPropertyConstant.PROCESS_FAMILY);
+		Join<ProcessUnitDO, UserDO> updatedBy = processUnitRoot.join(IPropertyConstant.UPDATED_BY);
+		Join<ProcessUnitDO, ProcessFamilyDO> processFamily = processUnitRoot.join(IPropertyConstant.PROCESS_FAMILY);
 
 		if (requestFilter != null) {
 			List<Predicate> conditions = new ArrayList<>();
@@ -893,9 +903,9 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 				conditions.add(builder.or(
 						builder.like(productRoot.get(IPropertyConstant.PRODUCT),
 								"%" + requestFilter.getQuick_finder() + "%"),
-						builder.like(productRoot.get(IPropertyConstant.PROCESS_TYPE),
+						builder.like(productTypeFetch.get(IPropertyConstant.NAME),
 								"%" + requestFilter.getQuick_finder() + "%"),
-						builder.like(productRoot.get(IPropertyConstant.PRODUCT_FORM),
+						builder.like(processFormFetch.get(IPropertyConstant.NAME),
 								"%" + requestFilter.getQuick_finder() + "%")));
 			}
 
@@ -942,6 +952,241 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 			return (long) query.getSingleResult();
 		}
 		return IConstants.VALUE_ZERO;
+	}
+
+	@Override
+	public List<ShelfLifeDO> getShelfLifeList(RequestBO requestFilter, int page, int limit) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<ShelfLifeDO> createQuery = builder.createQuery(ShelfLifeDO.class);
+		Root<ShelfLifeDO> shelfLifeRoot = createQuery.from(ShelfLifeDO.class);
+
+		Object[] queryResults = getConditionsForShelfLife(requestFilter, builder, shelfLifeRoot, true);
+
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+
+			Query query = entityManager
+					.createQuery(createQuery.select((Selection<? extends ShelfLifeDO>) queryResults[1]));
+
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				int start_index = IConstants.VALUE_ZERO;
+				if (page > 1) {
+					page -= 1;
+					start_index = page * limit;
+				}
+
+				query.setFirstResult(start_index);
+				query.setMaxResults(limit);
+			}
+
+			return query.getResultList();
+		}
+		return null;
+
+	}
+
+	/**
+	 * Add filters to the Product Definition and Prepare the construct with list of
+	 * fields required in the response
+	 * 
+	 * @param requestFilter
+	 * @param builder
+	 * @param shelfLifeRoot
+	 * @param prepareContruct
+	 * @return
+	 */
+	private Object[] getConditionsForShelfLife(RequestBO requestFilter, CriteriaBuilder builder,
+			Root<ShelfLifeDO> shelfLifeRoot, boolean prepareContruct) {
+
+		Object[] resultSet = new Object[2];
+
+		Join<ShelfLifeDO, UserDO> userFetch = shelfLifeRoot.join(IPropertyConstant.UPDATED_BY);
+		Join<ShelfLifeDO, ProductDefDO> productFetch = shelfLifeRoot.join(IPropertyConstant.PRODUCT, JoinType.LEFT);
+		Join<ShelfLifeDO, CRGradeDO> crgradeFetch = shelfLifeRoot.join(IPropertyConstant.CR_GRADE, JoinType.LEFT);
+
+		if (requestFilter != null) {
+			List<Predicate> conditions = new ArrayList<>();
+
+			System.out.println(">>>>>> Is Numeric :  " + NumberUtils.isCreatable(requestFilter.getQuick_finder()));
+
+			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
+
+				List<Predicate> orConditions = new ArrayList<>();
+				orConditions.add(builder.like(productFetch.get(IPropertyConstant.PRODUCT),
+						"%" + requestFilter.getQuick_finder() + "%"));
+				orConditions.add(builder.like(crgradeFetch.get(IPropertyConstant.NAME),
+						"%" + requestFilter.getQuick_finder() + "%"));
+
+				// check whether the input filter value is numeric, and add the condition for
+				// search in shelf life column
+				if (NumberUtils.isCreatable(requestFilter.getQuick_finder())) {
+					orConditions.add(builder.equal(shelfLifeRoot.get(IPropertyConstant.SHELF_LIFE),
+							Integer.parseInt(requestFilter.getQuick_finder())));
+				}
+
+				conditions.add(builder.or(orConditions.toArray(new Predicate[] {})));
+			}
+
+			// add condition to restrict rows whose status is inactive
+			if (!requestFilter.isInclude_inactive_data()) {
+				conditions
+						.add(builder.notEqual(shelfLifeRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
+			}
+
+			resultSet[0] = conditions;
+		}
+
+		// add construct in case if the identifier is true to fetch the limited details
+		// from list
+		if (prepareContruct) {
+			CompoundSelection<ShelfLifeDO> construct = builder.construct(ShelfLifeDO.class,
+					shelfLifeRoot.get(IPropertyConstant.ID), shelfLifeRoot.get(IPropertyConstant.SHELF_LIFE),
+					shelfLifeRoot.get(IPropertyConstant.UPDATED), shelfLifeRoot.get(IPropertyConstant.STATUS),
+					productFetch.get(IPropertyConstant.ID), productFetch.get(IPropertyConstant.PRODUCT),
+					crgradeFetch.get(IPropertyConstant.ID), crgradeFetch.get(IPropertyConstant.NAME),
+					userFetch.get(IPropertyConstant.USERNAME));
+			resultSet[1] = construct;
+		}
+		return resultSet;
+
+	}
+
+	@Override
+	public long getShelfLifeSize(RequestBO requestFilter) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
+		Root<ShelfLifeDO> shelfLifeRoot = createQuery.from(ShelfLifeDO.class);
+
+		createQuery.select(builder.count(shelfLifeRoot));
+
+		Object[] queryResults = getConditionsForShelfLife(requestFilter, builder, shelfLifeRoot, false);
+
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+
+			Query query = entityManager.createQuery(createQuery);
+			return (long) query.getSingleResult();
+		}
+		return IConstants.VALUE_ZERO;
+	}
+
+	@Override
+	public List<ShrinkageDO> getShrinkAgeList(RequestBO requestFilter, int page, int limit) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<ShrinkageDO> createQuery = builder.createQuery(ShrinkageDO.class);
+		Root<ShrinkageDO> shrinkageRoot = createQuery.from(ShrinkageDO.class);
+
+		Object[] queryResult = getConditionForShrinkage(requestFilter, builder, shrinkageRoot, true);
+
+		if (queryResult != null && queryResult.length > IConstants.VALUE_ZERO) {
+
+			List<Predicate> condition = (List<Predicate>) queryResult[0];
+			
+			if (condition != null && condition.isEmpty()) {	
+				createQuery.where(condition.toArray(new Predicate[] {}));
+			}
+			Query query = entityManager
+					.createQuery(createQuery.select((Selection<? extends ShrinkageDO>) queryResult[1]));
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				int start_index = IConstants.VALUE_ZERO;
+				if (page > 1) {
+					page -= 1;
+					start_index = page * limit;
+				}
+
+				query.setFirstResult(start_index);
+				query.setMaxResults(limit);
+			}
+
+			return query.getResultList();
+		}
+		return null;
+	}
+
+	/**
+	 * Add filters to the Shrinkage and Prepare the construct with list of fields
+	 * required in the response
+	 * 
+	 * @param requestFilter
+	 * @param builder
+	 * @param shrinkageRoot
+	 * @param b
+	 * @return
+	 */
+	private Object[] getConditionForShrinkage(RequestBO requestFilter, CriteriaBuilder builder,
+			Root<ShrinkageDO> shrinkageRoot, boolean prepareConstruct) {
+
+		Object[] resultSet = new Object[2];
+
+		Join<ShrinkageDO, UserDO> userFetch = shrinkageRoot.join(IPropertyConstant.UPDATED_BY);
+		Join<ShrinkageDO, CRGradeDO> crgradeFetch = shrinkageRoot.join(IPropertyConstant.CR_GRADE);
+
+		if (requestFilter != null) {
+			ArrayList<Predicate> conditions = new ArrayList<>();
+
+			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
+
+				conditions.add(builder.or(builder.like(crgradeFetch.get(IPropertyConstant.NAME),
+						"%" + requestFilter.getQuick_finder() + "%")));
+
+			}
+
+			// add condition to restrict rows whose status is inactive
+			if (requestFilter.isInclude_inactive_data()) {
+				conditions
+						.add(builder.notEqual(shrinkageRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
+			}
+			resultSet[0] = conditions;
+		}
+
+		if (prepareConstruct) {
+
+			CompoundSelection<ShrinkageDO> construct = builder.construct(ShrinkageDO.class,
+					shrinkageRoot.get(IPropertyConstant.ID), crgradeFetch.get(IPropertyConstant.ID),
+					crgradeFetch.get(IPropertyConstant.NAME), userFetch.get(IPropertyConstant.USERNAME),
+					shrinkageRoot.get(IPropertyConstant.UPDATED), shrinkageRoot.get(IPropertyConstant.STATUS));
+
+			resultSet[1] = construct;
+		}
+
+		return resultSet;
+	}
+
+	@Override
+	public long getShrinkageSize(RequestBO requestFilter) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
+		Root<ShrinkageDO> shrinkageRoot = createQuery.from(ShrinkageDO.class);
+
+		createQuery.select(builder.count(shrinkageRoot));
+
+		Object[] queryResults = getConditionForShrinkage(requestFilter, builder, shrinkageRoot, false);
+
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+
+			Query query = entityManager.createQuery(createQuery);
+			return (long) query.getSingleResult();
+		}
+		return IConstants.VALUE_ZERO;
+
 	}
 
 }

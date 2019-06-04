@@ -24,6 +24,8 @@ import com.syslogyx.model.masters.LeadTimeDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
+import com.syslogyx.model.masters.ShelfLifeDO;
+import com.syslogyx.model.masters.ShrinkageDO;
 import com.syslogyx.service.master.IMasterService;
 
 /**
@@ -471,7 +473,7 @@ public class MasterController extends BaseController {
 	 * This method is used to save ProductDef to the db
 	 * 
 	 * @param productDefDO:
-	 *            Containts Product Data provided by users
+	 *            Contains Product Data provided by users
 	 * @return
 	 */
 	@PostMapping(value = INetworkConstants.IURLConstants.PRODUCT + INetworkConstants.IURLConstants.SAVE)
@@ -509,6 +511,103 @@ public class MasterController extends BaseController {
 
 			if (productList != null)
 				return getResponseModel(productList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+
+			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * This method to Store the Shelf Life Data in db
+	 * 
+	 * @param shelfLifeDO
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.SHELF_LIFE + INetworkConstants.IURLConstants.SAVE)
+	public ResponseEntity<BaseResponseBO> createShelfLife(@RequestBody ShelfLifeDO shelfLifeDO) {
+		try {
+
+			iMasterService.createShelfLife(shelfLifeDO);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Fetch the Shelf Life List according to the Pagination and Quick Finder
+	 * 
+	 * @param page
+	 * @param limit
+	 * @param requestFilter
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.SHELF_LIFE + INetworkConstants.IURLConstants.LIST)
+	public ResponseEntity<BaseResponseBO> getShelfLifeList(
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.LIMIT, required = false, defaultValue = "-1") int limit,
+			@RequestBody RequestBO requestFilter) {
+		try {
+
+			Object shelfLifeList = iMasterService.getShelfLifeList(requestFilter, page, limit);
+
+			if (shelfLifeList != null)
+				return getResponseModel(shelfLifeList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+
+			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * This method is store Shrink Age data in db
+	 * 
+	 * @param shrinkageDO:
+	 *            contains Shrink Age provided by user
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.SHRINKAGE + INetworkConstants.IURLConstants.SAVE)
+	public ResponseEntity<BaseResponseBO> createShrinkAge(@RequestBody ShrinkageDO shrinkageDO) {
+		try {
+
+			iMasterService.createShrinkAge(shrinkageDO);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Fetch the Shrinkage list according to the Pagination and Quick finder
+	 * 
+	 * @param page
+	 * @param limit
+	 * @param requestFilter
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.SHRINKAGE + INetworkConstants.IURLConstants.LIST)
+	public ResponseEntity<BaseResponseBO> getShrinkAgeList(
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.LIMIT, required = false, defaultValue = "-1") int limit,
+			@RequestBody RequestBO requestFilter) {
+		try {
+
+			Object shrinkAgeList = iMasterService.getShrinkAgeList(requestFilter, page, limit);
+
+			if (shrinkAgeList != null)
+				return getResponseModel(shrinkAgeList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
 
 			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
 		} catch (Exception e) {

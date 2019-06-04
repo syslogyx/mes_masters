@@ -56,16 +56,17 @@ public interface IFileHeaderConstants {
 	public String CONST_SETUP_TIME = "Const. Setup Time";
 	public String YEILD = "Yeild";
 	public String OSP_IDENTIFIER = "OSP Identifier";
-	
-	//Lead Time Headers
-	public String IDEAL_TIME_MIN = "Ideal Time Min";
-	public String IDEAL_TIME_MAX = "Ideal Time Max";
+
+	// Lead Time Headers
+	public String IDLE_TIME_MIN = "Ideal Time Min";
+	public String IDLE_TIME_MAX = "Ideal Time Max";
 	public String HANDLE_TIME_MIN = "Handle Time Min";
 	public String HANDLE_TIME_MAX = "Handle Time Max";
-	
-	//Product Definition Headers
+
+	// Product Definition Headers
 	public String PRODUCT_TYPE = "Product Type";
 	public String PRODUCT_FORM = "Product Form";
+	public String SHELF_LIFES = "Shelf Life (In Days)";
 
 	/**
 	 * Prepare the List of Headers used in Code Group Excel and PDF
@@ -135,11 +136,41 @@ public interface IFileHeaderConstants {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_UNIT))
 			return getProcessUnitHeaders();
-		
+
 		else if (master_name.equals(IConstants.MASTERS_NAME.PRODUCT))
 			return getProductHeaders();
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.SHELF_LIFE))
+			return getShelfLifeHeaders();
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.SHRINKAGE))
+			return getShrinkageHeaders();
+
 		return null;
+	}
+
+	public static List<String> getShrinkageHeaders() {
+		List<String> headers = new ArrayList<>();
+		headers.add(SR_NO);
+		headers.add(CR_GRADE);
+		headers.add(UPDATED_BY);
+		headers.add(LAST_UPDATED);
+		headers.add(STATUS);
+
+		return headers;
+	}
+
+	public static List<String> getShelfLifeHeaders() {
+		List<String> headers = new ArrayList<>();
+		headers.add(SR_NO);
+		headers.add(PRODUCT);
+		headers.add(CR_GRADE);
+		headers.add(SHELF_LIFES);
+		headers.add(UPDATED_BY);
+		headers.add(LAST_UPDATED);
+		headers.add(STATUS);
+
+		return headers;
 	}
 
 	public static List<String> getProductHeaders() {
@@ -151,7 +182,6 @@ public interface IFileHeaderConstants {
 		headers.add(UPDATED_BY);
 		headers.add(LAST_UPDATED);
 		headers.add(STATUS);
-		
 
 		return headers;
 	}
@@ -246,8 +276,8 @@ public interface IFileHeaderConstants {
 		headers.add(SR_NO);
 		headers.add(AFTER_PROCESS_UNIT);
 		headers.add(BEFORE_PROCESS_UNIT);
-		headers.add(IDEAL_TIME_MIN);
-		headers.add(IDEAL_TIME_MAX);
+		headers.add(IDLE_TIME_MIN);
+		headers.add(IDLE_TIME_MAX);
 		headers.add(HANDLE_TIME_MIN);
 		headers.add(HANDLE_TIME_MAX);
 		headers.add(UPDATED_BY);

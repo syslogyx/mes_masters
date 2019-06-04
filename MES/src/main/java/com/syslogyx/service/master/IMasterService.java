@@ -11,6 +11,8 @@ import com.syslogyx.model.masters.LeadTimeDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
+import com.syslogyx.model.masters.ShelfLifeDO;
+import com.syslogyx.model.masters.ShrinkageDO;
 
 /**
  * This class is used for MasterService business logic related to Master module
@@ -121,7 +123,7 @@ public interface IMasterService {
 	 * @param master_name
 	 * @return
 	 * @throws ApplicationException
-	 * @throws DocumentException 
+	 * @throws DocumentException
 	 */
 	String exportListToPDF(String master_name) throws ApplicationException, DocumentException;
 
@@ -227,5 +229,45 @@ public interface IMasterService {
 	 * @return
 	 */
 	Object getProductList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Validate and Store Shelf Life Related Data
+	 * 
+	 * @param shelfLifeDO
+	 * @throws ApplicationException
+	 * @throws Exception
+	 */
+	void createShelfLife(ShelfLifeDO shelfLifeDO) throws ApplicationException, Exception;
+
+	/**
+	 * Fetch the list of Shelf Life Master according to the Pagination and Quick
+	 * Finder Specified
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	Object getShelfLifeList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Validate and Store Shrink Age Related Data
+	 * 
+	 * @param shrinkageDO
+	 * @throws ApplicationException
+	 * @throws Exception
+	 */
+	void createShrinkAge(ShrinkageDO shrinkageDO) throws ApplicationException, Exception;
+
+	/**
+	 * Fetch the list of ShrinkAge Master according to the Pagination and Quick
+	 * Finder Specified
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	Object getShrinkAgeList(RequestBO requestFilter, int page, int limit);
 
 }

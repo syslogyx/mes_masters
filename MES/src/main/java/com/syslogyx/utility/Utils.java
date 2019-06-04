@@ -69,6 +69,7 @@ public class Utils {
 		}
 	}
 
+	
 	public static final Logger LOG = Logger.getLogger(">>SMART_FACTORY>>");
 
 	public static String encrypt(String plainText) throws Exception {
@@ -539,10 +540,10 @@ public class Utils {
 	public static void writeToPDFHeaderRow(PdfPTable table, List<String> headerList) {
 
 		for (int index = 0; index < headerList.size(); index++) {
-			table.addCell(new Phrase(headerList.get(index), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8, Font.BOLD)));
+			table.addCell(new Phrase(headerList.get(index), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8)));
 			// table.addCell(headerList.get(index));
 		}
-
+		
 		PdfPRow headerRows = table.getRow(IConstants.VALUE_ZERO);
 		for (int index = 0; index < headerRows.getCells().length; index++) {
 			// headerRows.getCells()[index].setBackgroundColor(BaseColor.GRAY);

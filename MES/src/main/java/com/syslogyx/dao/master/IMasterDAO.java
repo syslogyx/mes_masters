@@ -13,6 +13,8 @@ import com.syslogyx.model.masters.LeadTimeDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
+import com.syslogyx.model.masters.ShelfLifeDO;
+import com.syslogyx.model.masters.ShrinkageDO;
 
 /**
  * This interface is used for communicating with db
@@ -178,5 +180,41 @@ public interface IMasterDAO extends IBaseDAO {
 	 * @return
 	 */
 	long getProductSize(RequestBO requestFilter);
+
+	/**
+	 * Fetch the Shelf Life List according to the Pagination and Filter
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	List<ShelfLifeDO> getShelfLifeList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Fetch the Shelf Lfe List Size according to the Filter
+	 * 
+	 * @param requestFilter
+	 * @return
+	 */
+	long getShelfLifeSize(RequestBO requestFilter);
+
+	/**
+	 * Fetch the Shrink Age list according to the Pagination and Filter
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	List<ShrinkageDO> getShrinkAgeList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Fetch the Shrinkage list Size according to the Filter
+	 * 
+	 * @param requestFilter
+	 * @return
+	 */
+	long getShrinkageSize(RequestBO requestFilter);
 
 }

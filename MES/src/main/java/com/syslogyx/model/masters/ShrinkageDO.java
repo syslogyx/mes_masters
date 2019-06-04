@@ -66,6 +66,27 @@ public class ShrinkageDO {
 	@Transient
 	private int cr_grade_id;
 
+	@Transient
+	private String cr_grade_name;
+
+	@Transient
+	private String updated_by_name;
+
+	public ShrinkageDO() {
+
+	}
+
+	public ShrinkageDO(int id, int cr_grade_id, String cr_grade_name, String updated_by_name, Date updated,
+			int status) {
+
+		this.id = id;
+		this.updated = updated;
+		this.status = status;
+		this.cr_grade_id = cr_grade_id;
+		this.cr_grade_name = cr_grade_name;
+		this.updated_by_name = updated_by_name;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -128,6 +149,22 @@ public class ShrinkageDO {
 
 	public void setCr_grade_id(int cr_grade_id) {
 		this.cr_grade_id = cr_grade_id;
+	}
+
+	public String getCr_grade_name() {
+		return cr_grade_name;
+	}
+
+	public void setCr_grade_name(String cr_grade_name) {
+		this.cr_grade_name = cr_grade_name;
+	}
+
+	public String getUpdated_by_name() {
+		return updated_by_name;
+	}
+
+	public void setUpdated_by_name(String updated_by_name) {
+		this.updated_by_name = updated_by_name;
 	}
 
 }

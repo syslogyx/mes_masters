@@ -45,5 +45,7 @@ public interface IResponseMessages {
 	String INVALID_PRODUCT_TYPE_ID = "Invalid Product Type Id.";
 	String INVALID_PRODUCT_FORM_ID = "Invalid Product Form Id.";
 	String EXISTING_PRODUCT = "This Product already exists.";
+	String INVALID_SHELF_LIFE_ID = "Invalid Shelf Life Id";
+	String INVALID_SHRINK_AGE_ID = "Invalid Shrink Age Id";
 
 }

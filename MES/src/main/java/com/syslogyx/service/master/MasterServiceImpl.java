@@ -10,14 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Phrase;
-import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.syslogyx.bo.RequestBO;
 import com.syslogyx.constants.IConstants;
@@ -39,6 +37,8 @@ import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.masters.ProductFormDO;
 import com.syslogyx.model.masters.ProductTypeDO;
+import com.syslogyx.model.masters.ShelfLifeDO;
+import com.syslogyx.model.masters.ShrinkageDO;
 import com.syslogyx.model.user.UserDO;
 import com.syslogyx.service.BaseService;
 import com.syslogyx.utility.Utils;
@@ -215,7 +215,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 				sheet.autoSizeColumn(index);
 			}
 
-			String filename = Utils.getFilePath(IConstants.EXCEL_BASE_PATH, master_name);
+			String filename = Utils.getFilePath(System.getProperty( "catalina.base" ), master_name);
 			return Utils.writeDataToWorkbook(workbook, filename);
 		} else {
 			throw new ApplicationException(IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
@@ -281,6 +281,58 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.PRODUCT))
 			processExportingProductListExcel(sheet, mastersList);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.SHELF_LIFE))
+			processExportingShelfLifeListExcel(sheet, mastersList);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.SHRINKAGE))
+			processExportingShrinkageListExcel(sheet, mastersList);
+	}
+
+	/**
+	 * set the Field value from ShrinkageDO object to it's respective index number
+	 * in excel sheet
+	 * 
+	 * @param sheet
+	 * @param shrinkageList
+	 */
+	private void processExportingShrinkageListExcel(HSSFSheet sheet, List<ShrinkageDO> shrinkageList) {
+
+		for (int index = 0; index < shrinkageList.size(); index++) {
+
+			ShrinkageDO shrinkageDO = shrinkageList.get(index);
+			HSSFRow row = sheet.createRow(index + 1);
+			row.createCell(0).setCellValue(index + 1);
+			row.createCell(1).setCellValue(shrinkageDO.getCr_grade_name());
+			row.createCell(2).setCellValue(shrinkageDO.getUpdated_by_name());
+			row.createCell(3).setCellValue(
+					Utils.getFormatedDate(shrinkageDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
+			row.createCell(4).setCellValue(getStatusString(shrinkageDO.getStatus()));
+
+		}
+	}
+
+	/**
+	 * Set the Field value from ShelfLifeDO object to it's respective index number
+	 * in excel sheet
+	 * 
+	 * @param sheet
+	 * @param shelfLifeList
+	 */
+	private void processExportingShelfLifeListExcel(HSSFSheet sheet, List<ShelfLifeDO> shelfLifeList) {
+
+		for (int index = 0; index < shelfLifeList.size(); index++) {
+			ShelfLifeDO shelfLifeDO = shelfLifeList.get(index);
+			HSSFRow row = sheet.createRow(index + 1);
+			row.createCell(0).setCellValue(index + 1);
+			row.createCell(1).setCellValue(shelfLifeDO.getProduct_name());
+			row.createCell(2).setCellValue(shelfLifeDO.getCr_grade_name());
+			row.createCell(3).setCellValue(shelfLifeDO.getShelf_life());
+			row.createCell(4).setCellValue(shelfLifeDO.getUpdated_by_name());
+			row.createCell(5).setCellValue(
+					Utils.getFormatedDate(shelfLifeDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
+			row.createCell(6).setCellValue(getStatusString(shelfLifeDO.getStatus()));
+		}
 	}
 
 	/**
@@ -536,6 +588,12 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.PRODUCT))
 			return new float[] { 1, 1, 1, 1, 1, 1, 1 };
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.SHELF_LIFE))
+			return new float[] { 1, 1, 1, 1, 1, 1, 1 };
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.SHRINKAGE))
+			return new float[] { 1, 1, 1, 1, 1 };
+
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
@@ -571,6 +629,64 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.PRODUCT))
 			processExportingProductListPDF(table, mastersList);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.SHELF_LIFE))
+			processExportingShelfLifeListPDF(table, mastersList);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.SHRINKAGE))
+			processExportingShrinkageListPDF(table, mastersList);
+
+	}
+
+	/**
+	 * Set the field value from ShrinkageDO object to it's respective index number
+	 * in the PDF table
+	 * 
+	 * @param table
+	 * @param shrinkageList
+	 */
+	private void processExportingShrinkageListPDF(PdfPTable table, List<ShrinkageDO> shrinkageList) {
+
+		for (int index = 0; index < shrinkageList.size(); index++) {
+			ShrinkageDO shrinkageDO = shrinkageList.get(index);
+
+			Font font = FontFactory.getFont(FontFactory.HELVETICA, 7);
+
+			table.addCell(new Phrase(index + 1 + "", font));
+			table.addCell(new Phrase(shrinkageDO.getCr_grade_name(), font));
+			table.addCell(new Phrase(shrinkageDO.getUpdated_by_name(), font));
+			table.addCell(new Phrase(
+					Utils.getFormatedDate(shrinkageDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
+					font));
+			table.addCell(new Phrase(getStatusString(shrinkageDO.getStatus()), font));
+		}
+	}
+
+	/**
+	 * Set the field value from ShelfLifeDO object to it's respective index number
+	 * in the PDF Table
+	 * 
+	 * @param table
+	 * @param shelfLifeList
+	 */
+	private void processExportingShelfLifeListPDF(PdfPTable table, List<ShelfLifeDO> shelfLifeList) {
+
+		for (int index = 0; index < shelfLifeList.size(); index++) {
+			ShelfLifeDO shelfLifeDO = shelfLifeList.get(index);
+
+			Font font = FontFactory.getFont(FontFactory.HELVETICA, 7);
+
+			table.addCell(new Phrase(index + 1 + "", font));
+			table.addCell(new Phrase(shelfLifeDO.getProduct_name(), font));
+			table.addCell(new Phrase(shelfLifeDO.getCr_grade_name(), font));
+			table.addCell(new Phrase(shelfLifeDO.getShelf_life() + "", font));
+			table.addCell(new Phrase(shelfLifeDO.getUpdated_by_name(), font));
+			table.addCell(new Phrase(
+					Utils.getFormatedDate(shelfLifeDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
+					font));
+			table.addCell(new Phrase(getStatusString(shelfLifeDO.getStatus()), font));
+
+		}
 
 	}
 
@@ -836,6 +952,10 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return ProcessFamilyDO.class;
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.PRODUCT))
 			return ProductDefDO.class;
+		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.SHELF_LIFE))
+			return ShelfLifeDO.class;
+		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.SHRINKAGE))
+			return ShrinkageDO.class;
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
@@ -1126,6 +1246,88 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return productList;
 		}
 
+		return null;
+	}
+
+	@Override
+	public void createShelfLife(ShelfLifeDO shelfLifeDO) throws ApplicationException, Exception {
+
+		int shelfLife_id = shelfLifeDO.getId();
+		int product_id = shelfLifeDO.getProduct_id();
+		int cr_grade_id = shelfLifeDO.getCr_grade_id();
+
+		// validate the shelf_life_id in update scenario
+		masterDAO.validateEntityById(ShelfLifeDO.class, shelfLife_id, IResponseMessages.INVALID_SHELF_LIFE_ID);
+
+		// Validate and set Product Definition
+		ProductDefDO productDefDO = (ProductDefDO) masterDAO.validateEntityById(ProductDefDO.class, product_id,
+				IResponseMessages.INVALID_PRODUCT_DEFINATION_ID);
+		shelfLifeDO.setProduct(productDefDO);
+
+		// validate and Set CRGrade
+		CRGradeDO cr_gradeDO = (CRGradeDO) masterDAO.validateEntityById(CRGradeDO.class, cr_grade_id,
+				IResponseMessages.INVALID_CR_GRADE_ID);
+		shelfLifeDO.setCr_grade(cr_gradeDO);
+
+		UserDO loggedInUser = getLoggedInUser();
+		shelfLifeDO.setStatus(IConstants.STATUS_ACTIVE);
+		shelfLifeDO.setCreated_by(loggedInUser);
+		shelfLifeDO.setUpdated_by(loggedInUser);
+
+		masterDAO.mergeEntity(shelfLifeDO);
+	}
+
+	@Override
+	public Object getShelfLifeList(RequestBO requestFilter, int page, int limit) {
+
+		List<ShelfLifeDO> shelfLifeList = masterDAO.getShelfLifeList(requestFilter, page, limit);
+
+		if (shelfLifeList != null && !shelfLifeList.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getShelfLifeSize(requestFilter);
+
+				return generatePaginationResponse(shelfLifeList, listSize, page, limit);
+			}
+			return shelfLifeList;
+		}
+		return null;
+	}
+
+	@Override
+	public void createShrinkAge(ShrinkageDO shrinkageDO) throws ApplicationException, Exception {
+
+		int shrinkage_id = shrinkageDO.getId();
+		int crgrade_id = shrinkageDO.getCr_grade_id();
+
+		// validate shrinkage_id in update scenario
+		masterDAO.validateEntityById(ShrinkageDO.class, shrinkage_id, IResponseMessages.INVALID_SHRINK_AGE_ID);
+
+		// validate and set CR_Grade
+		CRGradeDO crGradeDO = (CRGradeDO) masterDAO.validateEntityById(CRGradeDO.class, crgrade_id,
+				IResponseMessages.INVALID_CR_GRADE_ID);
+		shrinkageDO.setCr_grade(crGradeDO);
+
+		UserDO loggedInUser = getLoggedInUser();
+		shrinkageDO.setStatus(IConstants.STATUS_ACTIVE);
+		shrinkageDO.setCreated_by(loggedInUser);
+		shrinkageDO.setUpdated_by(loggedInUser);
+
+		masterDAO.mergeEntity(shrinkageDO);
+	}
+
+	@Override
+	public Object getShrinkAgeList(RequestBO requestFilter, int page, int limit) {
+
+		List<ShrinkageDO> shrinkAgeList = masterDAO.getShrinkAgeList(requestFilter, page, limit);
+
+		if (shrinkAgeList != null && !shrinkAgeList.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getShrinkageSize(requestFilter);
+
+				return generatePaginationResponse(shrinkAgeList, listSize, page, limit);
+			}
+			return shrinkAgeList;
+		}
 		return null;
 	}
 

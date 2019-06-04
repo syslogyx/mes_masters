@@ -75,7 +75,34 @@ public class ShelfLifeDO {
 	private int product_id;
 
 	@Transient
+	private String product_name;
+
+	@Transient
 	private int cr_grade_id;
+
+	@Transient
+	private String cr_grade_name;
+
+	@Transient
+	private String updated_by_name;
+
+	public ShelfLifeDO() {
+		super();
+	}
+
+	public ShelfLifeDO(int id, int shelf_life, Date updated, int status, int product_id, String product_name,
+			int cr_grade_id, String cr_grade_name, String updated_by_name) {
+
+		this.id = id;
+		this.shelf_life = shelf_life;
+		this.updated = updated;
+		this.status = status;
+		this.product_id = product_id;
+		this.product_name = product_name;
+		this.cr_grade_id = cr_grade_id;
+		this.cr_grade_name = cr_grade_name;
+		this.updated_by_name = updated_by_name;
+	}
 
 	public int getId() {
 		return id;
@@ -163,6 +190,30 @@ public class ShelfLifeDO {
 
 	public void setCr_grade_id(int cr_grade_id) {
 		this.cr_grade_id = cr_grade_id;
+	}
+
+	public String getProduct_name() {
+		return product_name;
+	}
+
+	public void setProduct_name(String product_name) {
+		this.product_name = product_name;
+	}
+
+	public String getCr_grade_name() {
+		return cr_grade_name;
+	}
+
+	public void setCr_grade_name(String cr_grade_name) {
+		this.cr_grade_name = cr_grade_name;
+	}
+
+	public String getUpdated_by_name() {
+		return updated_by_name;
+	}
+
+	public void setUpdated_by_name(String updated_by_name) {
+		this.updated_by_name = updated_by_name;
 	}
 
 }
