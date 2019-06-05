@@ -75,12 +75,13 @@ public class CodeGroupDO {
 
 	}
 
-	public CodeGroupDO(int id, String group_code, String group_desc, String username, Date created, Date updated,
+	public CodeGroupDO(int id, String group_code, String group_desc,int incrementor, String username, Date created, Date updated,
 			int status) {
 
 		this.id = id;
 		this.group_code = group_code;
 		this.group_desc = group_desc;
+		this.incrementor= incrementor;
 		this.updated_by_name = username;
 		this.created = created;
 		this.updated = updated;

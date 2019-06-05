@@ -522,11 +522,11 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			row.createCell(0).setCellValue(index + 1);
 			row.createCell(1).setCellValue(codeGroupDO.getGroup_code());
 			row.createCell(2).setCellValue(codeGroupDO.getGroup_desc());
-
-			row.createCell(3).setCellValue(
+			row.createCell(3).setCellValue(codeGroupDO.getIncrementor());
+			row.createCell(4).setCellValue(
 					Utils.getFormatedDate(codeGroupDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
-			row.createCell(4).setCellValue(codeGroupDO.getUpdated_by_name());
-			row.createCell(5).setCellValue(getStatusString(codeGroupDO.getStatus()));
+			row.createCell(5).setCellValue(codeGroupDO.getUpdated_by_name());
+			row.createCell(6).setCellValue(getStatusString(codeGroupDO.getStatus()));
 		}
 	}
 
@@ -565,7 +565,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	 */
 	private float[] setPDFwidth(String master_name) throws ApplicationException {
 		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP))
-			return new float[] { 1, 1, 2, 2, 2, 1 };
+			return new float[] { 1, 1, 2,1, 2, 2, 1 };
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN))
 			return new float[] { 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1 };
@@ -892,6 +892,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			table.addCell(new Phrase(index + 1 + "", font));
 			table.addCell(new Phrase(codeGroupDO.getGroup_code(), font));
 			table.addCell(new Phrase(codeGroupDO.getGroup_desc(), font));
+			table.addCell(new Phrase(codeGroupDO.getIncrementor()+"", font));
 			table.addCell(new Phrase(
 					Utils.getFormatedDate(codeGroupDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
 					font));

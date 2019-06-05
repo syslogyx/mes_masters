@@ -25,6 +25,7 @@ public interface IPropertyConstant {
 	// CodeGroup Constants
 	String GROUP_CODE = "group_code";
 	String GROUP_DESC = "group_desc";
+	String INCREMENTOR = "incrementor";
 
 	// Campaign Constants
 	String CAMPAIGN_ID = "campaign_id";
@@ -70,5 +71,6 @@ public interface IPropertyConstant {
 	//Product Definition Constants
 	String PRODUCT_TYPE = "product_type";
 	String SHELF_LIFE = "shelf_life";
+	
 
 }

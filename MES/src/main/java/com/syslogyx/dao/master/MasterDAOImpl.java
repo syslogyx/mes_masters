@@ -70,9 +70,9 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		// set the list of properties whose values are required to fetch
 		CompoundSelection<CodeGroupDO> construct = builder.construct(CodeGroupDO.class,
 				codeGroupRoot.get(IPropertyConstant.ID), codeGroupRoot.get(IPropertyConstant.GROUP_CODE),
-				codeGroupRoot.get(IPropertyConstant.GROUP_DESC), fetch.get(IPropertyConstant.USERNAME),
-				codeGroupRoot.get(IPropertyConstant.CREATED), codeGroupRoot.get(IPropertyConstant.UPDATED),
-				codeGroupRoot.get(IPropertyConstant.STATUS));
+				codeGroupRoot.get(IPropertyConstant.GROUP_DESC), codeGroupRoot.get(IPropertyConstant.INCREMENTOR),
+				fetch.get(IPropertyConstant.USERNAME), codeGroupRoot.get(IPropertyConstant.CREATED),
+				codeGroupRoot.get(IPropertyConstant.UPDATED), codeGroupRoot.get(IPropertyConstant.STATUS));
 
 		// prepare where conditions according to provided filter
 		List<Predicate> conditions = addCriteriaForCodeGroupFilter(requestFilter, builder, codeGroupRoot);
@@ -236,7 +236,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		Object[] resultSet = new Object[2];
 
 		Join<CampaignDO, UserDO> fetch = campaignRoot.join(IPropertyConstant.UPDATED_BY);
-		Join<CampaignDO, ProcessUnitDO> processUnitFetch = campaignRoot.join(IPropertyConstant.HOLD_UNIT);
+		Join<CampaignDO, ProcessUnitDO> processUnitFetch = campaignRoot.join(IPropertyConstant.HOLD_UNIT, JoinType.LEFT);
 
 		if (requestFilter != null) {
 			List<Predicate> conditions = new ArrayList<>();
@@ -307,8 +307,8 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		CriteriaQuery<DPRTargetDO> createQuery = builder.createQuery(DPRTargetDO.class);
 		Root<DPRTargetDO> dprTargetRoot = createQuery.from(DPRTargetDO.class);
 		Join<DPRTargetDO, UserDO> fetch = dprTargetRoot.join(IPropertyConstant.UPDATED_BY);
-		Join<DPRTargetDO, ProcessUnitDO> unitJoin = dprTargetRoot.join(IPropertyConstant.UNIT);
-		Join<DPRTargetDO, ProductDefDO> productJoin = dprTargetRoot.join(IPropertyConstant.PRODUCT);
+		Join<DPRTargetDO, ProcessUnitDO> unitJoin = dprTargetRoot.join(IPropertyConstant.UNIT, JoinType.LEFT);
+		Join<DPRTargetDO, ProductDefDO> productJoin = dprTargetRoot.join(IPropertyConstant.PRODUCT, JoinType.LEFT);
 
 		// set the list of properties whose values are required to fetch
 		CompoundSelection<DPRTargetDO> construct = builder.construct(DPRTargetDO.class,
@@ -376,22 +376,24 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 			Root<DPRTargetDO> dprTargetRoot) {
 		if (requestFilter != null) {
 
-			Join<DPRTargetDO, ProcessUnitDO> unitJoin = dprTargetRoot.join(IPropertyConstant.UNIT);
-			Join<DPRTargetDO, ProductDefDO> productJoin = dprTargetRoot.join(IPropertyConstant.PRODUCT);
+			Join<DPRTargetDO, ProcessUnitDO> unitJoin = dprTargetRoot.join(IPropertyConstant.UNIT, JoinType.LEFT);
+			Join<DPRTargetDO, ProductDefDO> productJoin = dprTargetRoot.join(IPropertyConstant.PRODUCT, JoinType.LEFT);
 			List<Predicate> conditions = new ArrayList<>();
 
 			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
 				conditions.add(builder.or(
 						builder.like(dprTargetRoot.get(IPropertyConstant.YEAR),
 								"%" + requestFilter.getQuick_finder() + "%"),
-						builder.like(unitJoin.get(IPropertyConstant.UNIT), "%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(unitJoin.get(IPropertyConstant.UNIT), 
+								"%" + requestFilter.getQuick_finder() + "%"),
 						builder.like(productJoin.get(IPropertyConstant.PRODUCT_FORM),
 								"%" + requestFilter.getQuick_finder() + "%")));
 			}
 
 			// add condition to restrict rows whose status is inactive
 			if (!requestFilter.isInclude_inactive_data()) {
-				conditions.add(builder.notEqual(dprTargetRoot.get("status"), IConstants.STATUS_INACTIVE));
+				conditions
+						.add(builder.notEqual(dprTargetRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
 			}
 			return conditions;
 		}
@@ -770,7 +772,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		Object[] resultSet = new Object[2];
 
 		Join<ProcessUnitDO, UserDO> updatedBy = processUnitRoot.join(IPropertyConstant.UPDATED_BY);
-		Join<ProcessUnitDO, ProcessFamilyDO> processFamily = processUnitRoot.join(IPropertyConstant.PROCESS_FAMILY);
+		Join<ProcessUnitDO, ProcessFamilyDO> processFamily = processUnitRoot.join(IPropertyConstant.PROCESS_FAMILY, JoinType.LEFT);
 
 		if (requestFilter != null) {
 			List<Predicate> conditions = new ArrayList<>();
@@ -1093,8 +1095,8 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		if (queryResult != null && queryResult.length > IConstants.VALUE_ZERO) {
 
 			List<Predicate> condition = (List<Predicate>) queryResult[0];
-			
-			if (condition != null && condition.isEmpty()) {	
+
+			if (condition != null && condition.isEmpty()) {
 				createQuery.where(condition.toArray(new Predicate[] {}));
 			}
 			Query query = entityManager
@@ -1131,7 +1133,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		Object[] resultSet = new Object[2];
 
 		Join<ShrinkageDO, UserDO> userFetch = shrinkageRoot.join(IPropertyConstant.UPDATED_BY);
-		Join<ShrinkageDO, CRGradeDO> crgradeFetch = shrinkageRoot.join(IPropertyConstant.CR_GRADE);
+		Join<ShrinkageDO, CRGradeDO> crgradeFetch = shrinkageRoot.join(IPropertyConstant.CR_GRADE, JoinType.LEFT);
 
 		if (requestFilter != null) {
 			ArrayList<Predicate> conditions = new ArrayList<>();

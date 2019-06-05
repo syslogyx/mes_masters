@@ -371,6 +371,26 @@ public class MasterController extends BaseController {
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
 	}
+	
+	
+	@PostMapping(value = INetworkConstants.IURLConstants.ELONGATION + INetworkConstants.IURLConstants.LIST)
+	public ResponseEntity<BaseResponseBO> getElongationList(
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.LIMIT, required = false, defaultValue = "-1") int limit,
+			@RequestBody RequestBO requestFilter) {
+		try {
+
+			Object elongationtList = iMasterService.getElongationList(requestFilter, page, limit);
+
+			if (elongationtList != null)
+				return getResponseModel(elongationtList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+
+			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
 
 	/**
 	 * For store Process Family data to db
