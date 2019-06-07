@@ -33,7 +33,7 @@ public interface IResponseMessages {
 	String INVALID_PRODUCT_ID = "Invalid Product Id.";
 	String INVALID_MASTER_ID = "Invalid Master Id.";
 	String INVALID_MASTER_NAME = "Invalid Master name.";
-	String INVALID_LEAD_TIME_ID = "Invalid Lead Time Id";
+	String INVALID_LEAD_TIME_ID = "Invalid Lead Time Id.";
 	String INVALID_ELONGATION_ID = "Invalid Elongation Id.";
 	String INVALID_CR_GRADE_ID = "Invalid CR Grade Id.";
 	String INVALID_PROCESS_FAMILY_ID = "Invalid Process Family Id.";
@@ -45,7 +45,9 @@ public interface IResponseMessages {
 	String INVALID_PRODUCT_TYPE_ID = "Invalid Product Type Id.";
 	String INVALID_PRODUCT_FORM_ID = "Invalid Product Form Id.";
 	String EXISTING_PRODUCT = "This Product already exists.";
-	String INVALID_SHELF_LIFE_ID = "Invalid Shelf Life Id";
-	String INVALID_SHRINK_AGE_ID = "Invalid Shrink Age Id";
+	String INVALID_SHELF_LIFE_ID = "Invalid Shelf Life Id.";
+	String INVALID_SHRINK_AGE_ID = "Invalid Shrink Age Id.";
+	String INVALID_TRIMMING_ID = "Invalid Trimming Id.";
+	String INVALID_THICKNESS_ID = "Invalid Thickness Id.";
 
 }

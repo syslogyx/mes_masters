@@ -15,6 +15,7 @@ import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.masters.ShelfLifeDO;
 import com.syslogyx.model.masters.ShrinkageDO;
+import com.syslogyx.model.masters.TrimmingDO;
 
 /**
  * This interface is used for communicating with db
@@ -216,5 +217,23 @@ public interface IMasterDAO extends IBaseDAO {
 	 * @return
 	 */
 	long getShrinkageSize(RequestBO requestFilter);
+
+	/**
+	 * Fetch the Trimming list according to the Pagination and Filter
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	List<TrimmingDO> getTrimmingList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Fetch the Trimming list Size according to the Filter
+	 * 
+	 * @param requestFilter
+	 * @return
+	 */
+	long getTrimmingSize(RequestBO requestFilter);
 
 }

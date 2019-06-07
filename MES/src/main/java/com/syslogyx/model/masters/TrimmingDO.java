@@ -39,19 +39,19 @@ public class TrimmingDO {
 	@SequenceGenerator(name = "trim_Sequence", sequenceName = "TRIM_SEQ", allocationSize = 1)
 	@Column(name = "trim_id")
 	private int id;
-
+	
 	@Column(name = "trim_allo_min")
 	private float trim_allo_min;
-
+	
 	@Column(name = "trim_allo_max")
 	private float trim_allo_max;
-
+	
 	@Column(name = "trim_allo_aim")
 	private float trim_allo_aim;
 
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "cr_grade_id")
-	private CRGradeDO cr_grade;
+	@JoinColumn(name = "unit_id")
+	private ProcessUnitDO unit;
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by", updatable = false)
@@ -73,7 +73,32 @@ public class TrimmingDO {
 	public int status;
 
 	@Transient
-	private int cr_grade_id;
+	private int unit_id;
+
+	@Transient
+	private String unit_name;
+
+	@Transient
+	private String updated_by_name;
+
+	public TrimmingDO() {
+
+	}
+
+	public TrimmingDO(int id, float trim_allo_min, float trim_allo_max, float trim_allo_aim,
+			int unit_id, String unit_name, String updated_by_name,Date updated, int status) {
+
+		this.id = id;
+		this.trim_allo_min = trim_allo_min;
+		this.trim_allo_max = trim_allo_max;
+		this.trim_allo_aim = trim_allo_aim;
+		this.unit_id = unit_id;
+		this.unit_name = unit_name;
+		this.updated_by_name = updated_by_name;
+		this.updated = updated;
+		this.status = status;
+		
+	}
 
 	public int getId() {
 		return id;
@@ -103,16 +128,16 @@ public class TrimmingDO {
 		return trim_allo_aim;
 	}
 
-	public void setTrim_allo_aim(int trim_allo_aim) {
+	public void setTrim_allo_aim(float trim_allo_aim) {
 		this.trim_allo_aim = trim_allo_aim;
 	}
 
-	public CRGradeDO getCr_grade() {
-		return cr_grade;
+	public ProcessUnitDO getUnit() {
+		return unit;
 	}
 
-	public void setCr_grade(CRGradeDO cr_grade) {
-		this.cr_grade = cr_grade;
+	public void setUnit(ProcessUnitDO unit) {
+		this.unit = unit;
 	}
 
 	public UserDO getCreated_by() {
@@ -155,12 +180,29 @@ public class TrimmingDO {
 		this.status = status;
 	}
 
-	public int getCr_grade_id() {
-		return cr_grade_id;
+	public int getUnit_id() {
+		return unit_id;
 	}
 
-	public void setCr_grade_id(int cr_grade_id) {
-		this.cr_grade_id = cr_grade_id;
+	public void setUnit_id(int unit_id) {
+		this.unit_id = unit_id;
 	}
+	
+	public String getUnit_name() {
+		return unit_name;
+	}
+	
+	public void setUnit_name(String unit_name) {
+		this.unit_name = unit_name;
+	}
+	
+	public String getUpdated_by_name() {
+		return updated_by_name;
+	}
+	
+	public void setUpdated_by_name(String updated_by_name) {
+		this.updated_by_name = updated_by_name;
+	}
+	
 
 }

@@ -20,6 +20,7 @@ public interface IFileHeaderConstants {
 	// Code Group Headers
 	public String GROUP_CODE = "Group Code";
 	public String GROUP_DESC = "Group Description";
+	public String INCREMENTOR = "Incrementor";
 
 	// Campaign Headers
 	public String CAMPAIGN_ID = "Campaign_id";
@@ -66,8 +67,14 @@ public interface IFileHeaderConstants {
 	// Product Definition Headers
 	public String PRODUCT_TYPE = "Product Type";
 	public String PRODUCT_FORM = "Product Form";
+	
+	//Shelf Life Headers
 	public String SHELF_LIFES = "Shelf Life (In Days)";
-	public String INCREMENTOR = "incrementor";
+	
+	//Trimming Headers
+	public String TRIM_ALLO_MIN = "Trim Allo Min";
+	public String TRIM_ALLO_MAX = "Trim Allo Max";
+	public String TRIM_ALLO_AIM = "Trim Allo Aim";
 
 	/**
 	 * Prepare the List of Headers used in Code Group Excel and PDF
@@ -148,7 +155,24 @@ public interface IFileHeaderConstants {
 		else if (master_name.equals(IConstants.MASTERS_NAME.SHRINKAGE))
 			return getShrinkageHeaders();
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
+			return getTrimmingHeaders();
+
 		return null;
+	}
+
+	public static List<String> getTrimmingHeaders() {
+		List<String> headers = new ArrayList<>();
+		headers.add(SR_NO);
+		headers.add(PROCESS_UNIT);
+		headers.add(TRIM_ALLO_MIN);
+		headers.add(TRIM_ALLO_MAX);
+		headers.add(TRIM_ALLO_AIM);
+		headers.add(UPDATED_BY);
+		headers.add(LAST_UPDATED);
+		headers.add(STATUS);
+
+		return headers;
 	}
 
 	public static List<String> getShrinkageHeaders() {

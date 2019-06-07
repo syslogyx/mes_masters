@@ -39,6 +39,8 @@ import com.syslogyx.model.masters.ProductFormDO;
 import com.syslogyx.model.masters.ProductTypeDO;
 import com.syslogyx.model.masters.ShelfLifeDO;
 import com.syslogyx.model.masters.ShrinkageDO;
+import com.syslogyx.model.masters.ThicknessDO;
+import com.syslogyx.model.masters.TrimmingDO;
 import com.syslogyx.model.user.UserDO;
 import com.syslogyx.service.BaseService;
 import com.syslogyx.utility.Utils;
@@ -215,7 +217,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 				sheet.autoSizeColumn(index);
 			}
 
-			String filename = Utils.getFilePath(System.getProperty( "catalina.base" ), master_name);
+			String filename = Utils.getFilePath(IConstants.EXCEL_BASE_PATH, master_name);
 			return Utils.writeDataToWorkbook(workbook, filename);
 		} else {
 			throw new ApplicationException(IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
@@ -287,6 +289,28 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.SHRINKAGE))
 			processExportingShrinkageListExcel(sheet, mastersList);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
+			processExportingTrimmingListExcel(sheet, mastersList);
+	}
+
+	private void processExportingTrimmingListExcel(HSSFSheet sheet, List<TrimmingDO> trimmingList) {
+
+		for (int index = 0; index < trimmingList.size(); index++) {
+
+			TrimmingDO trimmingDO = trimmingList.get(index);
+			HSSFRow row = sheet.createRow(index + 1);
+			row.createCell(0).setCellValue(index + 1);
+			row.createCell(1).setCellValue(trimmingDO.getUnit_name());
+			row.createCell(2).setCellValue(trimmingDO.getTrim_allo_min());
+			row.createCell(3).setCellValue(trimmingDO.getTrim_allo_max());
+			row.createCell(4).setCellValue(trimmingDO.getTrim_allo_aim());
+			row.createCell(5).setCellValue(trimmingDO.getUpdated_by_name());
+			row.createCell(6).setCellValue(
+					Utils.getFormatedDate(trimmingDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
+			row.createCell(7).setCellValue(getStatusString(trimmingDO.getStatus()));
+
+		}
 	}
 
 	/**
@@ -565,7 +589,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	 */
 	private float[] setPDFwidth(String master_name) throws ApplicationException {
 		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP))
-			return new float[] { 1, 1, 2,1, 2, 2, 1 };
+			return new float[] { 1, 1, 2, 1, 2, 2, 1 };
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN))
 			return new float[] { 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1 };
@@ -593,6 +617,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.SHRINKAGE))
 			return new float[] { 1, 1, 1, 1, 1 };
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
+			return new float[] { 1, 1, 1, 1, 1, 1, 1, 1 };
 
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
@@ -635,6 +662,30 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.SHRINKAGE))
 			processExportingShrinkageListPDF(table, mastersList);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
+			processExportingTrimmingListPDF(table, mastersList);
+
+	}
+
+	private void processExportingTrimmingListPDF(PdfPTable table, List<TrimmingDO> trimmingList) {
+
+		for (int index = 0; index < trimmingList.size(); index++) {
+			TrimmingDO trimmingDO = trimmingList.get(index);
+
+			Font font = FontFactory.getFont(FontFactory.HELVETICA, 7);
+
+			table.addCell(new Phrase(index + 1 + "", font));
+			table.addCell(new Phrase(trimmingDO.getUnit_name(), font));
+			table.addCell(new Phrase(trimmingDO.getTrim_allo_min() + "", font));
+			table.addCell(new Phrase(trimmingDO.getTrim_allo_max() + "", font));
+			table.addCell(new Phrase(trimmingDO.getTrim_allo_aim() + "", font));
+			table.addCell(new Phrase(trimmingDO.getUpdated_by_name(), font));
+			table.addCell(new Phrase(
+					Utils.getFormatedDate(trimmingDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
+					font));
+			table.addCell(new Phrase(getStatusString(trimmingDO.getStatus()), font));
+		}
 
 	}
 
@@ -892,7 +943,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			table.addCell(new Phrase(index + 1 + "", font));
 			table.addCell(new Phrase(codeGroupDO.getGroup_code(), font));
 			table.addCell(new Phrase(codeGroupDO.getGroup_desc(), font));
-			table.addCell(new Phrase(codeGroupDO.getIncrementor()+"", font));
+			table.addCell(new Phrase(codeGroupDO.getIncrementor() + "", font));
 			table.addCell(new Phrase(
 					Utils.getFormatedDate(codeGroupDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
 					font));
@@ -957,6 +1008,11 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return ShelfLifeDO.class;
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.SHRINKAGE))
 			return ShrinkageDO.class;
+		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.TRIMMING))
+			return TrimmingDO.class;
+		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.THICKNESS))
+			return ThicknessDO.class;
+
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
@@ -1330,6 +1386,60 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return shrinkAgeList;
 		}
 		return null;
+	}
+
+	@Override
+	public void createTrimming(TrimmingDO trimmingDO) throws ApplicationException, Exception {
+
+		int trimming_id = trimmingDO.getId();
+		int unit_id = trimmingDO.getUnit_id();
+
+		// validate trimming Id in update scenario
+		masterDAO.validateEntityById(TrimmingDO.class, trimming_id, IResponseMessages.INVALID_TRIMMING_ID);
+
+		// validate and Set ProcessUnit
+		ProcessUnitDO processUnit_id = (ProcessUnitDO) masterDAO.validateEntityById(ProcessUnitDO.class, unit_id,
+				IResponseMessages.INVALID_PROCESS_UNIT_ID);
+		trimmingDO.setUnit(processUnit_id);
+
+		UserDO loggedInUser = getLoggedInUser();
+		trimmingDO.setStatus(IConstants.STATUS_ACTIVE);
+		trimmingDO.setCreated_by(loggedInUser);
+		trimmingDO.setUpdated_by(loggedInUser);
+
+		masterDAO.mergeEntity(trimmingDO);
+
+	}
+
+	@Override
+	public Object getTrimmingList(RequestBO requestFilter, int page, int limit) {
+		List<TrimmingDO> trimmingLIst = masterDAO.getTrimmingList(requestFilter, page, limit);
+
+		if (trimmingLIst != null && !trimmingLIst.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getTrimmingSize(requestFilter);
+
+				return generatePaginationResponse(trimmingLIst, listSize, page, limit);
+			}
+			return trimmingLIst;
+		}
+		return null;
+	}
+
+	@Override
+	public void createThickness(ThicknessDO thicknessDO) throws ApplicationException, Exception {
+
+		int thickness_id = thicknessDO.getId();
+
+		masterDAO.validateEntityById(ThicknessDO.class, thickness_id, IResponseMessages.INVALID_THICKNESS_ID);
+
+		UserDO loggedInUser = getLoggedInUser();
+		thicknessDO.setStatus(IConstants.STATUS_ACTIVE);
+		thicknessDO.setCreated_by(loggedInUser);
+		thicknessDO.setUpdated_by(loggedInUser);
+
+		masterDAO.mergeEntity(thicknessDO);
+
 	}
 
 }

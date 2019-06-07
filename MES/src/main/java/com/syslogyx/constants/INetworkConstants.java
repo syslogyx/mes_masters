@@ -40,6 +40,8 @@ public interface INetworkConstants {
 		public String PRODUCT = "/product";
 		public String SHELF_LIFE = "/shelf_life";
 		public String SHRINKAGE = "/shrinkage";
+		public String TRIMMING = "/trimming";
+		public String THICKNESS = "/thickness";
 	}
 
 	/**

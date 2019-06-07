@@ -13,6 +13,8 @@ import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.masters.ShelfLifeDO;
 import com.syslogyx.model.masters.ShrinkageDO;
+import com.syslogyx.model.masters.ThicknessDO;
+import com.syslogyx.model.masters.TrimmingDO;
 
 /**
  * This class is used for MasterService business logic related to Master module
@@ -269,5 +271,33 @@ public interface IMasterService {
 	 * @return
 	 */
 	Object getShrinkAgeList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Validate and store Trimming Related Data
+	 * 
+	 * @param trimmingDO
+	 * @throws ApplicationException
+	 * @throws Exception
+	 */
+	void createTrimming(TrimmingDO trimmingDO) throws ApplicationException, Exception;
+
+	/**
+	 * Fetch the Trimming list according to the Pagination and Quick Finder
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	Object getTrimmingList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Validate and store Thickness Related Data
+	 * 
+	 * @param thicknessDO
+	 * @throws ApplicationException
+	 * @throws Exception
+	 */
+	void createThickness(ThicknessDO thicknessDO) throws ApplicationException, Exception;
 
 }

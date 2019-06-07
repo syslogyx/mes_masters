@@ -1,5 +1,6 @@
 package com.syslogyx.utility;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -69,7 +70,6 @@ public class Utils {
 		}
 	}
 
-	
 	public static final Logger LOG = Logger.getLogger(">>SMART_FACTORY>>");
 
 	public static String encrypt(String plainText) throws Exception {
@@ -543,7 +543,7 @@ public class Utils {
 			table.addCell(new Phrase(headerList.get(index), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8)));
 			// table.addCell(headerList.get(index));
 		}
-		
+
 		PdfPRow headerRows = table.getRow(IConstants.VALUE_ZERO);
 		for (int index = 0; index < headerRows.getCells().length; index++) {
 			// headerRows.getCells()[index].setBackgroundColor(BaseColor.GRAY);
@@ -599,5 +599,15 @@ public class Utils {
 			}
 		}
 	}
+
+	// public static String getFilePaths(File basePath, String fileName) {
+	//
+	//
+	// if (fileName != null && !fileName.isEmpty()) {
+	// return basePath + System.currentTimeMillis() + fileName;
+	// }
+	// return fileName;
+	//
+	// }
 
 }

@@ -26,6 +26,8 @@ import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.masters.ShelfLifeDO;
 import com.syslogyx.model.masters.ShrinkageDO;
+import com.syslogyx.model.masters.ThicknessDO;
+import com.syslogyx.model.masters.TrimmingDO;
 import com.syslogyx.service.master.IMasterService;
 
 /**
@@ -371,8 +373,7 @@ public class MasterController extends BaseController {
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
 	}
-	
-	
+
 	@PostMapping(value = INetworkConstants.IURLConstants.ELONGATION + INetworkConstants.IURLConstants.LIST)
 	public ResponseEntity<BaseResponseBO> getElongationList(
 			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
@@ -634,6 +635,76 @@ public class MasterController extends BaseController {
 			e.printStackTrace();
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
+	}
+
+	/**
+	 * This method to store the Trimming Master data to the db
+	 * 
+	 * @param shrinkageDO:
+	 *            contains Trimming provided by users
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.TRIMMING + INetworkConstants.IURLConstants.SAVE)
+	public ResponseEntity<BaseResponseBO> createTrimming(@RequestBody TrimmingDO trimmingDO) {
+		try {
+
+			iMasterService.createTrimming(trimmingDO);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Fetch the Trimming list according to the Pagination and quick finder
+	 * 
+	 * @param page
+	 * @param limit
+	 * @param requestFilter
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.TRIMMING + INetworkConstants.IURLConstants.LIST)
+	public ResponseEntity<BaseResponseBO> getTrimmingList(
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.LIMIT, required = false, defaultValue = "-1") int limit,
+			@RequestBody RequestBO requestFilter) {
+		try {
+
+			Object trimmingList = iMasterService.getTrimmingList(requestFilter, page, limit);
+
+			if (trimmingList != null)
+				return getResponseModel(trimmingList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+
+			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * This method used to store Thickness data to the db
+	 * 
+	 * @param thicknessDO : contains Thickness data provided by users
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.THICKNESS + INetworkConstants.IURLConstants.SAVE)
+	public ResponseEntity<BaseResponseBO> createThickness(@RequestBody ThicknessDO thicknessDO) {
+		try {
+			iMasterService.createThickness(thicknessDO);
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+
 	}
 
 }

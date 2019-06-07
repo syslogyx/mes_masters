@@ -70,7 +70,15 @@ public interface IPropertyConstant {
 	
 	//Product Definition Constants
 	String PRODUCT_TYPE = "product_type";
+	
+	//Shelf Life Constants
 	String SHELF_LIFE = "shelf_life";
+	
+	//Trimming Constants
+	String TRIM_ALLO_MIN = "trim_allo_min";
+	String TRIM_ALLO_MAX = "trim_allo_max";
+	String TRIM_ALLO_AIM = "trim_allo_aim";
+	
 	
 
 }

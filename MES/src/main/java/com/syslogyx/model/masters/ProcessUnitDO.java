@@ -52,16 +52,16 @@ public class ProcessUnitDO {
 
 	@Column(name = "capacity")
 	private String capacity;
-
+		
 	@Column(name = "const_setup_time")
 	private String const_setup_time;
-
+					
 	@Column(name = "yield")
 	private String yield;
-
+							
 	@Column(name = "osp_identifier")
-	private int osp_identifier;
-
+	private int osp_identifier;	
+	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by", updatable = false)
 	private UserDO created_by;
@@ -94,7 +94,7 @@ public class ProcessUnitDO {
 	}
 
 	public ProcessUnitDO(int id, String unit, String cost_center, String capacity, String const_setup_time,
-			String yield, int osp_identifier, Date updated, int status, String updated_by_name,
+			String yield, Integer osp_identifier, Date updated, int status, String updated_by_name,
 			Integer process_family_id, String process_family_name) {
 		this.id = id;
 		this.unit = unit;
@@ -102,7 +102,10 @@ public class ProcessUnitDO {
 		this.capacity = capacity;
 		this.const_setup_time = const_setup_time;
 		this.yield = yield;
-		this.osp_identifier = osp_identifier;
+
+		if (osp_identifier != null)
+			this.osp_identifier = osp_identifier;
+		
 		this.updated = updated;
 		this.status = status;
 		this.updated_by_name = updated_by_name;

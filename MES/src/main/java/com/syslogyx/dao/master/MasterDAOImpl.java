@@ -41,6 +41,7 @@ import com.syslogyx.model.masters.ProductFormDO;
 import com.syslogyx.model.masters.ProductTypeDO;
 import com.syslogyx.model.masters.ShelfLifeDO;
 import com.syslogyx.model.masters.ShrinkageDO;
+import com.syslogyx.model.masters.TrimmingDO;
 import com.syslogyx.model.user.UserDO;
 
 /**
@@ -183,6 +184,9 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		else if (master_name.equals(IConstants.MASTERS_NAME.SHRINKAGE))
 			return getShrinkAgeList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
+			return getTrimmingList(null, IConstants.DEFAULT, IConstants.DEFAULT);
+
 		throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
 
@@ -236,7 +240,8 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		Object[] resultSet = new Object[2];
 
 		Join<CampaignDO, UserDO> fetch = campaignRoot.join(IPropertyConstant.UPDATED_BY);
-		Join<CampaignDO, ProcessUnitDO> processUnitFetch = campaignRoot.join(IPropertyConstant.HOLD_UNIT, JoinType.LEFT);
+		Join<CampaignDO, ProcessUnitDO> processUnitFetch = campaignRoot.join(IPropertyConstant.HOLD_UNIT,
+				JoinType.LEFT);
 
 		if (requestFilter != null) {
 			List<Predicate> conditions = new ArrayList<>();
@@ -384,8 +389,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 				conditions.add(builder.or(
 						builder.like(dprTargetRoot.get(IPropertyConstant.YEAR),
 								"%" + requestFilter.getQuick_finder() + "%"),
-						builder.like(unitJoin.get(IPropertyConstant.UNIT), 
-								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(unitJoin.get(IPropertyConstant.UNIT), "%" + requestFilter.getQuick_finder() + "%"),
 						builder.like(productJoin.get(IPropertyConstant.PRODUCT_FORM),
 								"%" + requestFilter.getQuick_finder() + "%")));
 			}
@@ -772,7 +776,8 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		Object[] resultSet = new Object[2];
 
 		Join<ProcessUnitDO, UserDO> updatedBy = processUnitRoot.join(IPropertyConstant.UPDATED_BY);
-		Join<ProcessUnitDO, ProcessFamilyDO> processFamily = processUnitRoot.join(IPropertyConstant.PROCESS_FAMILY, JoinType.LEFT);
+		Join<ProcessUnitDO, ProcessFamilyDO> processFamily = processUnitRoot.join(IPropertyConstant.PROCESS_FAMILY,
+				JoinType.LEFT);
 
 		if (requestFilter != null) {
 			List<Predicate> conditions = new ArrayList<>();
@@ -1189,6 +1194,133 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		}
 		return IConstants.VALUE_ZERO;
 
+	}
+
+	@Override
+	public List<TrimmingDO> getTrimmingList(RequestBO requestFilter, int page, int limit) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<TrimmingDO> createQuery = builder.createQuery(TrimmingDO.class);
+		Root<TrimmingDO> trimmingRoot = createQuery.from(TrimmingDO.class);
+
+		Object[] queryResult = getConditionForTrimming(requestFilter, builder, trimmingRoot, true);
+
+		if (queryResult != null && queryResult.length > IConstants.VALUE_ZERO) {
+
+			List<Predicate> condition = (List<Predicate>) queryResult[0];
+
+			if (condition != null && condition.isEmpty()) {
+				createQuery.where(condition.toArray(new Predicate[] {}));
+			}
+			Query query = entityManager
+					.createQuery(createQuery.select((Selection<? extends TrimmingDO>) queryResult[1]));
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				int start_index = IConstants.VALUE_ZERO;
+				if (page > 1) {
+					page -= 1;
+					start_index = page * limit;
+				}
+
+				query.setFirstResult(start_index);
+				query.setMaxResults(limit);
+			}
+
+			return query.getResultList();
+		}
+		return null;
+	}
+
+	/**
+	 * Add filters to the Trimming and Prepare the construct with list of fields
+	 * required in the response
+	 * 
+	 * @param requestFilter
+	 * @param builder
+	 * @param trimmingRoot
+	 * @param prepareConstruct
+	 * @return
+	 */
+	private Object[] getConditionForTrimming(RequestBO requestFilter, CriteriaBuilder builder,
+			Root<TrimmingDO> trimmingRoot, boolean prepareConstruct) {
+
+		Object[] resultSet = new Object[2];
+
+		Join<TrimmingDO, UserDO> userFetch = trimmingRoot.join(IPropertyConstant.UPDATED_BY);
+		Join<TrimmingDO, ProcessUnitDO> unitFetch = trimmingRoot.join(IPropertyConstant.UNIT, JoinType.LEFT);
+
+		if (requestFilter != null) {
+			ArrayList<Predicate> conditions = new ArrayList<>();
+
+			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
+
+				List<Predicate> orConditions = new ArrayList<>();
+
+				orConditions.add(builder.like(unitFetch.get(IPropertyConstant.UNIT),
+						"%" + requestFilter.getQuick_finder() + "%"));
+
+				if (NumberUtils.isCreatable(requestFilter.getQuick_finder())) {
+					
+					orConditions.add(builder.equal(trimmingRoot.get(IPropertyConstant.TRIM_ALLO_MIN),
+							requestFilter.getQuick_finder()));
+
+					orConditions.add(builder.equal(trimmingRoot.get(IPropertyConstant.TRIM_ALLO_MAX),
+							requestFilter.getQuick_finder()));
+
+					orConditions.add(builder.equal(trimmingRoot.get(IPropertyConstant.TRIM_ALLO_AIM),
+							requestFilter.getQuick_finder()));
+				}
+
+				// check whether the input filter value is numeric, and add the condition for
+				// search in shelf life column
+				conditions.add(builder.or(orConditions.toArray(new Predicate[] {})));
+
+			}
+			// add condition to restrict rows whose status is inactive
+			if (requestFilter.isInclude_inactive_data()) {
+				conditions
+						.add(builder.notEqual(trimmingRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
+			}
+			resultSet[0] = conditions;
+
+		}
+
+		if (prepareConstruct) {
+			CompoundSelection<TrimmingDO> construct = builder.construct(TrimmingDO.class,
+					trimmingRoot.get(IPropertyConstant.ID), trimmingRoot.get(IPropertyConstant.TRIM_ALLO_MIN),
+					trimmingRoot.get(IPropertyConstant.TRIM_ALLO_MAX),
+					trimmingRoot.get(IPropertyConstant.TRIM_ALLO_AIM), unitFetch.get(IPropertyConstant.ID),
+					unitFetch.get(IPropertyConstant.UNIT), userFetch.get(IPropertyConstant.USERNAME),
+					trimmingRoot.get(IPropertyConstant.UPDATED), trimmingRoot.get(IPropertyConstant.STATUS));
+
+			resultSet[1] = construct;
+		}
+
+		return resultSet;
+
+	}
+
+	@Override
+	public long getTrimmingSize(RequestBO requestFilter) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
+		Root<TrimmingDO> trimmingRoot = createQuery.from(TrimmingDO.class);
+
+		createQuery.select(builder.count(trimmingRoot));
+
+		Object[] queryResults = getConditionForTrimming(requestFilter, builder, trimmingRoot, false);
+
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+
+			Query query = entityManager.createQuery(createQuery);
+			return (long) query.getSingleResult();
+		}
+		return IConstants.VALUE_ZERO;
 	}
 
 }
