@@ -49,5 +49,6 @@ public interface IResponseMessages {
 	String INVALID_SHRINK_AGE_ID = "Invalid Shrink Age Id.";
 	String INVALID_TRIMMING_ID = "Invalid Trimming Id.";
 	String INVALID_THICKNESS_ID = "Invalid Thickness Id.";
+	String INVALID_AUTHENTICATION = "Invalid Authentication";
 
 }

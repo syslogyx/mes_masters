@@ -300,4 +300,14 @@ public interface IMasterService {
 	 */
 	void createThickness(ThicknessDO thicknessDO) throws ApplicationException, Exception;
 
+	/**
+	 * Fetch the Thickness List according to the Pagination and Quick Finder
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	Object getThicknessList(RequestBO requestFilter, int page, int limit);
+
 }

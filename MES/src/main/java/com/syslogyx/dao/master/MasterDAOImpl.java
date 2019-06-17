@@ -41,6 +41,7 @@ import com.syslogyx.model.masters.ProductFormDO;
 import com.syslogyx.model.masters.ProductTypeDO;
 import com.syslogyx.model.masters.ShelfLifeDO;
 import com.syslogyx.model.masters.ShrinkageDO;
+import com.syslogyx.model.masters.ThicknessDO;
 import com.syslogyx.model.masters.TrimmingDO;
 import com.syslogyx.model.user.UserDO;
 
@@ -186,6 +187,9 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
 			return getTrimmingList(null, IConstants.DEFAULT, IConstants.DEFAULT);
+		
+		else if (master_name.equals(IConstants.MASTERS_NAME.THICKNESS))
+			return getThicknessList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
 		throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
@@ -1259,7 +1263,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 						"%" + requestFilter.getQuick_finder() + "%"));
 
 				if (NumberUtils.isCreatable(requestFilter.getQuick_finder())) {
-					
+
 					orConditions.add(builder.equal(trimmingRoot.get(IPropertyConstant.TRIM_ALLO_MIN),
 							requestFilter.getQuick_finder()));
 
@@ -1321,6 +1325,123 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 			return (long) query.getSingleResult();
 		}
 		return IConstants.VALUE_ZERO;
+	}
+
+	@Override
+	public List<ThicknessDO> getThicknessList(RequestBO requestFilter, int page, int limit) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<ThicknessDO> createQuery = builder.createQuery(ThicknessDO.class);
+		Root<ThicknessDO> shelfLifeRoot = createQuery.from(ThicknessDO.class);
+
+		Object[] queryResults = getConditionForThickness(requestFilter, builder, shelfLifeRoot, true);
+
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+
+			Query query = entityManager
+					.createQuery(createQuery.select((Selection<? extends ThicknessDO>) queryResults[1]));
+
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				int start_index = IConstants.VALUE_ZERO;
+				if (page > 1) {
+					page -= 1;
+					start_index = page * limit;
+				}
+
+				query.setFirstResult(start_index);
+				query.setMaxResults(limit);
+			}
+
+			return query.getResultList();
+		}
+		return null;
+
+	}
+
+	@Override
+	public long getThicknessSize(RequestBO requestFilter) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
+		Root<ThicknessDO> thicknessRoot = createQuery.from(ThicknessDO.class);
+
+		createQuery.select(builder.count(thicknessRoot));
+
+		Object[] queryResults = getConditionForThickness(requestFilter, builder, thicknessRoot, false);
+
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+
+			Query query = entityManager.createQuery(createQuery);
+			return (long) query.getSingleResult();
+		}
+		return IConstants.VALUE_ZERO;
+	}
+
+	private Object[] getConditionForThickness(RequestBO requestFilter, CriteriaBuilder builder,
+			Root<ThicknessDO> thicknessRoot, boolean prepareContruct) {
+
+		Object[] resultSet = new Object[2];
+
+		Join<ThicknessDO, UserDO> userFetch = thicknessRoot.join(IPropertyConstant.UPDATED_BY);
+
+		if (requestFilter != null) {
+			List<Predicate> conditions = new ArrayList<>();
+
+			System.out.println(">>>>>> Is Numeric :  " + NumberUtils.isCreatable(requestFilter.getQuick_finder()));
+
+			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
+
+				List<Predicate> orConditions = new ArrayList<>();
+
+				// check whether the input filter value is numeric, and add the condition for
+				// search in shelf life column
+				if (NumberUtils.isCreatable(requestFilter.getQuick_finder())) {
+					orConditions.add(builder.equal(thicknessRoot.get(IPropertyConstant.THICKNESS_MIN),
+							requestFilter.getQuick_finder()));
+
+					orConditions.add(builder.equal(thicknessRoot.get(IPropertyConstant.THICKNESS_MAX),
+							requestFilter.getQuick_finder()));
+
+					orConditions.add(builder.equal(thicknessRoot.get(IPropertyConstant.TOLERANCE_MINUS),
+							requestFilter.getQuick_finder()));
+
+					orConditions.add(builder.equal(thicknessRoot.get(IPropertyConstant.TOLERANCE_PLUS),
+							requestFilter.getQuick_finder()));
+				}
+
+				conditions.add(builder.or(orConditions.toArray(new Predicate[] {})));
+			}
+
+			// add condition to restrict rows whose status is inactive
+			if (!requestFilter.isInclude_inactive_data()) {
+				conditions
+						.add(builder.notEqual(thicknessRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
+			}
+
+			resultSet[0] = conditions;
+		}
+
+		// add construct in case if the identifier is true to fetch the limited details
+		// from list
+		if (prepareContruct) {
+			CompoundSelection<ThicknessDO> construct = builder.construct(ThicknessDO.class,
+					thicknessRoot.get(IPropertyConstant.ID), thicknessRoot.get(IPropertyConstant.THICKNESS_MIN),
+					thicknessRoot.get(IPropertyConstant.THICKNESS_MAX),
+					thicknessRoot.get(IPropertyConstant.TOLERANCE_MINUS),
+					thicknessRoot.get(IPropertyConstant.TOLERANCE_PLUS), userFetch.get(IPropertyConstant.USERNAME),
+					thicknessRoot.get(IPropertyConstant.UPDATED), thicknessRoot.get(IPropertyConstant.STATUS));
+			resultSet[1] = construct;
+		}
+		return resultSet;
 	}
 
 }

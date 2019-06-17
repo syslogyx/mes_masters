@@ -1,7 +1,10 @@
 package com.syslogyx.controller;
 
+import java.security.Security;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,7 +65,7 @@ public class MasterController extends BaseController {
 			return getResponseModel(null, e.getCode(), e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR+e);
 		}
 	}
 
@@ -705,6 +708,34 @@ public class MasterController extends BaseController {
 			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
 		}
 
+	}
+	
+	
+	/**
+	 * Fetch the Trimming list according to the Pagination and quick finder
+	 * 
+	 * @param page
+	 * @param limit
+	 * @param requestFilter
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.THICKNESS + INetworkConstants.IURLConstants.LIST)
+	public ResponseEntity<BaseResponseBO> getThicknessList(
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.LIMIT, required = false, defaultValue = "-1") int limit,
+			@RequestBody RequestBO requestFilter) {
+		try {
+
+			Object thicknessList = iMasterService.getThicknessList(requestFilter, page, limit);
+
+			if (thicknessList != null)
+				return getResponseModel(thicknessList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+
+			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
 	}
 
 }

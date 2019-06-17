@@ -78,7 +78,9 @@ public interface IPropertyConstant {
 	String TRIM_ALLO_MIN = "trim_allo_min";
 	String TRIM_ALLO_MAX = "trim_allo_max";
 	String TRIM_ALLO_AIM = "trim_allo_aim";
-	
-	
+	String THICKNESS_MIN = "thickness_min";
+	String THICKNESS_MAX = "thickness_max";
+	String TOLERANCE_MINUS = "tolerance_minus";
+	String TOLERANCE_PLUS = "tolerance_plus";	
 
 }

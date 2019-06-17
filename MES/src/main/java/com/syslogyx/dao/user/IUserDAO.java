@@ -1,5 +1,6 @@
 package com.syslogyx.dao.user;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,13 +15,11 @@ import com.syslogyx.model.user.UserDO;
  */
 @Repository
 @Transactional(rollbackFor = Exception.class)
-public interface IUserDAO extends CrudRepository<UserDO, Integer> {
+public interface IUserDAO extends JpaRepository<UserDO, Integer> {
 
 	/**
 	 * Find User by it's Username
 	 * 
-	 * @param username
-	 *            : value of username
 	 * @return
 	 */
 	UserDO findByUsername(String username);

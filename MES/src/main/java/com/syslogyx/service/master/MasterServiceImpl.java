@@ -30,6 +30,7 @@ import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.ElongationDO;
+import com.syslogyx.model.masters.EmployeeDO;
 import com.syslogyx.model.masters.LeadTimeDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
 import com.syslogyx.model.masters.ProcessTypeDO;
@@ -73,7 +74,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		if (existingCodeGroup != null && existingCodeGroup.getId() != code_groupId)
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.EXISTING_GROUP_CODE);
-
+		
 		UserDO loggedInUser = getLoggedInUser();
 		codeGroupDO.setCreated_by(loggedInUser);
 		codeGroupDO.setUpdated_by(loggedInUser);
@@ -292,8 +293,43 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
 			processExportingTrimmingListExcel(sheet, mastersList);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.THICKNESS))
+			processExportingThicknessListExcel(sheet, mastersList);
 	}
 
+	/**
+	 * set the Field value from Thickness object to it's respective index number in
+	 * excel sheet
+	 * 
+	 * @param sheet
+	 * @param shrinkageList
+	 */
+	private void processExportingThicknessListExcel(HSSFSheet sheet, List<ThicknessDO> thicknessList) {
+
+		for (int index = 0; index < thicknessList.size(); index++) {
+
+			ThicknessDO thicknessDO = thicknessList.get(index);
+			HSSFRow row = sheet.createRow(index + 1);
+			row.createCell(0).setCellValue(index + 1);
+			row.createCell(1).setCellValue(thicknessDO.getThickness_min());
+			row.createCell(2).setCellValue(thicknessDO.getThickness_max());
+			row.createCell(3).setCellValue(thicknessDO.getTolerance_minus());
+			row.createCell(4).setCellValue(thicknessDO.getTolerance_plus());
+			row.createCell(5).setCellValue(thicknessDO.getUpdate_by_name());
+			row.createCell(6).setCellValue(
+					Utils.getFormatedDate(thicknessDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A));
+			row.createCell(7).setCellValue(getStatusString(thicknessDO.getStatus()));
+		}
+	}
+
+	/**
+	 * set the Field value from Trimming object to it's respective index number in
+	 * excel sheet
+	 * 
+	 * @param sheet
+	 * @param shrinkageList
+	 */
 	private void processExportingTrimmingListExcel(HSSFSheet sheet, List<TrimmingDO> trimmingList) {
 
 		for (int index = 0; index < trimmingList.size(); index++) {
@@ -621,6 +657,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
 			return new float[] { 1, 1, 1, 1, 1, 1, 1, 1 };
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.THICKNESS))
+			return new float[] { 1, 1, 1, 1, 1, 1, 1, 1 };
+		
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
@@ -665,9 +704,48 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
 			processExportingTrimmingListPDF(table, mastersList);
+		
+		else if (master_name.equals(IConstants.MASTERS_NAME.THICKNESS))
+			processExportingThicknessListPDF(table, mastersList);
 
 	}
 
+	/**
+	 * Set the field value from Thickness object to it's respective index number
+	 * in the PDF table
+	 * 
+	 * @param table
+	 * @param shrinkageList
+	 */
+	private void processExportingThicknessListPDF(PdfPTable table, List<ThicknessDO> thicknessList) {
+
+
+		for (int index = 0; index < thicknessList.size(); index++) {
+			ThicknessDO thicknessDO = thicknessList.get(index);
+
+			Font font = FontFactory.getFont(FontFactory.HELVETICA, 7);
+
+			table.addCell(new Phrase(index + 1 + "", font));
+			table.addCell(new Phrase(thicknessDO.getThickness_min()+"", font));
+			table.addCell(new Phrase(thicknessDO.getThickness_max() + "", font));
+			table.addCell(new Phrase(thicknessDO.getTolerance_minus() + "", font));
+			table.addCell(new Phrase(thicknessDO.getTolerance_plus() + "", font));
+			table.addCell(new Phrase(thicknessDO.getUpdate_by_name(), font));
+			table.addCell(new Phrase(
+					Utils.getFormatedDate(thicknessDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
+					font));
+			table.addCell(new Phrase(getStatusString(thicknessDO.getStatus()), font));
+		}
+		
+	}
+
+	/**
+	 * Set the field value from Trimming object to it's respective index number
+	 * in the PDF table
+	 * 
+	 * @param table
+	 * @param shrinkageList
+	 */
 	private void processExportingTrimmingListPDF(PdfPTable table, List<TrimmingDO> trimmingList) {
 
 		for (int index = 0; index < trimmingList.size(); index++) {
@@ -1440,6 +1518,21 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		masterDAO.mergeEntity(thicknessDO);
 
+	}
+
+	@Override
+	public Object getThicknessList(RequestBO requestFilter, int page, int limit) {
+		List<ThicknessDO> thicknessList = masterDAO.getThicknessList(requestFilter, page, limit);
+
+		if (thicknessList != null && !thicknessList.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getThicknessSize(requestFilter);
+
+				return generatePaginationResponse(thicknessList, listSize, page, limit);
+			}
+			return thicknessList;
+		}
+		return null;
 	}
 
 }

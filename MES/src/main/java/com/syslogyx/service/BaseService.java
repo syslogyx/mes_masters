@@ -3,13 +3,17 @@ package com.syslogyx.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.syslogyx.bo.ResponseBO;
+import com.syslogyx.config.JwtAuthenticationFilter;
 import com.syslogyx.constants.IConstants;
 import com.syslogyx.dao.user.IUserDAO;
-
+import com.syslogyx.exception.ApplicationException;
+import com.syslogyx.message.IResponseCodes;
+import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.model.user.UserDO;
 import com.syslogyx.utility.Utils;
 
@@ -29,14 +33,29 @@ public class BaseService {
 	 * Get the instance of Logged in user from Current Authentication details
 	 * 
 	 * @return
+	 * @throws ApplicationException
 	 */
-	public UserDO getLoggedInUser() {
+
+	public UserDO getLoggedInUser() throws ApplicationException {
+
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
 		if (principal instanceof UserDetails) {
 			String username = ((UserDetails) principal).getUsername();
 			return iUserDAO.findByUsername(username);
 		}
+
 		return null;
+
+		// Authentication authentication = (Authentication)
+		// SecurityContextHolder.getContext().getAuthentication()
+		// .getPrincipal();
+		// if (authentication == null)
+		// throw new ApplicationException(IResponseCodes.INVALID_ENTITY,
+		// IResponseMessages.INVALID_AUTHENTICATION);
+		//
+		// return iUserDAO.findByUsername(authentication.getName());
+		// }
 
 	}
 
@@ -100,7 +119,7 @@ public class BaseService {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Return the Text of OSP according to it's value
 	 * 

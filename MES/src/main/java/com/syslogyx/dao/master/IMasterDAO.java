@@ -15,6 +15,7 @@ import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.masters.ShelfLifeDO;
 import com.syslogyx.model.masters.ShrinkageDO;
+import com.syslogyx.model.masters.ThicknessDO;
 import com.syslogyx.model.masters.TrimmingDO;
 
 /**
@@ -235,5 +236,24 @@ public interface IMasterDAO extends IBaseDAO {
 	 * @return
 	 */
 	long getTrimmingSize(RequestBO requestFilter);
+
+	/**
+	 * Fetch the Thickness list according to the Pagination and Filter
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	List<ThicknessDO> getThicknessList(RequestBO requestFilter, int page, int limit);
+
+	
+	/**
+	 * Fetch the Thickness list Size according to the Filter
+	 * 
+	 * @param requestFilter
+	 * @return
+	 */
+	long getThicknessSize(RequestBO requestFilter);
 
 }

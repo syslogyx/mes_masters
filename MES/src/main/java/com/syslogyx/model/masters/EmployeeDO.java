@@ -23,38 +23,38 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.syslogyx.model.user.UserDO;
 
 /**
- * This Class store Thickness Master Data
+ * This Class store Code_Group Data
  * 
- * @author namrata
+ * @author palash
  *
  */
 @Entity
-@Table(name = "thickness")
+@Table(name = "employees")
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ThicknessDO {
+public class EmployeeDO {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "thick_Sequence")
-	@SequenceGenerator(name = "thick_Sequence", sequenceName = "THICK_SEQ", allocationSize = 1)
-	@Column(name = "th_id")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "emp_Sequence")
+	@SequenceGenerator(name = "emp_Sequence", sequenceName = "EMP_SEQ", allocationSize = 1)
+	@Column(name = "e_id")
 	private int id;
 
-	@Column(name = "thickness_min")
-	private float thickness_min;
+	@Column(name = "name")
+	private String emp_name;
 
-	@Column(name = "thickness_max")
-	private float thickness_max;
+	@Column(name = "emp_desc")
+	private String emp_desc;
 
-	@Column(name = "tolerance_plus")
-	private float tolerance_plus;
-
-	@Column(name = "tolerance_minus")
-	private float tolerance_minus;
+	@Column(name = "incrementor")
+	private int incrementor;
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by", updatable = false)
 	private UserDO created_by;
+
+	@Transient
+	private String updated_by_name;
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "updated_by")
@@ -71,34 +71,6 @@ public class ThicknessDO {
 	@Column(name = "status")
 	public int status;
 
-	@Transient
-	private String update_by_name;
-
-	public ThicknessDO() {
-
-	}
-
-	public ThicknessDO(int id, float thickness_min, float thickness_max, float tolerance_minus, float tolerance_plus,
-			String update_by_name, Date updated, int status) {
-
-		this.id = id;
-		this.thickness_min = thickness_min;
-		this.thickness_max = thickness_max;
-		this.tolerance_plus = tolerance_plus;
-		this.tolerance_minus = tolerance_minus;
-		this.updated = updated;
-		this.status = status;
-		this.update_by_name = update_by_name;
-	}
-
-	public String getUpdate_by_name() {
-		return update_by_name;
-	}
-
-	public void setUpdate_by_name(String update_by_name) {
-		this.update_by_name = update_by_name;
-	}
-
 	public int getId() {
 		return id;
 	}
@@ -107,12 +79,44 @@ public class ThicknessDO {
 		this.id = id;
 	}
 
+	public String getEmp_name() {
+		return emp_name;
+	}
+
+	public void setEmp_name(String emp_name) {
+		this.emp_name = emp_name;
+	}
+
+	public String getEmp_desc() {
+		return emp_desc;
+	}
+
+	public void setEmp_desc(String emp_desc) {
+		this.emp_desc = emp_desc;
+	}
+
+	public int getIncrementor() {
+		return incrementor;
+	}
+
+	public void setIncrementor(int incrementor) {
+		this.incrementor = incrementor;
+	}
+	
 	public UserDO getCreated_by() {
 		return created_by;
 	}
 
 	public void setCreated_by(UserDO created_by) {
 		this.created_by = created_by;
+	}
+
+	public String getUpdated_by_name() {
+		return updated_by_name;
+	}
+
+	public void setUpdated_by_name(String updated_by_name) {
+		this.updated_by_name = updated_by_name;
 	}
 
 	public UserDO getUpdated_by() {
@@ -145,38 +149,6 @@ public class ThicknessDO {
 
 	public void setStatus(int status) {
 		this.status = status;
-	}
-
-	public float getThickness_min() {
-		return thickness_min;
-	}
-
-	public void setThickness_min(float thickness_min) {
-		this.thickness_min = thickness_min;
-	}
-
-	public float getThickness_max() {
-		return thickness_max;
-	}
-
-	public void setThickness_max(float thickness_max) {
-		this.thickness_max = thickness_max;
-	}
-
-	public float getTolerance_plus() {
-		return tolerance_plus;
-	}
-
-	public void setTolerance_plus(float tolerance_plus) {
-		this.tolerance_plus = tolerance_plus;
-	}
-
-	public float getTolerance_minus() {
-		return tolerance_minus;
-	}
-
-	public void setTolerance_minus(float tolerance_minus) {
-		this.tolerance_minus = tolerance_minus;
 	}
 
 }
