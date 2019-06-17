@@ -293,9 +293,6 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
 			processExportingTrimmingListExcel(sheet, mastersList);
-
-		else if (master_name.equals(IConstants.MASTERS_NAME.THICKNESS))
-			processExportingThicknessListExcel(sheet, mastersList);
 	}
 
 	/**

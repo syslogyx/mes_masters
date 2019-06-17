@@ -67,11 +67,11 @@ public interface IFileHeaderConstants {
 	// Product Definition Headers
 	public String PRODUCT_TYPE = "Product Type";
 	public String PRODUCT_FORM = "Product Form";
-
-	// Shelf Life Headers
+	
+	//Shelf Life Headers
 	public String SHELF_LIFES = "Shelf Life (In Days)";
-
-	// Trimming Headers
+	
+	//Trimming Headers
 	public String TRIM_ALLO_MIN = "Trim Allo Min";
 	public String TRIM_ALLO_MAX = "Trim Allo Max";
 	public String TRIM_ALLO_AIM = "Trim Allo Aim";
@@ -161,9 +161,6 @@ public interface IFileHeaderConstants {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
 			return getTrimmingHeaders();
-
-		else if (master_name.equals(IConstants.MASTERS_NAME.THICKNESS))
-			return getThicknessHeaders();
 
 		return null;
 	}

@@ -13,7 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -42,7 +41,7 @@ public class ThicknessDO {
 
 	@Column(name = "thickness_min")
 	private float thickness_min;
-
+	
 	@Column(name = "thickness_max")
 	private float thickness_max;
 
@@ -51,7 +50,7 @@ public class ThicknessDO {
 
 	@Column(name = "tolerance_minus")
 	private float tolerance_minus;
-
+	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by", updatable = false)
 	private UserDO created_by;
@@ -178,5 +177,7 @@ public class ThicknessDO {
 	public void setTolerance_minus(float tolerance_minus) {
 		this.tolerance_minus = tolerance_minus;
 	}
+
+	
 
 }

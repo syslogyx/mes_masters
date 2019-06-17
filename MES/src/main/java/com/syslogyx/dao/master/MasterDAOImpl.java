@@ -41,7 +41,6 @@ import com.syslogyx.model.masters.ProductFormDO;
 import com.syslogyx.model.masters.ProductTypeDO;
 import com.syslogyx.model.masters.ShelfLifeDO;
 import com.syslogyx.model.masters.ShrinkageDO;
-import com.syslogyx.model.masters.ThicknessDO;
 import com.syslogyx.model.masters.TrimmingDO;
 import com.syslogyx.model.user.UserDO;
 
@@ -187,9 +186,6 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
 			return getTrimmingList(null, IConstants.DEFAULT, IConstants.DEFAULT);
-		
-		else if (master_name.equals(IConstants.MASTERS_NAME.THICKNESS))
-			return getThicknessList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
 		throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
@@ -1263,7 +1259,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 						"%" + requestFilter.getQuick_finder() + "%"));
 
 				if (NumberUtils.isCreatable(requestFilter.getQuick_finder())) {
-
+					
 					orConditions.add(builder.equal(trimmingRoot.get(IPropertyConstant.TRIM_ALLO_MIN),
 							requestFilter.getQuick_finder()));
 
