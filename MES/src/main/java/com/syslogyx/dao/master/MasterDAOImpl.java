@@ -41,6 +41,7 @@ import com.syslogyx.model.masters.ProductFormDO;
 import com.syslogyx.model.masters.ProductTypeDO;
 import com.syslogyx.model.masters.ShelfLifeDO;
 import com.syslogyx.model.masters.ShrinkageDO;
+import com.syslogyx.model.masters.ThicknessDO;
 import com.syslogyx.model.masters.TrimmingDO;
 import com.syslogyx.model.user.UserDO;
 

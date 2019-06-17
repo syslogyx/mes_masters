@@ -15,6 +15,7 @@ import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.masters.ShelfLifeDO;
 import com.syslogyx.model.masters.ShrinkageDO;
+import com.syslogyx.model.masters.ThicknessDO;
 import com.syslogyx.model.masters.TrimmingDO;
 
 /**
