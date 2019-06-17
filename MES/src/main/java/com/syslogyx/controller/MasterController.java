@@ -57,8 +57,9 @@ public class MasterController extends BaseController {
 	@PostMapping(value = INetworkConstants.IURLConstants.CODE_GROUP + INetworkConstants.IURLConstants.SAVE)
 	public ResponseEntity<BaseResponseBO> createGroupCode(@RequestBody CodeGroupDO codeGroupDO) {
 		try {
-
+			
 			iMasterService.createGroupCode(codeGroupDO);
+		System.out.println("Thread Name:" +Thread.currentThread().getName());
 			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
 		} catch (ApplicationException e) {
 			e.printStackTrace();
