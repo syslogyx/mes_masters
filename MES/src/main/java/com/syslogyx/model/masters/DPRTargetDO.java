@@ -75,7 +75,7 @@ public class DPRTargetDO {
 
 	@Column(name = "status")
 	public int status;
-
+	
 	@Transient
 	private int unit_id;
 

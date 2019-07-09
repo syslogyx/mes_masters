@@ -13,42 +13,31 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.syslogyx.model.user.UserDO;
 
-/**
- * This class store Product Form data
- * 
- * @author Palash
- *
- */
 @Entity
-@Table(name = "product_form")
+@Table(name = "masters_list")
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductFormDO {
+public class MastersDO {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "productform_Sequence")
-	@SequenceGenerator(name = "productform_Sequence", sequenceName = "PRODUCTFORM_SEQ", allocationSize = 1)
-	@Column(name = "pf_id")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "masters_Sequence")
+	@SequenceGenerator(name = "masters_Sequence", sequenceName = "MASTERS_SEQ", allocationSize = 1)
+	@Column(name = "m_id")
 	private int id;
 
-	@Column(name = "name")
+	@Column(name = "masters")
 	private String name;
 
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "created_by", updatable = false)
-	private UserDO created_by;
-
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "updated_by")
-	private UserDO updated_by;
+	@Column(name = "path")
+	private String path;
 
 	@CreatedDate
 	@Column(name = "created", updatable = false)
@@ -60,6 +49,18 @@ public class ProductFormDO {
 
 	@Column(name = "status")
 	public int status;
+
+	public MastersDO() {
+
+	}
+
+	public MastersDO(int id, String name, String path, Date updated, int status) {
+		this.id = id;
+		this.name = name;
+		this.path = path;
+		this.updated = updated;
+		this.status = status;
+	}
 
 	public int getId() {
 		return id;
@@ -77,20 +78,12 @@ public class ProductFormDO {
 		this.name = name;
 	}
 
-	public UserDO getCreated_by() {
-		return created_by;
+	public String getPath() {
+		return path;
 	}
 
-	public void setCreated_by(UserDO created_by) {
-		this.created_by = created_by;
-	}
-
-	public UserDO getUpdated_by() {
-		return updated_by;
-	}
-
-	public void setUpdated_by(UserDO updated_by) {
-		this.updated_by = updated_by;
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 	public Date getCreated() {

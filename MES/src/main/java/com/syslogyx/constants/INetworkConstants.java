@@ -20,6 +20,7 @@ public interface INetworkConstants {
 		public String API = "/api";
 		public String APP = "/app";
 		public String LOGIN = "/login";
+		public String ROLE = "/role";
 		public String MASTERS = "/masters";
 		public String SAVE = "/save";
 		public String UPDATE = "/update";
@@ -42,6 +43,7 @@ public interface INetworkConstants {
 		public String SHRINKAGE = "/shrinkage";
 		public String TRIMMING = "/trimming";
 		public String THICKNESS = "/thickness";
+		public String USERS = "/user";
 	}
 
 	/**
@@ -83,6 +85,15 @@ public interface INetworkConstants {
 		String MASTER_NAME = "master_name";
 		String CAMP_ID = "cam_id";
 		String MASTER_ID = "master_id";
+
+	}
+	
+	
+	public interface ITables {
+
+		String USER_ROLES = "user_roles";
+		String ROLE_AUTHORITIES = "role_authorities";
+		String USER_DEPARTMENTS = "user_departments";
 
 	}
 }

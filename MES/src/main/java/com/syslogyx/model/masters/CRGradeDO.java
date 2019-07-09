@@ -45,7 +45,7 @@ public class CRGradeDO {
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by", updatable = false)
 	private UserDO created_by;
-
+	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "updated_by")
 	private UserDO updated_by;

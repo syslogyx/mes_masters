@@ -2,7 +2,6 @@ package com.syslogyx.config;
 
 import java.util.Properties;
 
-import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -76,13 +76,14 @@ public class ShrinkageDO {
 
 	}
 
-	public ShrinkageDO(int id, int cr_grade_id, String cr_grade_name, String updated_by_name, Date updated,
+	public ShrinkageDO(int id, Integer cr_grade_id, String cr_grade_name, String updated_by_name, Date updated,
 			int status) {
 
 		this.id = id;
 		this.updated = updated;
 		this.status = status;
-		this.cr_grade_id = cr_grade_id;
+		if (cr_grade_id != null)
+			this.cr_grade_id = cr_grade_id;
 		this.cr_grade_name = cr_grade_name;
 		this.updated_by_name = updated_by_name;
 	}

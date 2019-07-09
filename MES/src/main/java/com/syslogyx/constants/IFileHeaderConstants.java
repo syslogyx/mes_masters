@@ -79,6 +79,10 @@ public interface IFileHeaderConstants {
 	public String THICKNESS_MAX = "Thickness Max";
 	public String TOLERANCE_MINUS = "Tolerance Minus";
 	public String TOLERANCE_PLUS = "Tolerance Plus";
+	public String USERNAME = "username";
+	public String PASSWORD = "password";
+	public String EMAIL = "email";
+	public String MOBILE = "mobile";
 
 	/**
 	 * Prepare the List of Headers used in Code Group Excel and PDF
@@ -158,11 +162,29 @@ public interface IFileHeaderConstants {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.SHRINKAGE))
 			return getShrinkageHeaders();
+		
+		else if (master_name.equals(IConstants.MASTERS_NAME.THICKNESS))
+			return getThicknessHeaders();
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
 			return getTrimmingHeaders();
+		
+		else if (master_name.equals(IConstants.MASTERS_NAME.USER))
+			return getUserHeaders();
 
 		return null;
+	}
+
+	public static List<String> getUserHeaders() {
+		List<String> headers = new ArrayList<>();
+		headers.add(SR_NO);
+		headers.add(USERNAME);
+		headers.add(PASSWORD);
+		headers.add(EMAIL);
+		headers.add(MOBILE);
+		headers.add(STATUS);
+
+		return headers;
 	}
 
 	/**

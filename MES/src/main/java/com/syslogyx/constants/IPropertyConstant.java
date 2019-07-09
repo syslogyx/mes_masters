@@ -79,10 +79,19 @@ public interface IPropertyConstant {
 	String TRIM_ALLO_MAX = "trim_allo_max";
 	String TRIM_ALLO_AIM = "trim_allo_aim";
 	
-	
+	//Thickness Constants
 	String THICKNESS_MIN = "thickness_min";
 	String THICKNESS_MAX = "thickness_max";
 	String TOLERANCE_MINUS = "tolerance_minus";
-	String TOLERANCE_PLUS = "tolerance_plus";	
+	String TOLERANCE_PLUS = "tolerance_plus";
+	
+	
+	String ROLE_ID = "role_id";
+	String AUTHORITIES_ID = "authorities_id";
+	String USER_ID = "u_id";
+	String PATH = "path";
+	String PASSWORD = "password";
+	String EMAIL = "email";
+	String MOBILE = "mobile";
 
 }

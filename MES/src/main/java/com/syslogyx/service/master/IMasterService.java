@@ -1,5 +1,7 @@
 package com.syslogyx.service.master;
 
+import java.io.IOException;
+
 import com.itextpdf.text.DocumentException;
 import com.syslogyx.bo.RequestBO;
 import com.syslogyx.exception.ApplicationException;
@@ -8,7 +10,9 @@ import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.LeadTimeDO;
+import com.syslogyx.model.masters.MastersDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
+import com.syslogyx.model.masters.ProcessTypeDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.masters.ShelfLifeDO;
@@ -29,6 +33,7 @@ public interface IMasterService {
 	 * 
 	 * @param codeGroupDO
 	 *            : contains codeGroup Data provided by users
+	 * @param authentication
 	 * @throws ApplicationException
 	 * @throws Exception
 	 */
@@ -116,8 +121,9 @@ public interface IMasterService {
 	 * @param master_name
 	 * @return
 	 * @throws ApplicationException
+	 * @throws IOException
 	 */
-	String exportListToExcel(String master_name) throws ApplicationException;
+	String exportListToExcel(String master_name) throws ApplicationException, IOException;
 
 	/**
 	 * export the Master's list data to PDF sheet and return the Path of PDF
@@ -126,8 +132,9 @@ public interface IMasterService {
 	 * @return
 	 * @throws ApplicationException
 	 * @throws DocumentException
+	 * @throws IOException
 	 */
-	String exportListToPDF(String master_name) throws ApplicationException, DocumentException;
+	String exportListToPDF(String master_name) throws ApplicationException, DocumentException, IOException;
 
 	/**
 	 * This Method is used to validation on LeadTime and Save LeadTime Data in db
@@ -309,5 +316,34 @@ public interface IMasterService {
 	 * @return
 	 */
 	Object getThicknessList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Validate and Store Masters Name in Masters Table
+	 * 
+	 * @param mastersDO
+	 * @throws ApplicationException
+	 * @throws Exception
+	 */
+	void createMasters(MastersDO mastersDO) throws ApplicationException, Exception;
+
+	/**
+	 * Fetch the Masters List according to the Pagination and Quick Finder
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	Object MastersList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Fetch the Users List according to the Pagination and Quick Finder
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	Object userList(RequestBO requestFilter, int page, int limit);
 
 }

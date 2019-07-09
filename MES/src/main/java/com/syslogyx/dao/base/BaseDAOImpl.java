@@ -22,7 +22,7 @@ import com.syslogyx.message.IResponseMessages;
  */
 @Repository
 public class BaseDAOImpl implements IBaseDAO {
-
+	
 	@Autowired
 	private EntityManager entityManager;
 

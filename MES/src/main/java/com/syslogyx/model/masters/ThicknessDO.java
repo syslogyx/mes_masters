@@ -33,7 +33,7 @@ import com.syslogyx.model.user.UserDO;
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ThicknessDO {
-
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "thick_Sequence")
 	@SequenceGenerator(name = "thick_Sequence", sequenceName = "THICK_SEQ", allocationSize = 1)

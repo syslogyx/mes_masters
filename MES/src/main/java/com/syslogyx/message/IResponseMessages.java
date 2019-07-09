@@ -49,6 +49,13 @@ public interface IResponseMessages {
 	String INVALID_SHRINK_AGE_ID = "Invalid Shrink Age Id.";
 	String INVALID_TRIMMING_ID = "Invalid Trimming Id.";
 	String INVALID_THICKNESS_ID = "Invalid Thickness Id.";
-	String INVALID_AUTHENTICATION = "Invalid Authentication";
+	String INVALID_AUTHENTICATION = "Invalid Authentication.";
+	String INVALIDE_USER_ID = "Invalid User Id.";
+	String EXISTING_USERNAME = "This Username already exists.";
+	String INVALID_ROLE = "Invalid Role Id.";
+	String ROLES_ARE_NOT_AVAILABLE = "Role are not Available.";
+	String DATA_NOT_FOUNDS = "Data not found in Authentication";
+	String AUTHENTICATION_NULL = "Authentication Are empty";
+	String EXISTING_MASTERS_NAME = "This Masters Name already exists";
 
 }

@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -33,6 +32,7 @@ import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.LeadTimeDO;
+import com.syslogyx.model.masters.MastersDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
 import com.syslogyx.model.masters.ProcessTypeDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
@@ -59,6 +59,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 	@Autowired
 	private EntityManager entityManager;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<CodeGroupDO> getCodeGroupList(RequestBO requestFilter, int page, int limit) {
 
@@ -152,6 +153,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		return (long) query.getSingleResult();
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public List findMastersList(String master_name) throws ApplicationException {
 
@@ -185,12 +187,20 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		else if (master_name.equals(IConstants.MASTERS_NAME.SHRINKAGE))
 			return getShrinkAgeList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
+		else if (master_name.equals(IConstants.MASTERS_NAME.THICKNESS))
+			return getThicknessList(null, IConstants.DEFAULT, IConstants.DEFAULT);
+
 		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
 			return getTrimmingList(null, IConstants.DEFAULT, IConstants.DEFAULT);
+		
+		else if (master_name.equals(IConstants.MASTERS_NAME.USER))
+			return getUsersList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
 		throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
 
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<CampaignDO> getCampaignList(RequestBO requestFilter, int page, int limit) {
 
@@ -295,6 +305,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		Object[] queryResults = getConditionsForCampaign(requestFilter, builder, campaignRoot, false);
 
 		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+			@SuppressWarnings("unchecked")
 			List<Predicate> conditions = (List<Predicate>) queryResults[0];
 
 			if (conditions != null && !conditions.isEmpty()) {
@@ -307,6 +318,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		return IConstants.VALUE_ZERO;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<DPRTargetDO> getDPRTargetList(RequestBO requestFilter, int page, int limit) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -387,12 +399,25 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 			List<Predicate> conditions = new ArrayList<>();
 
 			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
-				conditions.add(builder.or(
+				List<Predicate> orConditions = new ArrayList<>();
+
+				orConditions.add(builder.or(
 						builder.like(dprTargetRoot.get(IPropertyConstant.YEAR),
 								"%" + requestFilter.getQuick_finder() + "%"),
-						builder.like(unitJoin.get(IPropertyConstant.UNIT), "%" + requestFilter.getQuick_finder() + "%"),
-						builder.like(productJoin.get(IPropertyConstant.PRODUCT_FORM),
+						builder.like(productJoin.get(IPropertyConstant.PRODUCT),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(unitJoin.get(IPropertyConstant.UNIT),
 								"%" + requestFilter.getQuick_finder() + "%")));
+
+				if (NumberUtils.isCreatable(requestFilter.getQuick_finder())) {
+					orConditions.add(builder.equal(dprTargetRoot.get(IPropertyConstant.BUSINESS_PLAN_TARGET),
+							requestFilter.getQuick_finder()));
+
+					orConditions.add(builder.equal(dprTargetRoot.get(IPropertyConstant.INTERNAL_TARGET),
+							requestFilter.getQuick_finder()));
+
+				}
+				conditions.add(builder.or(orConditions.toArray(new Predicate[] {})));
 			}
 
 			// add condition to restrict rows whose status is inactive
@@ -405,6 +430,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<LeadTimeDO> getLeadTimeList(RequestBO requestFilter, int page, int limit) {
 
@@ -525,6 +551,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<ElongationDO> getElongationList(RequestBO requestFilter, int page, int limit) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -623,6 +650,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		return (long) query.getSingleResult();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<ProcessFamilyDO> getProcessFamilyList(RequestBO requestFilter, int page, int limit) {
 
@@ -727,6 +755,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<ProcessUnitDO> getProcessUnitList(RequestBO requestFilter, int page, int limit) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -824,6 +853,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		return resultSet;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public long getProcessUnitListSize(RequestBO requestFilter) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -847,6 +877,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		return IConstants.VALUE_ZERO;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<ProductDefDO> getProductList(RequestBO requestFilter, int page, int limit) {
 
@@ -950,6 +981,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		Object[] queryResults = getConditionsForProductDefinition(requestFilter, builder, productRoot, false);
 
 		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+			@SuppressWarnings("unchecked")
 			List<Predicate> conditions = (List<Predicate>) queryResults[0];
 
 			if (conditions != null && !conditions.isEmpty()) {
@@ -962,6 +994,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		return IConstants.VALUE_ZERO;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<ShelfLifeDO> getShelfLifeList(RequestBO requestFilter, int page, int limit) {
 
@@ -1077,6 +1110,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		Object[] queryResults = getConditionsForShelfLife(requestFilter, builder, shelfLifeRoot, false);
 
 		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+			@SuppressWarnings("unchecked")
 			List<Predicate> conditions = (List<Predicate>) queryResults[0];
 
 			if (conditions != null && !conditions.isEmpty()) {
@@ -1089,6 +1123,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		return IConstants.VALUE_ZERO;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<ShrinkageDO> getShrinkAgeList(RequestBO requestFilter, int page, int limit) {
 
@@ -1142,33 +1177,32 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		Join<ShrinkageDO, CRGradeDO> crgradeFetch = shrinkageRoot.join(IPropertyConstant.CR_GRADE, JoinType.LEFT);
 
 		if (requestFilter != null) {
-			ArrayList<Predicate> conditions = new ArrayList<>();
+			List<Predicate> conditions = new ArrayList<>();
 
 			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
 
 				conditions.add(builder.or(builder.like(crgradeFetch.get(IPropertyConstant.NAME),
 						"%" + requestFilter.getQuick_finder() + "%")));
-
 			}
 
 			// add condition to restrict rows whose status is inactive
-			if (requestFilter.isInclude_inactive_data()) {
+			if (!requestFilter.isInclude_inactive_data()) {
 				conditions
 						.add(builder.notEqual(shrinkageRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
 			}
+
 			resultSet[0] = conditions;
 		}
 
+		// add construct in case if the identifier is true to fetch the limited details
+		// from list
 		if (prepareConstruct) {
-
 			CompoundSelection<ShrinkageDO> construct = builder.construct(ShrinkageDO.class,
 					shrinkageRoot.get(IPropertyConstant.ID), crgradeFetch.get(IPropertyConstant.ID),
 					crgradeFetch.get(IPropertyConstant.NAME), userFetch.get(IPropertyConstant.USERNAME),
 					shrinkageRoot.get(IPropertyConstant.UPDATED), shrinkageRoot.get(IPropertyConstant.STATUS));
-
 			resultSet[1] = construct;
 		}
-
 		return resultSet;
 	}
 
@@ -1184,6 +1218,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		Object[] queryResults = getConditionForShrinkage(requestFilter, builder, shrinkageRoot, false);
 
 		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+			@SuppressWarnings("unchecked")
 			List<Predicate> conditions = (List<Predicate>) queryResults[0];
 
 			if (conditions != null && !conditions.isEmpty()) {
@@ -1197,133 +1232,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 	}
 
-	@Override
-	public List<TrimmingDO> getTrimmingList(RequestBO requestFilter, int page, int limit) {
-
-		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<TrimmingDO> createQuery = builder.createQuery(TrimmingDO.class);
-		Root<TrimmingDO> trimmingRoot = createQuery.from(TrimmingDO.class);
-
-		Object[] queryResult = getConditionForTrimming(requestFilter, builder, trimmingRoot, true);
-
-		if (queryResult != null && queryResult.length > IConstants.VALUE_ZERO) {
-
-			List<Predicate> condition = (List<Predicate>) queryResult[0];
-
-			if (condition != null && condition.isEmpty()) {
-				createQuery.where(condition.toArray(new Predicate[] {}));
-			}
-			Query query = entityManager
-					.createQuery(createQuery.select((Selection<? extends TrimmingDO>) queryResult[1]));
-			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
-				int start_index = IConstants.VALUE_ZERO;
-				if (page > 1) {
-					page -= 1;
-					start_index = page * limit;
-				}
-
-				query.setFirstResult(start_index);
-				query.setMaxResults(limit);
-			}
-
-			return query.getResultList();
-		}
-		return null;
-	}
-
-	/**
-	 * Add filters to the Trimming and Prepare the construct with list of fields
-	 * required in the response
-	 * 
-	 * @param requestFilter
-	 * @param builder
-	 * @param trimmingRoot
-	 * @param prepareConstruct
-	 * @return
-	 */
-	private Object[] getConditionForTrimming(RequestBO requestFilter, CriteriaBuilder builder,
-			Root<TrimmingDO> trimmingRoot, boolean prepareConstruct) {
-
-		Object[] resultSet = new Object[2];
-
-		Join<TrimmingDO, UserDO> userFetch = trimmingRoot.join(IPropertyConstant.UPDATED_BY);
-		Join<TrimmingDO, ProcessUnitDO> unitFetch = trimmingRoot.join(IPropertyConstant.UNIT, JoinType.LEFT);
-
-		if (requestFilter != null) {
-			ArrayList<Predicate> conditions = new ArrayList<>();
-
-			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
-
-				List<Predicate> orConditions = new ArrayList<>();
-
-				orConditions.add(builder.like(unitFetch.get(IPropertyConstant.UNIT),
-						"%" + requestFilter.getQuick_finder() + "%"));
-
-				if (NumberUtils.isCreatable(requestFilter.getQuick_finder())) {
-					
-					orConditions.add(builder.equal(trimmingRoot.get(IPropertyConstant.TRIM_ALLO_MIN),
-							requestFilter.getQuick_finder()));
-
-					orConditions.add(builder.equal(trimmingRoot.get(IPropertyConstant.TRIM_ALLO_MAX),
-							requestFilter.getQuick_finder()));
-
-					orConditions.add(builder.equal(trimmingRoot.get(IPropertyConstant.TRIM_ALLO_AIM),
-							requestFilter.getQuick_finder()));
-				}
-
-				// check whether the input filter value is numeric, and add the condition for
-				// search in shelf life column
-				conditions.add(builder.or(orConditions.toArray(new Predicate[] {})));
-
-			}
-			// add condition to restrict rows whose status is inactive
-			if (requestFilter.isInclude_inactive_data()) {
-				conditions
-						.add(builder.notEqual(trimmingRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
-			}
-			resultSet[0] = conditions;
-
-		}
-
-		if (prepareConstruct) {
-			CompoundSelection<TrimmingDO> construct = builder.construct(TrimmingDO.class,
-					trimmingRoot.get(IPropertyConstant.ID), trimmingRoot.get(IPropertyConstant.TRIM_ALLO_MIN),
-					trimmingRoot.get(IPropertyConstant.TRIM_ALLO_MAX),
-					trimmingRoot.get(IPropertyConstant.TRIM_ALLO_AIM), unitFetch.get(IPropertyConstant.ID),
-					unitFetch.get(IPropertyConstant.UNIT), userFetch.get(IPropertyConstant.USERNAME),
-					trimmingRoot.get(IPropertyConstant.UPDATED), trimmingRoot.get(IPropertyConstant.STATUS));
-
-			resultSet[1] = construct;
-		}
-
-		return resultSet;
-
-	}
-
-	@Override
-	public long getTrimmingSize(RequestBO requestFilter) {
-
-		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
-		Root<TrimmingDO> trimmingRoot = createQuery.from(TrimmingDO.class);
-
-		createQuery.select(builder.count(trimmingRoot));
-
-		Object[] queryResults = getConditionForTrimming(requestFilter, builder, trimmingRoot, false);
-
-		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
-			List<Predicate> conditions = (List<Predicate>) queryResults[0];
-
-			if (conditions != null && !conditions.isEmpty()) {
-				createQuery.where(conditions.toArray(new Predicate[] {}));
-			}
-
-			Query query = entityManager.createQuery(createQuery);
-			return (long) query.getSingleResult();
-		}
-		return IConstants.VALUE_ZERO;
-	}
-
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<ThicknessDO> getThicknessList(RequestBO requestFilter, int page, int limit) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -1360,6 +1269,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public long getThicknessSize(RequestBO requestFilter) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -1383,6 +1293,16 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		return IConstants.VALUE_ZERO;
 	}
 
+	/**
+	 * Add filters to the Thickness and Prepare the construct with list of fields
+	 * required in the response
+	 * 
+	 * @param requestFilter
+	 * @param builder
+	 * @param thicknessRoot
+	 * @param prepareContruct
+	 * @return
+	 */
 	private Object[] getConditionForThickness(RequestBO requestFilter, CriteriaBuilder builder,
 			Root<ThicknessDO> thicknessRoot, boolean prepareContruct) {
 
@@ -1439,6 +1359,358 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 			resultSet[1] = construct;
 		}
 		return resultSet;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<TrimmingDO> getTrimmingList(RequestBO requestFilter, int page, int limit) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<TrimmingDO> createQuery = builder.createQuery(TrimmingDO.class);
+		Root<TrimmingDO> trimmingRoot = createQuery.from(TrimmingDO.class);
+
+		Object[] queryResults = getConditionForTrimming(requestFilter, builder, trimmingRoot, true);
+
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+
+			Query query = entityManager
+					.createQuery(createQuery.select((Selection<? extends TrimmingDO>) queryResults[1]));
+
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				int start_index = IConstants.VALUE_ZERO;
+				if (page > 1) {
+					page -= 1;
+					start_index = page * limit;
+				}
+
+				query.setFirstResult(start_index);
+				query.setMaxResults(limit);
+			}
+
+			return query.getResultList();
+		}
+		return null;
+	}
+
+	/**
+	 * Add filters to the Trimming and Prepare the construct with list of fields
+	 * required in the response
+	 * 
+	 * @param requestFilter
+	 * @param builder
+	 * @param trimmingRoot
+	 * @param prepareContruct
+	 * @return
+	 */
+	private Object[] getConditionForTrimming(RequestBO requestFilter, CriteriaBuilder builder,
+			Root<TrimmingDO> trimmingRoot, boolean prepareContruct) {
+
+		Object[] resultSet = new Object[2];
+
+		Join<TrimmingDO, UserDO> userFetch = trimmingRoot.join(IPropertyConstant.UPDATED_BY);
+		Join<TrimmingDO, ProcessUnitDO> unitFetch = trimmingRoot.join(IPropertyConstant.UNIT);
+
+		if (requestFilter != null) {
+			List<Predicate> conditions = new ArrayList<>();
+
+			System.out.println(">>>>>> Is Numeric :  " + NumberUtils.isCreatable(requestFilter.getQuick_finder()));
+
+			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
+
+				List<Predicate> orConditions = new ArrayList<>();
+
+				orConditions.add(builder.like(unitFetch.get(IPropertyConstant.UNIT),
+						"%" + requestFilter.getQuick_finder() + "%"));
+
+				// check whether the input filter value is numeric, and add the condition for
+				// search in shelf life column
+				if (NumberUtils.isCreatable(requestFilter.getQuick_finder())) {
+					orConditions.add(builder.equal(trimmingRoot.get(IPropertyConstant.TRIM_ALLO_MIN),
+							requestFilter.getQuick_finder()));
+
+					orConditions.add(builder.equal(trimmingRoot.get(IPropertyConstant.TRIM_ALLO_MAX),
+							requestFilter.getQuick_finder()));
+
+					orConditions.add(builder.equal(trimmingRoot.get(IPropertyConstant.TRIM_ALLO_AIM),
+							requestFilter.getQuick_finder()));
+
+				}
+
+				conditions.add(builder.or(orConditions.toArray(new Predicate[] {})));
+			}
+
+			// add condition to restrict rows whose status is inactive
+			if (!requestFilter.isInclude_inactive_data()) {
+				conditions
+						.add(builder.notEqual(trimmingRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
+			}
+
+			resultSet[0] = conditions;
+		}
+
+		// add construct in case if the identifier is true to fetch the limited details
+		// from list
+		if (prepareContruct) {
+			CompoundSelection<TrimmingDO> construct = builder.construct(TrimmingDO.class,
+					trimmingRoot.get(IPropertyConstant.ID), trimmingRoot.get(IPropertyConstant.TRIM_ALLO_MIN),
+					trimmingRoot.get(IPropertyConstant.TRIM_ALLO_MAX),
+					trimmingRoot.get(IPropertyConstant.TRIM_ALLO_AIM), unitFetch.get(IPropertyConstant.ID),
+					unitFetch.get(IPropertyConstant.UNIT), userFetch.get(IPropertyConstant.USERNAME),
+					trimmingRoot.get(IPropertyConstant.UPDATED), trimmingRoot.get(IPropertyConstant.STATUS));
+			resultSet[1] = construct;
+		}
+		return resultSet;
+
+	}
+
+	@Override
+	public long getTrimmingSize(RequestBO requestFilter) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
+		Root<TrimmingDO> trimmingRoot = createQuery.from(TrimmingDO.class);
+
+		createQuery.select(builder.count(trimmingRoot));
+
+		Object[] queryResults = getConditionForTrimming(requestFilter, builder, trimmingRoot, false);
+
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+			@SuppressWarnings("unchecked")
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+
+			Query query = entityManager.createQuery(createQuery);
+			return (long) query.getSingleResult();
+		}
+		return IConstants.VALUE_ZERO;
+	}
+
+	@Override
+	public List<MastersDO> getMastersList(RequestBO requestFilter, int page, int limit) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<MastersDO> createQuery = builder.createQuery(MastersDO.class);
+		Root<MastersDO> mastersRoot = createQuery.from(MastersDO.class);
+
+		Object[] queryResults = getConditionForMasters(requestFilter, builder, mastersRoot, true);
+
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+
+			Query query = entityManager
+					.createQuery(createQuery.select((Selection<? extends MastersDO>) queryResults[1]));
+
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				int start_index = IConstants.VALUE_ZERO;
+				if (page > 1) {
+					page -= 1;
+					start_index = page * limit;
+				}
+
+				query.setFirstResult(start_index);
+				query.setMaxResults(limit);
+			}
+
+			return query.getResultList();
+		}
+		return null;
+
+	}
+
+	/**
+	 * Add filters to the Masters and Prepare the construct with list of fields
+	 * required in the response
+	 * 
+	 * @param requestFilter
+	 * @param builder
+	 * @param mastersRoot
+	 * @param prepareContruct
+	 * @return
+	 */
+	private Object[] getConditionForMasters(RequestBO requestFilter, CriteriaBuilder builder,
+			Root<MastersDO> mastersRoot, boolean prepareContruct) {
+
+		Object[] resultSet = new Object[2];
+
+		if (requestFilter != null) {
+			List<Predicate> conditions = new ArrayList<>();
+
+			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
+				conditions.add(builder.or(
+						builder.like(mastersRoot.get(IPropertyConstant.NAME),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(mastersRoot.get(IPropertyConstant.PATH),
+								"%" + requestFilter.getQuick_finder() + "%")));
+			}
+
+			// add condition to restrict rows whose status is inactive
+			if (!requestFilter.isInclude_inactive_data()) {
+				conditions.add(builder.notEqual(mastersRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
+			}
+
+			resultSet[0] = conditions;
+		}
+
+		// add construct in case if the identifier is true to fetch the limited details
+		// from list
+		if (prepareContruct) {
+			CompoundSelection<MastersDO> construct = builder.construct(MastersDO.class,
+					mastersRoot.get(IPropertyConstant.ID), mastersRoot.get(IPropertyConstant.NAME),
+					mastersRoot.get(IPropertyConstant.PATH), mastersRoot.get(IPropertyConstant.UPDATED),
+					mastersRoot.get(IPropertyConstant.STATUS));
+			resultSet[1] = construct;
+		}
+		return resultSet;
+
+	}
+
+	@Override
+	public long getMastersSize(RequestBO requestFilter) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
+		Root<MastersDO> mastersRoot = createQuery.from(MastersDO.class);
+
+		createQuery.select(builder.count(mastersRoot));
+
+		Object[] queryResults = getConditionForMasters(requestFilter, builder, mastersRoot, false);
+
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+			@SuppressWarnings("unchecked")
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+
+			Query query = entityManager.createQuery(createQuery);
+			return (long) query.getSingleResult();
+		}
+		return IConstants.VALUE_ZERO;
+	}
+
+	@Override
+	public List<UserDO> getUsersList(RequestBO requestFilter, int page, int limit) {
+
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<UserDO> createQuery = builder.createQuery(UserDO.class);
+		Root<UserDO> userRoot = createQuery.from(UserDO.class);
+
+		Object[] queryResults = getConditionForUsers(requestFilter, builder, userRoot, true);
+
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+
+			Query query = entityManager.createQuery(createQuery.select((Selection<? extends UserDO>) queryResults[1]));
+
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				int start_index = IConstants.VALUE_ZERO;
+				if (page > 1) {
+					page -= 1;
+					start_index = page * limit;
+				}
+
+				query.setFirstResult(start_index);
+				query.setMaxResults(limit);
+			}
+
+			return query.getResultList();
+		}
+		return null;
+	}
+
+	private Object[] getConditionForUsers(RequestBO requestFilter, CriteriaBuilder builder, Root<UserDO> userRoot,
+			boolean prepareContruct) {
+
+		Object[] resultSet = new Object[2];
+
+		if (requestFilter != null) {
+			List<Predicate> conditions = new ArrayList<>();
+
+			System.out.println(">>>>>> Is Numeric :  " + NumberUtils.isCreatable(requestFilter.getQuick_finder()));
+
+			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
+
+				List<Predicate> orConditions = new ArrayList<>();
+				orConditions.add(builder.like(userRoot.get(IPropertyConstant.USERNAME),
+						"%" + requestFilter.getQuick_finder() + "%"));
+				orConditions.add(builder.like(userRoot.get(IPropertyConstant.PASSWORD),
+						"%" + requestFilter.getQuick_finder() + "%"));
+				orConditions.add(builder.like(userRoot.get(IPropertyConstant.EMAIL),
+						"%" + requestFilter.getQuick_finder() + "%"));
+				orConditions.add(builder.like(userRoot.get(IPropertyConstant.MOBILE),
+						"%" + requestFilter.getQuick_finder() + "%"));
+
+				// check whether the input filter value is numeric, and add the condition for
+				// search in shelf life column
+				if (NumberUtils.isCreatable(requestFilter.getQuick_finder())) {
+					
+				}
+				conditions.add(builder.or(orConditions.toArray(new Predicate[] {})));
+			}
+
+			// add condition to restrict rows whose status is inactive
+			if (!requestFilter.isInclude_inactive_data()) {
+				conditions
+						.add(builder.notEqual(userRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
+			}
+
+			resultSet[0] = conditions;
+		}
+
+		// add construct in case if the identifier is true to fetch the limited details
+		// from list
+		if (prepareContruct) {
+			CompoundSelection<UserDO> construct = builder.construct(UserDO.class,
+					userRoot.get(IPropertyConstant.ID), userRoot.get(IPropertyConstant.USERNAME),
+					userRoot.get(IPropertyConstant.PASSWORD), userRoot.get(IPropertyConstant.EMAIL),
+					userRoot.get(IPropertyConstant.MOBILE), userRoot.get(IPropertyConstant.STATUS));
+			resultSet[1] = construct;
+		}
+		return resultSet;
+	}
+
+	@Override
+	public long getUsersSize(RequestBO requestFilter) {
+		
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
+		Root<UserDO> userRoot = createQuery.from(UserDO.class);
+		
+		createQuery.select(builder.count(userRoot));
+		
+		Object[] queryResults = getConditionForUsers(requestFilter, builder, userRoot, false);
+		
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+			@SuppressWarnings("unchecked")
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+			
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+			
+			Query query = entityManager.createQuery(createQuery);
+			return (long) query.getSingleResult();
+		}
+		return IConstants.VALUE_ZERO;
+			
 	}
 
 }

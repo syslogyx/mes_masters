@@ -1,6 +1,7 @@
 package com.syslogyx;
 
-import javax.servlet.FilterRegistration;
+
+//import javax.servlet.FilterRegistration;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -12,7 +13,7 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import com.syslogyx.config.CORSFilter;
+//import com.syslogyx.config.CORSFilter;
 import com.syslogyx.config.JPAConfiguration;
 
 //comment below class if you want to create jar file and want to test on tomcat
@@ -26,7 +27,7 @@ import com.syslogyx.config.JPAConfiguration;
  *
  */
 @ComponentScan(basePackages = { "com.syslogyx" })
-public class SmartFactoryInitializer implements WebApplicationInitializer {
+public class MesInitializer implements WebApplicationInitializer {
 
 	public void onStartup(ServletContext container) throws ServletException {
 
@@ -39,15 +40,16 @@ public class SmartFactoryInitializer implements WebApplicationInitializer {
 
 		ServletRegistration.Dynamic servlet = container.addServlet("dispatcher", new DispatcherServlet(ctx));
 
-		servlet.setLoadOnStartup(0);
+		servlet.setLoadOnStartup(1);
 		servlet.addMapping("/");
 		servlet.setMultipartConfig(
 				new MultipartConfigElement("/", 1024 * 1024 * 1024, 1024 * 1024 * 1024, 1024 * 1024 * 1024));
 
-		FilterRegistration.Dynamic fr1 = container.addFilter("corsFilter", new CORSFilter());
-		fr1.setInitParameter("encoding", "UTF-8");
-		fr1.setInitParameter("forceEncoding", "true");
-		fr1.addMappingForUrlPatterns(null, false, "/*");
+//		FilterRegistration.Dynamic fr1 = container.addFilter("corsFilter", new CORSFilter());
+//		fr1.setInitParameter("encoding", "UTF-8");
+//		fr1.setInitParameter("forceEncoding", "true");
+//		fr1.addMappingForUrlPatterns(null, false, "/*");
+		ctx.close();
 
 	}
 }

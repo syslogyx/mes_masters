@@ -3,17 +3,13 @@ package com.syslogyx.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.syslogyx.bo.ResponseBO;
-import com.syslogyx.config.JwtAuthenticationFilter;
 import com.syslogyx.constants.IConstants;
 import com.syslogyx.dao.user.IUserDAO;
 import com.syslogyx.exception.ApplicationException;
-import com.syslogyx.message.IResponseCodes;
-import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.model.user.UserDO;
 import com.syslogyx.utility.Utils;
 
@@ -39,7 +35,7 @@ public class BaseService {
 	public UserDO getLoggedInUser() throws ApplicationException {
 
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+		
 		if (principal instanceof UserDetails) {
 			String username = ((UserDetails) principal).getUsername();
 			return iUserDAO.findByUsername(username);
@@ -47,16 +43,7 @@ public class BaseService {
 
 		return null;
 
-		// Authentication authentication = (Authentication)
-		// SecurityContextHolder.getContext().getAuthentication()
-		// .getPrincipal();
-		// if (authentication == null)
-		// throw new ApplicationException(IResponseCodes.INVALID_ENTITY,
-		// IResponseMessages.INVALID_AUTHENTICATION);
-		//
-		// return iUserDAO.findByUsername(authentication.getName());
-		// }
-
+		
 	}
 
 	/**
@@ -68,7 +55,7 @@ public class BaseService {
 	 * @param limit
 	 * @return
 	 */
-	public ResponseBO generatePaginationResponse(List list, long listSize, int current_page, int limit) {
+	public ResponseBO generatePaginationResponse(@SuppressWarnings("rawtypes") List list, long listSize, int current_page, int limit) {
 		ResponseBO responseBO = new ResponseBO();
 		responseBO.setList(list);
 		responseBO.setPagination(Utils.getPagination(current_page, listSize, limit));

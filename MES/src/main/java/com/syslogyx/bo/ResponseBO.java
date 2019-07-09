@@ -12,7 +12,7 @@ import java.util.List;
 public class ResponseBO {
 
 	private Pagination pagination;
-	private List list;
+	private List<?> list;
 
 	public Pagination getPagination() {
 		return pagination;
@@ -22,12 +22,14 @@ public class ResponseBO {
 		this.pagination = pagination;
 	}
 
-	public List getList() {
+	public List<?> getList() {
 		return list;
 	}
 
-	public void setList(List list) {
+	public void setList(List<?> list) {
 		this.list = list;
 	}
+
+	
 
 }

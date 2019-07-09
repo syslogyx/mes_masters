@@ -1,5 +1,7 @@
 package com.syslogyx.controller;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +21,7 @@ import com.syslogyx.constants.INetworkConstants;
 import com.syslogyx.constants.INetworkConstants.IURLConstants;
 import com.syslogyx.message.IResponseCodes;
 import com.syslogyx.message.IResponseMessages;
+import com.syslogyx.service.user.IUserService;
 
 /**
  * Application Controller Map all those API urls where we don't need API token
@@ -38,8 +41,8 @@ public class ApplicationController extends BaseController {
 	@Autowired
 	private TokenProvider jwtTokenUtil;
 
-	// @Autowired
-	// private IUserService userService;
+	 @Autowired
+	 private IUserService userService;
 
 	/**
 	 * Mapped the URL to Login the User
@@ -49,15 +52,16 @@ public class ApplicationController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value = IURLConstants.LOGIN, method = RequestMethod.POST)
-	public ResponseEntity<?> login(@RequestBody LoginUser loginUser) {
+	public ResponseEntity<?> login(@RequestBody LoginUser loginUser, HttpServletResponse response) {
 
 		try {
 			final Authentication authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword()));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
+				
 			final String token = jwtTokenUtil.generateToken(authentication);
 
-			// userService.findOne(loginUser.getUsername());
+			userService.findOne(loginUser.getUsername());
 
 			return getResponseModel(new AuthToken(token, loginUser.getUsername()), IResponseCodes.SUCCESS,
 					IResponseMessages.SUCCESS);

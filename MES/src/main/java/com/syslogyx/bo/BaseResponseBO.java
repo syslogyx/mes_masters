@@ -1,6 +1,5 @@
 package com.syslogyx.bo;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -13,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BaseResponseBO implements Serializable {
+public class BaseResponseBO{
 
 	@JsonProperty("status")
 	public int status;
@@ -26,6 +25,15 @@ public class BaseResponseBO implements Serializable {
 
 	@JsonProperty("timestamp")
 	public Date timestamp;
+
+	
+	public BaseResponseBO() {
+		super();
+	}
+
+	public BaseResponseBO(String message) {
+		this.message = message;
+	}
 
 	public int getStatus() {
 		return status;

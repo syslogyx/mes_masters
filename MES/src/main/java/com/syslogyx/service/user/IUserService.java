@@ -1,5 +1,10 @@
-package com.syslogyx.service.user;
+	package com.syslogyx.service.user;
 
+import java.util.List;
+
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.model.user.UserDO;
 
 /**
@@ -18,5 +23,31 @@ public interface IUserService {
 	 * @return
 	 */
 	UserDO findOne(String username);
+
+	/**
+	 * Fetch the UserDO list from db
+	 * 
+	 * @return
+	 */
+	List<UserDO> findAll();
+
+	void delete(long id);
+
+	UserDO findById(Long id);
+
+	/**
+	 * Validate and Save UserDO data to db
+	 * 
+	 * @param userDO
+	 * @throws Exception 
+	 */
+	void saveUser(UserDO userDO) throws ApplicationException, Exception;
+
+	/**
+	 * for fetch the current user name
+	 * @param username
+	 * @return
+	 */
+	UserDetails loadUserByUsername(String username);
 
 }

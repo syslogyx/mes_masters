@@ -1,10 +1,7 @@
 package com.syslogyx.controller;
 
-import java.security.Security;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +21,9 @@ import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.LeadTimeDO;
+import com.syslogyx.model.masters.MastersDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
+import com.syslogyx.model.masters.ProcessTypeDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
 import com.syslogyx.model.masters.ShelfLifeDO;
@@ -48,6 +47,55 @@ public class MasterController extends BaseController {
 	private IMasterService iMasterService;
 
 	/**
+	 * This Method is used to Created Masters and save Masters table in db
+	 * 
+	 * @param mastersDO
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.SAVE)
+	public ResponseEntity<BaseResponseBO> createMasters(@RequestBody MastersDO mastersDO) {
+		try {
+
+			iMasterService.createMasters(mastersDO);
+
+			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+			return getResponseModel(null, e.getCode(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR + e);
+		}
+	}
+	
+	/**
+	 * For fetching Masters list with Pagination and Quick Finder
+	 * 
+	 * @param page
+	 * @param limit
+	 * @param requestFilter
+	 * @return
+	 */
+	@PostMapping(value = INetworkConstants.IURLConstants.LIST)
+	public ResponseEntity<BaseResponseBO> listMastersList(
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.PAGE, required = false, defaultValue = "-1") int page,
+			@RequestParam(name = INetworkConstants.IRequestParamConstants.LIMIT, required = false, defaultValue = "-1") int limit,
+			@RequestBody RequestBO requestFilter) {
+		try {
+			
+			Object mastersList = iMasterService.MastersList(requestFilter, page, limit);
+
+			if (mastersList != null)
+				return getResponseModel(mastersList, IResponseCodes.SUCCESS, IResponseMessages.SUCCESS);
+
+			return getResponseModel(null, IResponseCodes.DATA_NOT_FOUND, IResponseMessages.DATA_NOT_FOUND);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR);
+		}
+	}
+
+	/**
 	 * This method is used to save CodeGroup Data to db
 	 * 
 	 * @param codeGroupDO
@@ -57,16 +105,16 @@ public class MasterController extends BaseController {
 	@PostMapping(value = INetworkConstants.IURLConstants.CODE_GROUP + INetworkConstants.IURLConstants.SAVE)
 	public ResponseEntity<BaseResponseBO> createGroupCode(@RequestBody CodeGroupDO codeGroupDO) {
 		try {
-			
+
 			iMasterService.createGroupCode(codeGroupDO);
-		System.out.println("Thread Name:" +Thread.currentThread().getName());
+
 			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 			return getResponseModel(null, e.getCode(), e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR+e);
+			return getResponseModel(null, IResponseCodes.SERVER_ERROR, IResponseMessages.SERVER_ERROR + e);
 		}
 	}
 
@@ -693,7 +741,8 @@ public class MasterController extends BaseController {
 	/**
 	 * This method used to store Thickness data to the db
 	 * 
-	 * @param thicknessDO : contains Thickness data provided by users
+	 * @param thicknessDO
+	 *            : contains Thickness data provided by users
 	 * @return
 	 */
 	@PostMapping(value = INetworkConstants.IURLConstants.THICKNESS + INetworkConstants.IURLConstants.SAVE)
@@ -710,8 +759,7 @@ public class MasterController extends BaseController {
 		}
 
 	}
-	
-	
+
 	/**
 	 * Fetch the Trimming list according to the Pagination and quick finder
 	 * 

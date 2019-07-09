@@ -10,6 +10,7 @@ import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.LeadTimeDO;
+import com.syslogyx.model.masters.MastersDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.masters.ProductDefDO;
@@ -17,6 +18,7 @@ import com.syslogyx.model.masters.ShelfLifeDO;
 import com.syslogyx.model.masters.ShrinkageDO;
 import com.syslogyx.model.masters.ThicknessDO;
 import com.syslogyx.model.masters.TrimmingDO;
+import com.syslogyx.model.user.UserDO;
 
 /**
  * This interface is used for communicating with db
@@ -247,7 +249,6 @@ public interface IMasterDAO extends IBaseDAO {
 	 */
 	List<ThicknessDO> getThicknessList(RequestBO requestFilter, int page, int limit);
 
-	
 	/**
 	 * Fetch the Thickness list Size according to the Filter
 	 * 
@@ -255,5 +256,41 @@ public interface IMasterDAO extends IBaseDAO {
 	 * @return
 	 */
 	long getThicknessSize(RequestBO requestFilter);
+
+	/**
+	 * Fetch the Masters List according to the Pagination and Filter
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	List<MastersDO> getMastersList(RequestBO requestFilter, int page, int limit);
+
+	/**
+	 * Fetch the Thickness list Size according to the Filter
+	 * 
+	 * @param requestFilter
+	 * @return
+	 */
+	long getMastersSize(RequestBO requestFilter);
+
+	/**
+	 * Fetch the Masters List according to the Pagination and Filter
+	 * 
+	 * @param requestFilter
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	List<UserDO> getUsersList(RequestBO requestFilter, int page, int limit);
+	
+	/**
+	 * Fetch the User list Size according to the Filter
+	 * 
+	 * @param requestFilter
+	 * @return
+	 */
+	long getUsersSize(RequestBO requestFilter);
 
 }

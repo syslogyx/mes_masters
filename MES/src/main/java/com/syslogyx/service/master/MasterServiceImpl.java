@@ -1,5 +1,6 @@
 package com.syslogyx.service.master;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -30,8 +31,8 @@ import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.ElongationDO;
-import com.syslogyx.model.masters.EmployeeDO;
 import com.syslogyx.model.masters.LeadTimeDO;
+import com.syslogyx.model.masters.MastersDO;
 import com.syslogyx.model.masters.ProcessFamilyDO;
 import com.syslogyx.model.masters.ProcessTypeDO;
 import com.syslogyx.model.masters.ProcessUnitDO;
@@ -74,10 +75,11 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		if (existingCodeGroup != null && existingCodeGroup.getId() != code_groupId)
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.EXISTING_GROUP_CODE);
-		
-		UserDO loggedInUser = getLoggedInUser();
-		codeGroupDO.setCreated_by(loggedInUser);
-		codeGroupDO.setUpdated_by(loggedInUser);
+
+//		UserDO loggedInUser = getLoggedInUser();
+//
+//		codeGroupDO.setCreated_by(loggedInUser);
+//		codeGroupDO.setUpdated_by(loggedInUser);
 		codeGroupDO.setStatus(IConstants.STATUS_ACTIVE);
 		masterDAO.mergeEntity(codeGroupDO);
 
@@ -129,17 +131,16 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 	@Override
 	public Object getDPRTargetList(RequestBO requestFilter, int page, int limit) {
-		List<DPRTargetDO> dprTargets = masterDAO.getDPRTargetList(requestFilter, page, limit);
+		List<DPRTargetDO> dprTargetList = masterDAO.getDPRTargetList(requestFilter, page, limit);
 
-		if (dprTargets != null && !dprTargets.isEmpty()) {
+		if (dprTargetList != null && !dprTargetList.isEmpty()) {
 			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
 				long listSize = masterDAO.getDPRTargetListSize(requestFilter);
 
-				return generatePaginationResponse(dprTargets, listSize, page, limit);
+				return generatePaginationResponse(dprTargetList, listSize, page, limit);
 			}
-			return dprTargets;
+			return dprTargetList;
 		}
-
 		return null;
 	}
 
@@ -198,8 +199,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	}
 
 	@Override
-	public String exportListToExcel(String master_name) throws ApplicationException {
-		List mastersList = masterDAO.findMastersList(master_name);
+	public String exportListToExcel(String master_name) throws ApplicationException, IOException {
+
+		List<?> mastersList = masterDAO.findMastersList(master_name);
 
 		if (mastersList != null && !mastersList.isEmpty()) {
 			HSSFWorkbook workbook = new HSSFWorkbook();
@@ -259,7 +261,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	 * @param mastersList
 	 * @param master_name
 	 */
-	private void processExcelToExportingDataRows(HSSFSheet sheet, List mastersList, String master_name) {
+	@SuppressWarnings("unchecked")
+	private void processExcelToExportingDataRows(HSSFSheet sheet, @SuppressWarnings("rawtypes") List mastersList,
+			String master_name) {
 
 		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP))
 			processExportingCodeGroupListExcel(sheet, mastersList);
@@ -293,6 +297,31 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
 			processExportingTrimmingListExcel(sheet, mastersList);
+
+		else if (master_name.equals(IConstants.MASTERS_NAME.USER))
+			processExportingUserListExcel(sheet, mastersList);
+	}
+
+	/**
+	 * set the Field value from User object to it's respective index number in excel
+	 * sheet
+	 * 
+	 * @param sheet
+	 * @param userList
+	 */
+	private void processExportingUserListExcel(HSSFSheet sheet, List<UserDO> userList) {
+
+		for (int index = 0; index < userList.size(); index++) {
+
+			UserDO userDO = userList.get(index);
+			HSSFRow row = sheet.createRow(index + 1);
+			row.createCell(0).setCellValue(index + 1);
+			row.createCell(1).setCellValue(userDO.getUsername());
+			row.createCell(2).setCellValue(userDO.getPassword());
+			row.createCell(3).setCellValue(userDO.getEmail());
+			row.createCell(4).setCellValue(userDO.getMobile());
+			row.createCell(5).setCellValue(getStatusString(userDO.getStatus()));
+		}
 	}
 
 	/**
@@ -302,6 +331,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	 * @param sheet
 	 * @param shrinkageList
 	 */
+	@SuppressWarnings("unused")
 	private void processExportingThicknessListExcel(HSSFSheet sheet, List<ThicknessDO> thicknessList) {
 
 		for (int index = 0; index < thicknessList.size(); index++) {
@@ -588,8 +618,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	}
 
 	@Override
-	public String exportListToPDF(String master_name) throws ApplicationException {
-		List mastersList = masterDAO.findMastersList(master_name);
+	public String exportListToPDF(String master_name) throws ApplicationException, IOException {
+		List<?> mastersList = masterDAO.findMastersList(master_name);
 
 		if (mastersList != null && !mastersList.isEmpty()) {
 			Document document = new Document(PageSize.A4);
@@ -622,10 +652,10 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	 */
 	private float[] setPDFwidth(String master_name) throws ApplicationException {
 		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP))
-			return new float[] { 1, 1, 2, 1, 2, 2, 1 };
+			return new float[] { 1, 1, 1, 1, 1, 1, 1 };
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.CAMPAIGN))
-			return new float[] { 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1 };
+			return new float[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.DPR_TARGET))
 			return new float[] { 1, 1, 1, 1, 1, 1, 1, 1, 1 };
@@ -637,7 +667,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return new float[] { 1, 1, 1, 1, 2, 1 };
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_FAMILY))
-			return new float[] { 1, 2, 1, 1, 1, 1, 1, 1 };
+			return new float[] { 1, 1, 1, 1, 1, 1, 1, 1 };
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.PROCESS_UNIT))
 			return new float[] { 1, 1, 2, 1, 1, 1.5f, 1, 1, 1, 2, 1 };
@@ -657,6 +687,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equals(IConstants.MASTERS_NAME.THICKNESS))
 			return new float[] { 1, 1, 1, 1, 1, 1, 1, 1 };
 		
+		else if (master_name.equals(IConstants.MASTERS_NAME.USER))
+			return new float[] { 1, 1, 1, 1, 1, 1 };
+
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
@@ -668,7 +701,9 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	 * @param mastersList
 	 * @param master_name
 	 */
-	private void processPDFToExportingDataRows(PdfPTable table, List mastersList, String master_name) {
+	@SuppressWarnings("unchecked")
+	private void processPDFToExportingDataRows(PdfPTable table, @SuppressWarnings("rawtypes") List mastersList,
+			String master_name) {
 		if (master_name.equals(IConstants.MASTERS_NAME.CODE_GROUP))
 			processExportingCodeGroupListPDF(table, mastersList);
 
@@ -701,21 +736,40 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
 			processExportingTrimmingListPDF(table, mastersList);
-		
+
 		else if (master_name.equals(IConstants.MASTERS_NAME.THICKNESS))
 			processExportingThicknessListPDF(table, mastersList);
+		
+		else if (master_name.equals(IConstants.MASTERS_NAME.USER))
+			processExportingUserListPDF(table, mastersList);
+
+	}
+
+	private void processExportingUserListPDF(PdfPTable table, List<UserDO> userList) {
+
+		for (int index = 0; index < userList.size(); index++) {
+			UserDO userDO = userList.get(index);
+
+			Font font = FontFactory.getFont(FontFactory.HELVETICA, 7);
+
+			table.addCell(new Phrase(index + 1 + "", font));
+			table.addCell(new Phrase(userDO.getUsername() + "", font));
+			table.addCell(new Phrase(userDO.getPassword() + "", font));
+			table.addCell(new Phrase(userDO.getEmail() + "", font));
+			table.addCell(new Phrase(userDO.getMobile() + "", font));
+			table.addCell(new Phrase(getStatusString(userDO.getStatus()), font));
+		}
 
 	}
 
 	/**
-	 * Set the field value from Thickness object to it's respective index number
-	 * in the PDF table
+	 * Set the field value from Thickness object to it's respective index number in
+	 * the PDF table
 	 * 
 	 * @param table
 	 * @param shrinkageList
 	 */
 	private void processExportingThicknessListPDF(PdfPTable table, List<ThicknessDO> thicknessList) {
-
 
 		for (int index = 0; index < thicknessList.size(); index++) {
 			ThicknessDO thicknessDO = thicknessList.get(index);
@@ -723,7 +777,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			Font font = FontFactory.getFont(FontFactory.HELVETICA, 7);
 
 			table.addCell(new Phrase(index + 1 + "", font));
-			table.addCell(new Phrase(thicknessDO.getThickness_min()+"", font));
+			table.addCell(new Phrase(thicknessDO.getThickness_min() + "", font));
 			table.addCell(new Phrase(thicknessDO.getThickness_max() + "", font));
 			table.addCell(new Phrase(thicknessDO.getTolerance_minus() + "", font));
 			table.addCell(new Phrase(thicknessDO.getTolerance_plus() + "", font));
@@ -733,12 +787,12 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 					font));
 			table.addCell(new Phrase(getStatusString(thicknessDO.getStatus()), font));
 		}
-		
+
 	}
 
 	/**
-	 * Set the field value from Trimming object to it's respective index number
-	 * in the PDF table
+	 * Set the field value from Trimming object to it's respective index number in
+	 * the PDF table
 	 * 
 	 * @param table
 	 * @param shrinkageList
@@ -991,8 +1045,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			table.addCell(new Phrase(campaignDO.getCampaign_id(), font));
 			table.addCell(new Phrase(campaignDO.getAttribute(), font));
 			table.addCell(new Phrase(campaignDO.getAim(), font));
-			table.addCell(new Phrase(campaignDO.getCapacity_max() + "", font));
 			table.addCell(new Phrase(campaignDO.getCapacity_min() + "", font));
+			table.addCell(new Phrase(campaignDO.getCapacity_max() + "", font));
 			table.addCell(new Phrase(campaignDO.getUpdated_by_name(), font));
 			table.addCell(new Phrase(
 					Utils.getFormatedDate(campaignDO.getUpdated(), IConstants.DATE_TIME_FORMAT.YYYY_MM_DD_HH_MM_SS_A),
@@ -1076,7 +1130,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.PROCESS_FAMILY))
 			return ProcessFamilyDO.class;
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.PROCESS_UNIT))
-			return ProcessFamilyDO.class;
+			return ProcessUnitDO.class;
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.PRODUCT))
 			return ProductDefDO.class;
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.SHELF_LIFE))
@@ -1087,6 +1141,10 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return TrimmingDO.class;
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.THICKNESS))
 			return ThicknessDO.class;
+		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.MASTERS))
+			return MastersDO.class;
+		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.USER))
+			return UserDO.class;
 
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
@@ -1487,21 +1545,6 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	}
 
 	@Override
-	public Object getTrimmingList(RequestBO requestFilter, int page, int limit) {
-		List<TrimmingDO> trimmingLIst = masterDAO.getTrimmingList(requestFilter, page, limit);
-
-		if (trimmingLIst != null && !trimmingLIst.isEmpty()) {
-			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
-				long listSize = masterDAO.getTrimmingSize(requestFilter);
-
-				return generatePaginationResponse(trimmingLIst, listSize, page, limit);
-			}
-			return trimmingLIst;
-		}
-		return null;
-	}
-
-	@Override
 	public void createThickness(ThicknessDO thicknessDO) throws ApplicationException, Exception {
 
 		int thickness_id = thicknessDO.getId();
@@ -1531,5 +1574,99 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		}
 		return null;
 	}
+
+	@Override
+	public Object getTrimmingList(RequestBO requestFilter, int page, int limit) {
+
+		List<TrimmingDO> trimmingList = masterDAO.getTrimmingList(requestFilter, page, limit);
+
+		if (trimmingList != null && !trimmingList.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getTrimmingSize(requestFilter);
+
+				return generatePaginationResponse(trimmingList, listSize, page, limit);
+			}
+			return trimmingList;
+		}
+		return null;
+	}
+
+	@Override
+	public void createMasters(MastersDO mastersDO) throws ApplicationException, Exception {
+
+		int masters_id = mastersDO.getId();
+		String name = mastersDO.getName();
+
+		// validate code group id
+		masterDAO.validateEntityById(MastersDO.class, masters_id, IResponseMessages.INVALID_MASTER_ID);
+
+		// validate the Masters Name if already exists in database or not
+		MastersDO existingMasterName = (MastersDO) masterDAO.getEntityByPropertyName(MastersDO.class,
+				IPropertyConstant.NAME, name);
+
+		if (existingMasterName != null && existingMasterName.getId() != masters_id)
+			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.EXISTING_MASTERS_NAME);
+
+		// UserDO loggedInUser = getLoggedInUser();
+		mastersDO.setStatus(IConstants.STATUS_ACTIVE);
+		// mastersDO.setCreated_by(loggedInUser);
+		// mastersDO.setUpdated_by(loggedInUser);
+
+		masterDAO.mergeEntity(mastersDO);
+
+	}
+
+	@Override
+	public Object MastersList(RequestBO requestFilter, int page, int limit) {
+
+		List<MastersDO> mastersList = masterDAO.getMastersList(requestFilter, page, limit);
+
+		if (mastersList != null && !mastersList.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				long listSize = masterDAO.getMastersSize(requestFilter);
+
+				return generatePaginationResponse(mastersList, listSize, page, limit);
+			}
+			return mastersList;
+		}
+		return null;
+
+	}
+
+	@Override
+	public Object userList(RequestBO requestFilter, int page, int limit) {
+
+		List<UserDO> userList = masterDAO.getUsersList(requestFilter, page, limit);
+
+		if (userList != null && !userList.isEmpty()) {
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+
+				long listSize = masterDAO.getUsersSize(requestFilter);
+
+				return generatePaginationResponse(userList, listSize, page, limit);
+			}
+			return userList;
+		}
+		return null;
+	}
+
+	// @Override
+	// public void createProcessType(ProcessTypeDO processTypeDO) throws
+	// ApplicationException, Exception {
+	//
+	// int processType_id = processTypeDO.getId();
+	//
+	// // validate Process Type Id in update scenario
+	// masterDAO.validateEntityById(ProcessTypeDO.class, processType_id,
+	// IResponseMessages.INVALID_PROCESS_TYPE_ID);
+	//
+	// UserDO loggedInUser = getLoggedInUser();
+	// processTypeDO.setStatus(IConstants.STATUS_ACTIVE);
+	// processTypeDO.setCreated_by(loggedInUser);
+	// processTypeDO.setUpdated_by(loggedInUser);
+	//
+	// masterDAO.mergeEntity(processTypeDO);
+	//
+	// }
 
 }

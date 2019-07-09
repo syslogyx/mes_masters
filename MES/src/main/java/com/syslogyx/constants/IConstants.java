@@ -22,6 +22,7 @@ public interface IConstants {
 	public String EXTENSION_EXCEL = ".xls";
 	public String EXTENSION_PDF = ".pdf";
 	public int VALUE_ONE = 1;
+	public String AUTH_LOGIN_URL = "/api/app/login";
 
 	/**
 	 * Interface to define constants of Date time format
@@ -55,6 +56,8 @@ public interface IConstants {
 		public String SHRINKAGE = "shrinkage";
 		public String TRIMMING = "trimming";
 		public String THICKNESS = "thickness";
+		public String MASTERS = "masters";
+		public String USER = "user";
 	}
 
 	/**

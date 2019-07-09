@@ -90,16 +90,22 @@ public class ShelfLifeDO {
 		super();
 	}
 
-	public ShelfLifeDO(int id, int shelf_life, Date updated, int status, int product_id, String product_name,
-			int cr_grade_id, String cr_grade_name, String updated_by_name) {
+	public ShelfLifeDO(int id, int shelf_life, Date updated, int status, Integer product_id, String product_name,
+			Integer cr_grade_id, String cr_grade_name, String updated_by_name) {
 
 		this.id = id;
 		this.shelf_life = shelf_life;
 		this.updated = updated;
 		this.status = status;
-		this.product_id = product_id;
+
+		if (product_id != null)
+			this.product_id = product_id;
+
 		this.product_name = product_name;
-		this.cr_grade_id = cr_grade_id;
+
+		if (cr_grade_id != null)
+			this.cr_grade_id = cr_grade_id;
+		
 		this.cr_grade_name = cr_grade_name;
 		this.updated_by_name = updated_by_name;
 	}

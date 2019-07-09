@@ -1,6 +1,5 @@
 package com.syslogyx.utility;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,7 +32,6 @@ import org.apache.poi.hssf.util.HSSFColor;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPRow;
@@ -45,6 +43,7 @@ import com.syslogyx.constants.IConstants.DATE_TIME_FORMAT;
 import com.syslogyx.exception.ApplicationException;
 import com.syslogyx.message.IResponseCodes;
 import com.syslogyx.message.IResponseMessages;
+
 
 /**
  * Maintain Utility for Application
@@ -464,17 +463,26 @@ public class Utils {
 	 * @param cellStyle
 	 * @param cellFont
 	 */
+
 	public static void writeToExcelHeaderRow(HSSFSheet sheet, List<String> excelHeaders, HSSFCellStyle cellStyle,
 			HSSFFont cellFont) {
 		HSSFRow rowhead = sheet.createRow(IConstants.VALUE_ZERO);
 
 		// Set the Font to the Cell
-		cellFont.setBoldweight(cellFont.BOLDWEIGHT_BOLD);
-		cellFont.setFontName(cellFont.FONT_ARIAL);
+//		cellFont.setBoldweight(cellFont.BOLDWEIGHT_BOLD);
+//		cellFont.setFontName(cellFont.FONT_ARIAL);
+//		cellFont.setColor(HSSFColor.BLUE_GREY.index);
+//
+//		// Set the Style to the Cell
+//		cellStyle.setAlignment(cellStyle.ALIGN_CENTER);
+		
+		//Set the Font to the Cell
+		cellFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		cellFont.setFontName(HSSFFont.FONT_ARIAL);
 		cellFont.setColor(HSSFColor.BLUE_GREY.index);
 
 		// Set the Style to the Cell
-		cellStyle.setAlignment(cellStyle.ALIGN_CENTER);
+		cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
 
 		cellStyle.setWrapText(true);
 		cellStyle.setFont(cellFont);
@@ -497,9 +505,11 @@ public class Utils {
 	 * @param filepath
 	 * @return
 	 * @throws ApplicationException
+	 * @throws IOException
 	 */
-	public static String writeDataToWorkbook(HSSFWorkbook workbook, String filepath) throws ApplicationException {
-		FileOutputStream fileOut;
+	public static String writeDataToWorkbook(HSSFWorkbook workbook, String filepath)
+			throws ApplicationException, IOException {
+		FileOutputStream fileOut = null;
 		try {
 			fileOut = new FileOutputStream(filepath + IConstants.EXTENSION_EXCEL);
 			workbook.write(fileOut);
@@ -508,11 +518,14 @@ public class Utils {
 			return filepath + IConstants.EXTENSION_EXCEL;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+			fileOut.close();
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.UNABLE_TO_LOCATE_FILE);
 		} catch (IOException e) {
 			e.printStackTrace();
+			fileOut.close();
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.UNABLE_TO_EXORT_EXCEL);
 		}
+
 	}
 
 	/**
@@ -561,20 +574,26 @@ public class Utils {
 	 * @param filename
 	 * @return
 	 * @throws ApplicationException
+	 * @throws IOException
 	 */
 	public static String writeDataToPDF(Document document, PdfPTable table, String filename)
-			throws ApplicationException {
+			throws ApplicationException, IOException {
+
 		try {
-			PdfWriter.getInstance(document, new FileOutputStream(filename + IConstants.EXTENSION_PDF));
+			FileOutputStream file = new FileOutputStream(filename + IConstants.EXTENSION_PDF);
+			PdfWriter.getInstance(document, file);
 			document.open();
 			document.add(table);
 			document.close();
+			file.close();
 
 			return filename + IConstants.EXTENSION_PDF;
+
 		} catch (FileNotFoundException | DocumentException e) {
 			e.printStackTrace();
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.UNABLE_TO_EXORT_PDF);
 		}
+
 	}
 
 	/**
@@ -591,7 +610,8 @@ public class Utils {
 
 			try {
 				// if not valid, it will throw ParseException
-				Date date = sdf.parse(date_time);
+				// Date date = sdf.parse(date_time);
+				sdf.parse(date_time);
 
 			} catch (Exception e) {
 				e.printStackTrace();

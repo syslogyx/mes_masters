@@ -22,7 +22,7 @@ public class CORSFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
 		System.out.println("Filtering on...........................................................");
-
+		
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 		response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
@@ -33,15 +33,17 @@ public class CORSFilter implements Filter {
 		// "X-Requested-With, Content-Type, Authorization, Origin, Accept,
 		// Access-Control-Request-Method, Access-Control-Request-Headers,
 		// X-AUTH-TOKEN");
-
+		
 		response.setHeader("Access-Control-Allow-Headers",
 				"Content-Type, Accept, X-Requested-With, remember-me,X-AUTH-TOKEN");
 		chain.doFilter(req, res);
+		
 	}
 
 	public void init(FilterConfig filterConfig) {
+		
 	}
-
+	
 	public void destroy() {
 	}
 

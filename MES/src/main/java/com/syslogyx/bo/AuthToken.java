@@ -3,7 +3,7 @@ package com.syslogyx.bo;
 /**
  * Response Class for Token Response
  * 
- * @author namrata
+ * @author Namrata
  *
  */
 public class AuthToken {
@@ -15,6 +15,7 @@ public class AuthToken {
 
 	}
 
+	
 	public AuthToken(String token, String username) {
 		this.token = token;
 		this.username = username;

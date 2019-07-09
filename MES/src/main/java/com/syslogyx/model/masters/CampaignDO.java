@@ -121,11 +121,11 @@ public class CampaignDO {
 	public void setId(int id) {
 		this.id = id;
 	}
-
+	
 	public String getCampaign_id() {
 		return campaign_id;
 	}
-
+	
 	public void setCampaign_id(String campaign_id) {
 		this.campaign_id = campaign_id;
 	}

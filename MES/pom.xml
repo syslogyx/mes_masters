@@ -16,6 +16,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+
 		</dependency>
 		<!-- <dependency> <groupId> org.springframework.boot </groupId> <artifactId>spring-boot-starter-jdbc</artifactId> 
 			</dependency> -->
@@ -32,6 +33,23 @@
 			<artifactId>jjwt</artifactId>
 			<version>0.9.0</version>
 		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.10.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.10.5</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.10.5</version>
+			<scope>runtime</scope>
+		</dependency>
 
 		<!-- Apache POI library is used to Read and Write with Excel Sheets -->
 		<dependency>
@@ -46,13 +64,13 @@
 			<artifactId>itextpdf</artifactId>
 			<version>5.5.13</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.9</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
@@ -69,6 +87,21 @@
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-jwt</artifactId>
+			<version>1.0.0.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- <dependency> <groupId>commons-digester</groupId> <artifactId>commons-digester</artifactId> 
+			<version>2.1</version> </dependency> -->
+
 		<!-- Websocket Dependencies -->
 		<!-- <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-websocket</artifactId> 
 			</dependency> <dependency> <groupId>org.webjars</groupId> <artifactId>stomp-websocket</artifactId> 
@@ -82,12 +115,17 @@
 			<version>3.3.7</version> </dependency> <dependency> <groupId>org.webjars</groupId> 
 			<artifactId>jquery</artifactId> <version>3.1.0</version> </dependency> -->
 
+		<!-- <dependency> juli fot tomcat 7 <groupId>org.apache.tomcat</groupId> 
+			<artifactId>tomcat-juli</artifactId> <version>${tomcat.version}</version> 
+			</dependency> -->
+
 	</dependencies>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
+		<!-- <tomcat.version>7.0.94</tomcat.version> -->
 	</properties>
 
 	<build>
