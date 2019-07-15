@@ -66,39 +66,132 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<CodeGroupDO> createQuery = builder.createQuery(CodeGroupDO.class);
 		Root<CodeGroupDO> codeGroupRoot = createQuery.from(CodeGroupDO.class);
-		Join<CodeGroupDO, UserDO> fetch = codeGroupRoot.join(IPropertyConstant.UPDATED_BY);
-		createQuery.select(codeGroupRoot).orderBy(builder.asc(codeGroupRoot.get(IPropertyConstant.GROUP_DESC)));
-		// createQuery.select(codeGroupRoot).orderBy(builder.desc(codeGroupRoot.get("group_code")));
 
-		// set the list of properties whose values are required to fetch
-		CompoundSelection<CodeGroupDO> construct = builder.construct(CodeGroupDO.class,
-				codeGroupRoot.get(IPropertyConstant.ID), codeGroupRoot.get(IPropertyConstant.GROUP_CODE),
-				codeGroupRoot.get(IPropertyConstant.GROUP_DESC), codeGroupRoot.get(IPropertyConstant.INCREMENTOR),
-				fetch.get(IPropertyConstant.USERNAME), codeGroupRoot.get(IPropertyConstant.CREATED),
-				codeGroupRoot.get(IPropertyConstant.UPDATED), codeGroupRoot.get(IPropertyConstant.STATUS));
+		Object[] queryResults = getConditionsForCodeGroup(requestFilter, builder, codeGroupRoot, true);
 
-		// prepare where conditions according to provided filter
-		List<Predicate> conditions = addCriteriaForCodeGroupFilter(requestFilter, builder, codeGroupRoot);
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
 
-		// add the list of predicates in where clause
-		if (conditions != null && !conditions.isEmpty()) {
-			createQuery.where(conditions.toArray(new Predicate[] {}));
-		}
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
 
-		Query query = entityManager.createQuery(createQuery.select(construct));
-
-		if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
-			int start_index = IConstants.VALUE_ZERO;
-			if (page > 1) {
-				page -= 1;
-				start_index = page * limit;
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
 			}
 
-			query.setFirstResult(start_index);
-			query.setMaxResults(limit);
+			Query query = entityManager
+					.createQuery(createQuery.select((Selection<? extends CodeGroupDO>) queryResults[1]));
+
+			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+				int start_index = IConstants.VALUE_ZERO;
+				if (page > 1) {
+					page -= 1;
+					start_index = page * limit;
+				}
+
+				query.setFirstResult(start_index);
+				query.setMaxResults(limit);
+			}
+
+			return query.getResultList();
+		}
+		return null;
+
+		// CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		// CriteriaQuery<CodeGroupDO> createQuery =
+		// builder.createQuery(CodeGroupDO.class);
+		// Root<CodeGroupDO> codeGroupRoot = createQuery.from(CodeGroupDO.class);
+		// Join<CodeGroupDO, UserDO> fetch =
+		// codeGroupRoot.join(IPropertyConstant.UPDATED_BY, JoinType.LEFT);
+		// createQuery.select(codeGroupRoot).orderBy(builder.asc(codeGroupRoot.get(IPropertyConstant.GROUP_DESC)));
+		// //
+		// createQuery.select(codeGroupRoot).orderBy(builder.desc(codeGroupRoot.get("group_code")));
+		//
+		// // set the list of properties whose values are required to fetch
+		// CompoundSelection<CodeGroupDO> construct =
+		// builder.construct(CodeGroupDO.class,
+		// codeGroupRoot.get(IPropertyConstant.ID),
+		// codeGroupRoot.get(IPropertyConstant.GROUP_CODE),
+		// codeGroupRoot.get(IPropertyConstant.GROUP_DESC),
+		// codeGroupRoot.get(IPropertyConstant.INCREMENTOR),
+		// fetch.get(IPropertyConstant.USERNAME),
+		// codeGroupRoot.get(IPropertyConstant.CREATED),
+		// codeGroupRoot.get(IPropertyConstant.UPDATED),
+		// codeGroupRoot.get(IPropertyConstant.STATUS));
+		//
+		// // prepare where conditions according to provided filter
+		// List<Predicate> conditions = addCriteriaForCodeGroupFilter(requestFilter,
+		// builder, codeGroupRoot);
+		//
+		// // add the list of predicates in where clause
+		// if (conditions != null && !conditions.isEmpty()) {
+		// createQuery.where(conditions.toArray(new Predicate[] {}));
+		// }
+		//
+		// Query query = entityManager.createQuery(createQuery.select(construct));
+		//
+		// if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
+		// int start_index = IConstants.VALUE_ZERO;
+		// if (page > 1) {
+		// page -= 1;
+		// start_index = page * limit;
+		// }
+		//
+		// query.setFirstResult(start_index);
+		// query.setMaxResults(limit);
+		// }
+		//
+		// return query.getResultList();
+	}
+
+	/**
+	 * Fetch the CodeGroup List according to the provided filter request
+	 * 
+	 * @param requestFilter
+	 * @param builder
+	 * @param codeGroupRoot
+	 * @param prepareContruct
+	 * @return
+	 */
+	private Object[] getConditionsForCodeGroup(RequestBO requestFilter, CriteriaBuilder builder,
+			Root<CodeGroupDO> codeGroupRoot, boolean prepareContruct) {
+
+		Object[] resultSet = new Object[2];
+
+		Join<CodeGroupDO, UserDO> fetch = codeGroupRoot.join(IPropertyConstant.UPDATED_BY, JoinType.LEFT);
+
+		if (requestFilter != null) {
+			List<Predicate> conditions = new ArrayList<>();
+
+			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
+				conditions.add(builder.or(
+						builder.like(codeGroupRoot.get(IPropertyConstant.GROUP_CODE),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(codeGroupRoot.get(IPropertyConstant.GROUP_DESC),
+								"%" + requestFilter.getQuick_finder() + "%"),
+						builder.like(codeGroupRoot.get(IPropertyConstant.INCREMENTOR),
+								"%" + requestFilter.getQuick_finder() + "%")));
+			}
+
+			// add condition to restrict rows whose status is inactive
+			if (!requestFilter.isInclude_inactive_data()) {
+				conditions
+						.add(builder.notEqual(codeGroupRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
+			}
+
+			resultSet[0] = conditions;
 		}
 
-		return query.getResultList();
+		// add construct in case if the identifier is true to fetch the limited details
+		// from list
+		if (prepareContruct) {
+			CompoundSelection<CodeGroupDO> construct = builder.construct(CodeGroupDO.class,
+					codeGroupRoot.get(IPropertyConstant.ID), codeGroupRoot.get(IPropertyConstant.GROUP_CODE),
+					codeGroupRoot.get(IPropertyConstant.GROUP_DESC), codeGroupRoot.get(IPropertyConstant.INCREMENTOR),
+					codeGroupRoot.get(IPropertyConstant.CREATED), codeGroupRoot.get(IPropertyConstant.UPDATED),
+					codeGroupRoot.get(IPropertyConstant.STATUS), fetch.get(IPropertyConstant.USERNAME));
+			resultSet[1] = construct;
+		}
+		return resultSet;
+
 	}
 
 	/**
@@ -109,29 +202,32 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 	 * @param builder
 	 * @return
 	 */
-	private List<Predicate> addCriteriaForCodeGroupFilter(RequestBO requestFilter, CriteriaBuilder builder,
-			Root<CodeGroupDO> codeGroupRoot) {
-
-		if (requestFilter != null) {
-			List<Predicate> conditions = new ArrayList<>();
-
-			if (requestFilter.getQuick_finder() != null && !requestFilter.getQuick_finder().isEmpty()) {
-				conditions.add(builder.or(
-						builder.like(codeGroupRoot.get(IPropertyConstant.GROUP_CODE),
-								"%" + requestFilter.getQuick_finder() + "%"),
-						builder.like(codeGroupRoot.get(IPropertyConstant.GROUP_DESC),
-								"%" + requestFilter.getQuick_finder() + "%")));
-			}
-
-			// add condition to restrict rows whose status is inactive
-			if (!requestFilter.isInclude_inactive_data()) {
-				conditions
-						.add(builder.notEqual(codeGroupRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
-			}
-			return conditions;
-		}
-		return null;
-	}
+	// private List<Predicate> addCriteriaForCodeGroupFilter(RequestBO
+	// requestFilter, CriteriaBuilder builder,
+	// Root<CodeGroupDO> codeGroupRoot) {
+	//
+	// if (requestFilter != null) {
+	// List<Predicate> conditions = new ArrayList<>();
+	//
+	// if (requestFilter.getQuick_finder() != null &&
+	// !requestFilter.getQuick_finder().isEmpty()) {
+	// conditions.add(builder.or(
+	// builder.like(codeGroupRoot.get(IPropertyConstant.GROUP_CODE),
+	// "%" + requestFilter.getQuick_finder() + "%"),
+	// builder.like(codeGroupRoot.get(IPropertyConstant.GROUP_DESC),
+	// "%" + requestFilter.getQuick_finder() + "%")));
+	// }
+	//
+	// // add condition to restrict rows whose status is inactive
+	// if (!requestFilter.isInclude_inactive_data()) {
+	// conditions
+	// .add(builder.notEqual(codeGroupRoot.get(IPropertyConstant.STATUS),
+	// IConstants.STATUS_INACTIVE));
+	// }
+	// return conditions;
+	// }
+	// return null;
+	// }
 
 	@Override
 	public long getCodeGroupListSize(RequestBO requestFilter) {
@@ -141,16 +237,20 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 		createQuery.select(builder.count(codeGroupRoot));
 
-		// prepare where conditions according to provided filter
-		List<Predicate> conditions = addCriteriaForCodeGroupFilter(requestFilter, builder, codeGroupRoot);
+		Object[] queryResults = getConditionsForCodeGroup(requestFilter, builder, codeGroupRoot, false);
 
-		// add the list of predicates in where clause
-		if (conditions != null && !conditions.isEmpty()) {
-			createQuery.where(conditions.toArray(new Predicate[] {}));
+		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
+			@SuppressWarnings("unchecked")
+			List<Predicate> conditions = (List<Predicate>) queryResults[0];
+
+			if (conditions != null && !conditions.isEmpty()) {
+				createQuery.where(conditions.toArray(new Predicate[] {}));
+			}
+
+			Query query = entityManager.createQuery(createQuery);
+			return (long) query.getSingleResult();
 		}
-
-		Query query = entityManager.createQuery(createQuery);
-		return (long) query.getSingleResult();
+		return IConstants.VALUE_ZERO;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -192,13 +292,12 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.TRIMMING))
 			return getTrimmingList(null, IConstants.DEFAULT, IConstants.DEFAULT);
-		
+
 		else if (master_name.equals(IConstants.MASTERS_NAME.USER))
 			return getUsersList(null, IConstants.DEFAULT, IConstants.DEFAULT);
 
 		throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}
-
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -250,7 +349,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 		Object[] resultSet = new Object[2];
 
-		Join<CampaignDO, UserDO> fetch = campaignRoot.join(IPropertyConstant.UPDATED_BY);
+		Join<CampaignDO, UserDO> fetch = campaignRoot.join(IPropertyConstant.UPDATED_BY, JoinType.LEFT);
 		Join<CampaignDO, ProcessUnitDO> processUnitFetch = campaignRoot.join(IPropertyConstant.HOLD_UNIT,
 				JoinType.LEFT);
 
@@ -1661,15 +1760,14 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 				// check whether the input filter value is numeric, and add the condition for
 				// search in shelf life column
 				if (NumberUtils.isCreatable(requestFilter.getQuick_finder())) {
-					
+
 				}
 				conditions.add(builder.or(orConditions.toArray(new Predicate[] {})));
 			}
 
 			// add condition to restrict rows whose status is inactive
 			if (!requestFilter.isInclude_inactive_data()) {
-				conditions
-						.add(builder.notEqual(userRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
+				conditions.add(builder.notEqual(userRoot.get(IPropertyConstant.STATUS), IConstants.STATUS_INACTIVE));
 			}
 
 			resultSet[0] = conditions;
@@ -1678,10 +1776,10 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		// add construct in case if the identifier is true to fetch the limited details
 		// from list
 		if (prepareContruct) {
-			CompoundSelection<UserDO> construct = builder.construct(UserDO.class,
-					userRoot.get(IPropertyConstant.ID), userRoot.get(IPropertyConstant.USERNAME),
-					userRoot.get(IPropertyConstant.PASSWORD), userRoot.get(IPropertyConstant.EMAIL),
-					userRoot.get(IPropertyConstant.MOBILE), userRoot.get(IPropertyConstant.STATUS));
+			CompoundSelection<UserDO> construct = builder.construct(UserDO.class, userRoot.get(IPropertyConstant.ID),
+					userRoot.get(IPropertyConstant.USERNAME), userRoot.get(IPropertyConstant.PASSWORD),
+					userRoot.get(IPropertyConstant.EMAIL), userRoot.get(IPropertyConstant.MOBILE),
+					userRoot.get(IPropertyConstant.STATUS));
 			resultSet[1] = construct;
 		}
 		return resultSet;
@@ -1689,28 +1787,28 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 	@Override
 	public long getUsersSize(RequestBO requestFilter) {
-		
+
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
 		Root<UserDO> userRoot = createQuery.from(UserDO.class);
-		
+
 		createQuery.select(builder.count(userRoot));
-		
+
 		Object[] queryResults = getConditionForUsers(requestFilter, builder, userRoot, false);
-		
+
 		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
 			@SuppressWarnings("unchecked")
 			List<Predicate> conditions = (List<Predicate>) queryResults[0];
-			
+
 			if (conditions != null && !conditions.isEmpty()) {
 				createQuery.where(conditions.toArray(new Predicate[] {}));
 			}
-			
+
 			Query query = entityManager.createQuery(createQuery);
 			return (long) query.getSingleResult();
 		}
 		return IConstants.VALUE_ZERO;
-			
+
 	}
 
 }

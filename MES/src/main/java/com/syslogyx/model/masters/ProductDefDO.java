@@ -75,6 +75,9 @@ public class ProductDefDO {
 
 	@Transient
 	private String product_type_name;
+	
+	@Transient
+	private int updated_by_id;
 
 	@Transient
 	private int product_form_id;

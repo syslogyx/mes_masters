@@ -70,6 +70,9 @@ public class ShelfLifeDO {
 
 	@Column(name = "status")
 	public int status;
+	
+	@Transient
+	private int updated_by_id;
 
 	@Transient
 	private int product_id;

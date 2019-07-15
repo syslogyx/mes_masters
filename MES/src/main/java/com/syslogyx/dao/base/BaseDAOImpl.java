@@ -41,7 +41,7 @@ public class BaseDAOImpl implements IBaseDAO {
 				// validate the status of the entity, throw exception in case it is inactive
 				Field declaredField = classT.getDeclaredField(IPropertyConstant.STATUS);
 				int status = (int) declaredField.get(entity);
-
+				
 				if (status == IConstants.STATUS_INACTIVE)
 					throw new ApplicationException(IResponseCodes.INVALID_ENTITY, error_msg);
 			}

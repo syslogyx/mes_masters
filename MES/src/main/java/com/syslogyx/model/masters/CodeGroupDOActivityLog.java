@@ -29,16 +29,20 @@ import com.syslogyx.model.user.UserDO;
  *
  */
 @Entity
-@Table(name = "code_groups")
+@Table(name = "code_group_activitylog")
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CodeGroupDO {
+public class CodeGroupDOActivityLog {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "codeg_Sequence")
 	@SequenceGenerator(name = "codeg_Sequence", sequenceName = "CODE_SEQ", allocationSize = 1)
-	@Column(name = "cg_id")
+	@Column(name = "id")
 	private int id;
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "cg_id")
+	private CodeGroupDO cg_id;
 
 	@Column(name = "group_code")
 	private String group_code;
@@ -50,7 +54,7 @@ public class CodeGroupDO {
 	private int incrementor;
 
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "created_by")
+	@JoinColumn(name = "created_by", updatable = false)
 	private UserDO created_by;
 
 	@Transient
@@ -74,21 +78,18 @@ public class CodeGroupDO {
 	@Column(name = "status")
 	public int status;
 
-	public CodeGroupDO() {
+	public CodeGroupDOActivityLog() {
 
 	}
 
-	public CodeGroupDO(int id, String group_code, String group_desc, int incrementor, String username, Date created,
-			Date updated, int status) {
-
-		this.id = id;
+	public CodeGroupDOActivityLog(CodeGroupDO cg_id, String group_code, String group_desc, int incrementor,
+			UserDO created_by, UserDO updated_by, int status) {
+		this.cg_id = cg_id;
 		this.group_code = group_code;
 		this.group_desc = group_desc;
 		this.incrementor = incrementor;
-		this.updated_by_name = username;
-		this.created = created;
-		this.updated = updated;
-
+		this.created_by = created_by;
+		this.updated_by = updated_by;
 		this.status = status;
 	}
 
@@ -180,6 +181,12 @@ public class CodeGroupDO {
 		this.updated_by_id = updated_by_id;
 	}
 
-	
+	public CodeGroupDO getCg_id() {
+		return cg_id;
+	}
+
+	public void setCg_id(CodeGroupDO cg_id) {
+		this.cg_id = cg_id;
+	}
 
 }

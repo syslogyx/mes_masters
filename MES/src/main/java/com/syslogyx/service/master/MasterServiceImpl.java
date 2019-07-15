@@ -29,6 +29,7 @@ import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.model.masters.CRGradeDO;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
+import com.syslogyx.model.masters.CodeGroupDOActivityLog;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.LeadTimeDO;
@@ -65,9 +66,16 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		int code_groupId = codeGroupDO.getId();
 		String group_code = codeGroupDO.getGroup_code();
+		int updated_by_id = codeGroupDO.getUpdated_by_id();
 
 		// validate code group id
 		masterDAO.validateEntityById(CodeGroupDO.class, code_groupId, IResponseMessages.INVALID_GROUP_CODE_ID);
+
+		// validate and set product id
+		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
+				IResponseMessages.INVALID_USER_ID);
+		codeGroupDO.setCreated_by(validateUpdatedById);
+		codeGroupDO.setUpdated_by(validateUpdatedById);
 
 		// validate the group code if already exists in database or not
 		CodeGroupDO existingCodeGroup = (CodeGroupDO) masterDAO.getEntityByPropertyName(CodeGroupDO.class,
@@ -76,12 +84,18 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		if (existingCodeGroup != null && existingCodeGroup.getId() != code_groupId)
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.EXISTING_GROUP_CODE);
 
-//		UserDO loggedInUser = getLoggedInUser();
-//
-//		codeGroupDO.setCreated_by(loggedInUser);
-//		codeGroupDO.setUpdated_by(loggedInUser);
+		UserDO loggedInUser = getLoggedInUser();
+
+		// codeGroupDO.setCreated_by(validateUserId);
+		// codeGroupDO.setUpdated_by(validateUserId);
 		codeGroupDO.setStatus(IConstants.STATUS_ACTIVE);
 		masterDAO.mergeEntity(codeGroupDO);
+		if (code_groupId > 0) {
+			CodeGroupDOActivityLog codeGroupDOActivityLog = new CodeGroupDOActivityLog(codeGroupDO,
+					codeGroupDO.getGroup_code(), codeGroupDO.getGroup_desc(), codeGroupDO.getIncrementor(), codeGroupDO.getCreated_by(),
+					codeGroupDO.getUpdated_by(), codeGroupDO.getStatus());
+			masterDAO.mergeEntity(codeGroupDOActivityLog);
+		}
 
 	}
 
@@ -686,7 +700,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.THICKNESS))
 			return new float[] { 1, 1, 1, 1, 1, 1, 1, 1 };
-		
+
 		else if (master_name.equals(IConstants.MASTERS_NAME.USER))
 			return new float[] { 1, 1, 1, 1, 1, 1 };
 
@@ -739,7 +753,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		else if (master_name.equals(IConstants.MASTERS_NAME.THICKNESS))
 			processExportingThicknessListPDF(table, mastersList);
-		
+
 		else if (master_name.equals(IConstants.MASTERS_NAME.USER))
 			processExportingUserListPDF(table, mastersList);
 

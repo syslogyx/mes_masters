@@ -55,11 +55,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
 		// allowed paths without JWT token paths- api/app/*
+//		http.cors().and().csrf().disable().authorizeRequests()
+//				.antMatchers(INetworkConstants.IURLConstants.API + INetworkConstants.IURLConstants.APP + "/*")
+//				.permitAll().anyRequest().authenticated().and().exceptionHandling()
+//				.authenticationEntryPoint(unauthorizedHandler).and().sessionManagement()
+//				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		
 		http.cors().and().csrf().disable().authorizeRequests()
-				.antMatchers(INetworkConstants.IURLConstants.API + INetworkConstants.IURLConstants.APP + "/*")
-				.permitAll().anyRequest().authenticated().and().exceptionHandling()
-				.authenticationEntryPoint(unauthorizedHandler).and().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		.antMatchers(INetworkConstants.IURLConstants.API + INetworkConstants.IURLConstants.APP + "/*")
+		.permitAll();
 
 		http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
 	}

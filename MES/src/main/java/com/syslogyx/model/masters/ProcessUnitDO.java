@@ -77,6 +77,9 @@ public class ProcessUnitDO {
 	@LastModifiedDate
 	@Column(name = "updated")
 	private Date updated;
+	
+	@Transient
+	private int updated_by_id;
 
 	@Column(name = "status")
 	public int status;

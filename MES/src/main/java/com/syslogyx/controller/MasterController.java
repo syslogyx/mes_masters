@@ -2,6 +2,7 @@ package com.syslogyx.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +40,7 @@ import com.syslogyx.service.master.IMasterService;
  *
  */
 @RestController
-
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping(value = INetworkConstants.IURLConstants.API + INetworkConstants.IURLConstants.MASTERS)
 public class MasterController extends BaseController {
 

@@ -71,6 +71,9 @@ public class ProcessFamilyDO {
 
 	@Column(name = "status")
 	public int status;
+	
+	@Transient
+	private int updated_by_id;
 
 	@Transient
 	private int process_type_id;

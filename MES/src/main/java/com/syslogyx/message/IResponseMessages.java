@@ -54,8 +54,9 @@ public interface IResponseMessages {
 	String EXISTING_USERNAME = "This Username already exists.";
 	String INVALID_ROLE = "Invalid Role Id.";
 	String ROLES_ARE_NOT_AVAILABLE = "Role are not Available.";
-	String DATA_NOT_FOUNDS = "Data not found in Authentication";
-	String AUTHENTICATION_NULL = "Authentication Are empty";
-	String EXISTING_MASTERS_NAME = "This Masters Name already exists";
+	String DATA_NOT_FOUNDS = "Data not found in Authentication.";
+	String AUTHENTICATION_NULL = "Authentication Are empty.";
+	String EXISTING_MASTERS_NAME = "This Masters Name already exists.";
+	String INVALID_USER_ID = "Invalid User Id.";
 
 }

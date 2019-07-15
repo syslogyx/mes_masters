@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -57,6 +58,9 @@ public class ProductFormDO {
 	@LastModifiedDate
 	@Column(name = "updated")
 	private Date updated;
+	
+	@Transient
+	private int updated_by_id;
 
 	@Column(name = "status")
 	public int status;
