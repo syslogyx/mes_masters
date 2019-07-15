@@ -71,12 +71,6 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		// validate code group id
 		masterDAO.validateEntityById(CodeGroupDO.class, code_groupId, IResponseMessages.INVALID_GROUP_CODE_ID);
 
-		// validate and set product id
-		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
-				IResponseMessages.INVALID_USER_ID);
-		codeGroupDO.setCreated_by(validateUpdatedById);
-		codeGroupDO.setUpdated_by(validateUpdatedById);
-
 		// validate the group code if already exists in database or not
 		CodeGroupDO existingCodeGroup = (CodeGroupDO) masterDAO.getEntityByPropertyName(CodeGroupDO.class,
 				IPropertyConstant.GROUP_CODE, group_code);
@@ -86,22 +80,28 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		UserDO loggedInUser = getLoggedInUser();
 
+		// validate and set user id
+		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
+				IResponseMessages.INVALID_USER_ID);
+		codeGroupDO.setCreated_by(validateUpdatedById);
+		codeGroupDO.setUpdated_by(validateUpdatedById);
+
 		// codeGroupDO.setCreated_by(validateUserId);
 		// codeGroupDO.setUpdated_by(validateUserId);
 		codeGroupDO.setStatus(IConstants.STATUS_ACTIVE);
 		masterDAO.mergeEntity(codeGroupDO);
+
 		if (code_groupId > 0) {
-			CodeGroupDOActivityLog codeGroupDOActivityLog = new CodeGroupDOActivityLog();
-//					codeGroupDO,
-//					codeGroupDO.getGroup_code(), codeGroupDO.getGroup_desc(), codeGroupDO.getIncrementor(),
-//					codeGroupDO.getCreated_by(), codeGroupDO.getUpdated_by(), codeGroupDO.getStatus());
-			 codeGroupDOActivityLog.setGroup_code(codeGroupDO.getGroup_code());
-			 codeGroupDOActivityLog.setGroup_desc(codeGroupDO.getGroup_desc());
-			 codeGroupDOActivityLog.setIncrementor(codeGroupDO.getIncrementor());
-			 codeGroupDOActivityLog.setCreated_by(codeGroupDO.getCreated_by());
-			 codeGroupDOActivityLog.setUpdated_by(codeGroupDO.getUpdated_by());
-			 codeGroupDOActivityLog.setStatus(codeGroupDO.getStatus());
-			 codeGroupDOActivityLog.setCg_id(codeGroupDO);
+			CodeGroupDOActivityLog codeGroupDOActivityLog = new CodeGroupDOActivityLog(codeGroupDO,
+					codeGroupDO.getGroup_code(), codeGroupDO.getGroup_desc(), codeGroupDO.getIncrementor(),
+					codeGroupDO.getCreated_by(), codeGroupDO.getUpdated_by(), codeGroupDO.getStatus());
+//			codeGroupDOActivityLog.setGroup_code(codeGroupDO.getGroup_code());
+//			codeGroupDOActivityLog.setGroup_desc(codeGroupDO.getGroup_desc());
+//			codeGroupDOActivityLog.setIncrementor(codeGroupDO.getIncrementor());
+//			codeGroupDOActivityLog.setCreated_by(codeGroupDO.getCreated_by());
+//			codeGroupDOActivityLog.setUpdated_by(codeGroupDO.getUpdated_by());
+//			codeGroupDOActivityLog.setStatus(codeGroupDO.getStatus());
+//			codeGroupDOActivityLog.setCg_id(codeGroupDO);
 			masterDAO.mergeEntity(codeGroupDOActivityLog);
 		}
 
@@ -144,15 +144,15 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		ProductDefDO productDefDO = (ProductDefDO) masterDAO.validateEntityById(ProductDefDO.class, product_id,
 				IResponseMessages.INVALID_PRODUCT_ID);
 		dprTargetDO.setProduct(productDefDO);
-		
+
 		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
 				IResponseMessages.INVALID_USER_ID);
 		dprTargetDO.setCreated_by(validateUpdatedById);
 		dprTargetDO.setUpdated_by(validateUpdatedById);
 
 		UserDO loggedInUser = getLoggedInUser();
-//		dprTargetDO.setCreated_by(loggedInUser);
-//		dprTargetDO.setUpdated_by(loggedInUser);
+		// dprTargetDO.setCreated_by(loggedInUser);
+		// dprTargetDO.setUpdated_by(loggedInUser);
 		dprTargetDO.setStatus(IConstants.STATUS_ACTIVE);
 		masterDAO.mergeEntity(dprTargetDO);
 	}
@@ -199,7 +199,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		ProcessUnitDO hold_unit = (ProcessUnitDO) masterDAO.validateEntityById(ProcessUnitDO.class, hold_unit_id,
 				IResponseMessages.INVALID_PROCESS_UNIT_ID);
 		campaignDO.setHold_unit(hold_unit);
-		
+
 		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
 				IResponseMessages.INVALID_USER_ID);
 		campaignDO.setCreated_by(validateUpdatedById);
@@ -208,8 +208,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		validatePriority(priority_level);
 
 		UserDO loggedInUser = getLoggedInUser();
-//		campaignDO.setCreated_by(loggedInUser);
-//		campaignDO.setUpdated_by(loggedInUser);
+		// campaignDO.setCreated_by(loggedInUser);
+		// campaignDO.setUpdated_by(loggedInUser);
 		campaignDO.setStatus(IConstants.STATUS_ACTIVE);
 		masterDAO.mergeEntity(campaignDO);
 
@@ -1240,15 +1240,15 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		Utils.validateDateFormat(idle_time_max, IConstants.DATE_TIME_FORMAT.HH_MM_SS);
 		Utils.validateDateFormat(handle_time_min, IConstants.DATE_TIME_FORMAT.HH_MM_SS);
 		Utils.validateDateFormat(handle_time_max, IConstants.DATE_TIME_FORMAT.HH_MM_SS);
-		
+
 		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
 				IResponseMessages.INVALID_USER_ID);
 		leadTimeDO.setCreated_by(validateUpdatedById);
 		leadTimeDO.setUpdated_by(validateUpdatedById);
 
 		UserDO loggedInUser = getLoggedInUser();
-//		leadTimeDO.setCreated_by(loggedInUser);
-//		leadTimeDO.setUpdated_by(loggedInUser);
+		// leadTimeDO.setCreated_by(loggedInUser);
+		// leadTimeDO.setUpdated_by(loggedInUser);
 		leadTimeDO.setStatus(IConstants.STATUS_ACTIVE);
 		masterDAO.mergeEntity(leadTimeDO);
 
@@ -1290,7 +1290,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		ProcessUnitDO processUnitDO = (ProcessUnitDO) masterDAO.validateEntityById(ProcessUnitDO.class, unit_id,
 				IResponseMessages.INVALID_PROCESS_UNIT_ID);
 		elongationDO.setUnit(processUnitDO);
-		
+
 		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
 				IResponseMessages.INVALID_USER_ID);
 		elongationDO.setCreated_by(validateUpdatedById);
@@ -1300,8 +1300,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		UserDO loggedInUser = getLoggedInUser();
 
 		elongationDO.setStatus(IConstants.STATUS_ACTIVE);
-//		elongationDO.setCreated_by(loggedInUser);
-//		elongationDO.setUpdated_by(loggedInUser);
+		// elongationDO.setCreated_by(loggedInUser);
+		// elongationDO.setUpdated_by(loggedInUser);
 
 		masterDAO.mergeEntity(elongationDO);
 	}
@@ -1338,7 +1338,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		ProcessTypeDO processTypeDO = (ProcessTypeDO) masterDAO.validateEntityById(ProcessTypeDO.class, process_type_id,
 				IResponseMessages.INVALID_PROCESS_TYPE_ID);
 		processFamilyDO.setProcess_type(processTypeDO);
-		
+
 		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
 				IResponseMessages.INVALID_USER_ID);
 		processFamilyDO.setCreated_by(validateUpdatedById);
@@ -1348,8 +1348,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		UserDO loggedInUser = getLoggedInUser();
 		processFamilyDO.setStatus(IConstants.STATUS_ACTIVE);
-//		processFamilyDO.setCreated_by(loggedInUser);
-//		processFamilyDO.setUpdated_by(loggedInUser);
+		// processFamilyDO.setCreated_by(loggedInUser);
+		// processFamilyDO.setUpdated_by(loggedInUser);
 
 		masterDAO.mergeEntity(processFamilyDO);
 	}
@@ -1394,7 +1394,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		ProcessFamilyDO processFamilyDO = (ProcessFamilyDO) masterDAO.validateEntityById(ProcessFamilyDO.class,
 				process_family_id, IResponseMessages.INVALID_PROCESS_FAMILY_ID);
 		processUnitDO.setProcess_family(processFamilyDO);
-		
+
 		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
 				IResponseMessages.INVALID_USER_ID);
 		processFamilyDO.setCreated_by(validateUpdatedById);
@@ -1408,8 +1408,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		UserDO loggedInUser = getLoggedInUser();
 		processUnitDO.setStatus(IConstants.STATUS_ACTIVE);
-//		processUnitDO.setCreated_by(loggedInUser);
-//		processUnitDO.setUpdated_by(loggedInUser);
+		// processUnitDO.setCreated_by(loggedInUser);
+		// processUnitDO.setUpdated_by(loggedInUser);
 
 		masterDAO.mergeEntity(processUnitDO);
 	}
@@ -1469,7 +1469,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 				IResponseMessages.INVALID_PRODUCT_FORM_ID);
 		productDefDO.setProduct_type(productTypeDO);
 		productDefDO.setProduct_form(productFormDO);
-		
+
 		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
 				IResponseMessages.INVALID_USER_ID);
 		productDefDO.setCreated_by(validateUpdatedById);
@@ -1477,8 +1477,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		UserDO loggedInUser = getLoggedInUser();
 		productDefDO.setStatus(IConstants.STATUS_ACTIVE);
-//		productDefDO.setCreated_by(loggedInUser);
-//		productDefDO.setUpdated_by(loggedInUser);
+		// productDefDO.setCreated_by(loggedInUser);
+		// productDefDO.setUpdated_by(loggedInUser);
 
 		masterDAO.mergeEntity(productDefDO);
 
@@ -1508,7 +1508,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		int product_id = shelfLifeDO.getProduct_id();
 		int cr_grade_id = shelfLifeDO.getCr_grade_id();
 		int updated_by_id = shelfLifeDO.getUpdated_by_id();
-		
+
 		// validate the shelf_life_id in update scenario
 		masterDAO.validateEntityById(ShelfLifeDO.class, shelfLife_id, IResponseMessages.INVALID_SHELF_LIFE_ID);
 
@@ -1521,7 +1521,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		CRGradeDO cr_gradeDO = (CRGradeDO) masterDAO.validateEntityById(CRGradeDO.class, cr_grade_id,
 				IResponseMessages.INVALID_CR_GRADE_ID);
 		shelfLifeDO.setCr_grade(cr_gradeDO);
-		
+
 		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
 				IResponseMessages.INVALID_USER_ID);
 		shelfLifeDO.setCreated_by(validateUpdatedById);
@@ -1529,8 +1529,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		UserDO loggedInUser = getLoggedInUser();
 		shelfLifeDO.setStatus(IConstants.STATUS_ACTIVE);
-//		shelfLifeDO.setCreated_by(loggedInUser);
-//		shelfLifeDO.setUpdated_by(loggedInUser);
+		// shelfLifeDO.setCreated_by(loggedInUser);
+		// shelfLifeDO.setUpdated_by(loggedInUser);
 
 		masterDAO.mergeEntity(shelfLifeDO);
 	}
@@ -1557,7 +1557,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		int shrinkage_id = shrinkageDO.getId();
 		int crgrade_id = shrinkageDO.getCr_grade_id();
 		int updated_by_id = shrinkageDO.getUpdated_by_id();
-		
+
 		// validate shrinkage_id in update scenario
 		masterDAO.validateEntityById(ShrinkageDO.class, shrinkage_id, IResponseMessages.INVALID_SHRINK_AGE_ID);
 
@@ -1565,7 +1565,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		CRGradeDO crGradeDO = (CRGradeDO) masterDAO.validateEntityById(CRGradeDO.class, crgrade_id,
 				IResponseMessages.INVALID_CR_GRADE_ID);
 		shrinkageDO.setCr_grade(crGradeDO);
-		
+
 		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
 				IResponseMessages.INVALID_USER_ID);
 		shrinkageDO.setCreated_by(validateUpdatedById);
@@ -1573,8 +1573,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		UserDO loggedInUser = getLoggedInUser();
 		shrinkageDO.setStatus(IConstants.STATUS_ACTIVE);
-//		shrinkageDO.setCreated_by(loggedInUser);
-//		shrinkageDO.setUpdated_by(loggedInUser);
+		// shrinkageDO.setCreated_by(loggedInUser);
+		// shrinkageDO.setUpdated_by(loggedInUser);
 
 		masterDAO.mergeEntity(shrinkageDO);
 	}
@@ -1609,7 +1609,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		ProcessUnitDO processUnit_id = (ProcessUnitDO) masterDAO.validateEntityById(ProcessUnitDO.class, unit_id,
 				IResponseMessages.INVALID_PROCESS_UNIT_ID);
 		trimmingDO.setUnit(processUnit_id);
-		
+
 		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
 				IResponseMessages.INVALID_USER_ID);
 		trimmingDO.setCreated_by(validateUpdatedById);
@@ -1617,8 +1617,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		UserDO loggedInUser = getLoggedInUser();
 		trimmingDO.setStatus(IConstants.STATUS_ACTIVE);
-//		trimmingDO.setCreated_by(loggedInUser);
-//		trimmingDO.setUpdated_by(loggedInUser);
+		// trimmingDO.setCreated_by(loggedInUser);
+		// trimmingDO.setUpdated_by(loggedInUser);
 
 		masterDAO.mergeEntity(trimmingDO);
 
@@ -1628,19 +1628,20 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 	public void createThickness(ThicknessDO thicknessDO) throws ApplicationException, Exception {
 
 		int thickness_id = thicknessDO.getId();
-		int updated_by_id = thicknessDO.getUpdated_by_id();
+		// int updated_by_id = thicknessDO.getUpdated_by_id();
 
 		masterDAO.validateEntityById(ThicknessDO.class, thickness_id, IResponseMessages.INVALID_THICKNESS_ID);
-		
-		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
-				IResponseMessages.INVALID_USER_ID);
-		thicknessDO.setCreated_by(validateUpdatedById);
-		thicknessDO.setUpdated_by(validateUpdatedById);
+
+		// UserDO validateUpdatedById = (UserDO)
+		// masterDAO.validateEntityById(UserDO.class, updated_by_id,
+		// IResponseMessages.INVALID_USER_ID);
+		// thicknessDO.setCreated_by(validateUpdatedById);
+		// thicknessDO.setUpdated_by(validateUpdatedById);
 
 		UserDO loggedInUser = getLoggedInUser();
 		thicknessDO.setStatus(IConstants.STATUS_ACTIVE);
-//		thicknessDO.setCreated_by(loggedInUser);
-//		thicknessDO.setUpdated_by(loggedInUser);
+		// thicknessDO.setCreated_by(loggedInUser);
+		// thicknessDO.setUpdated_by(loggedInUser);
 
 		masterDAO.mergeEntity(thicknessDO);
 
@@ -1682,7 +1683,6 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		int masters_id = mastersDO.getId();
 		String name = mastersDO.getName();
-		
 
 		// validate code group id
 		masterDAO.validateEntityById(MastersDO.class, masters_id, IResponseMessages.INVALID_MASTER_ID);

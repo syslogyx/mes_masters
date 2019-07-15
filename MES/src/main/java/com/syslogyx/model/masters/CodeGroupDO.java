@@ -78,8 +78,8 @@ public class CodeGroupDO {
 
 	}
 
-	public CodeGroupDO(int id, String group_code, String group_desc, int incrementor, String username, Date created,
-			Date updated, int status) {
+	public CodeGroupDO(int id, String group_code, String group_desc, int incrementor, Date created,
+			Date updated, int status,String username) {
 
 		this.id = id;
 		this.group_code = group_code;
@@ -88,7 +88,6 @@ public class CodeGroupDO {
 		this.updated_by_name = username;
 		this.created = created;
 		this.updated = updated;
-
 		this.status = status;
 	}
 
