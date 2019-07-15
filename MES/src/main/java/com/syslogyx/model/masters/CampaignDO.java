@@ -80,6 +80,9 @@ public class CampaignDO {
 
 	@Column(name = "status")
 	public int status;
+	
+	@Transient
+	private int updated_by_id;
 
 	@Transient
 	private int hold_unit_id;
@@ -242,4 +245,12 @@ public class CampaignDO {
 		this.hold_unit_name = hold_unit_name;
 	}
 
+	public int getUpdated_by_id() {
+		return updated_by_id;
+	}
+
+	public void setUpdated_by_id(int updated_by_id) {
+		this.updated_by_id = updated_by_id;
+	}
+	
 }

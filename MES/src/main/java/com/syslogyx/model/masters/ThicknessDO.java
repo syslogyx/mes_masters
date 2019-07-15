@@ -181,7 +181,13 @@ public class ThicknessDO {
 	public void setTolerance_minus(float tolerance_minus) {
 		this.tolerance_minus = tolerance_minus;
 	}
+	public int getUpdated_by_id() {
+		return updated_by_id;
+	}
 
+	public void setUpdated_by_id(int updated_by_id) {
+		this.updated_by_id = updated_by_id;
+	}
 	
 
 }

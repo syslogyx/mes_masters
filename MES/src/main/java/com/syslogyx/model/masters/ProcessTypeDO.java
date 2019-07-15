@@ -39,26 +39,26 @@ public class ProcessTypeDO {
 	@SequenceGenerator(name = "processT_Sequence", sequenceName = "PROCESST_SEQ", allocationSize = 1)
 	@Column(name = "pt_id")
 	private int id;
-	
+
 	@Column(name = "name")
 	private String name;
-	
+
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by", updatable = false)
 	private UserDO created_by;
-	
+
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "updated_by")
 	private UserDO updated_by;
-	
+
 	@CreatedDate
 	@Column(name = "created", updatable = false)
 	private Date created;
-	
+
 	@LastModifiedDate
 	@Column(name = "updated")
 	private Date updated;
-	
+
 	@Transient
 	private int updated_by_id;
 
@@ -121,4 +121,11 @@ public class ProcessTypeDO {
 		this.status = status;
 	}
 
+	public int getUpdated_by_id() {
+		return updated_by_id;
+	}
+
+	public void setUpdated_by_id(int updated_by_id) {
+		this.updated_by_id = updated_by_id;
+	}
 }

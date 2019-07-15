@@ -120,5 +120,12 @@ public class ProductFormDO {
 	public void setStatus(int status) {
 		this.status = status;
 	}
+	public int getUpdated_by_id() {
+		return updated_by_id;
+	}
+
+	public void setUpdated_by_id(int updated_by_id) {
+		this.updated_by_id = updated_by_id;
+	}
 
 }

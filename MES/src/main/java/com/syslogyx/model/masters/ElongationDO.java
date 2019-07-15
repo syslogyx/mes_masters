@@ -199,4 +199,24 @@ public class ElongationDO {
 		return updated_by_name;
 	}
 
+	public int getUpdated_by_id() {
+		return updated_by_id;
+	}
+
+	public void setUpdated_by_id(int updated_by_id) {
+		this.updated_by_id = updated_by_id;
+	}
+
+	public void setUnit_name(String unit_name) {
+		this.unit_name = unit_name;
+	}
+
+	public void setCr_grade_name(String cr_grade_name) {
+		this.cr_grade_name = cr_grade_name;
+	}
+
+	public void setUpdated_by_name(String updated_by_name) {
+		this.updated_by_name = updated_by_name;
+	}
+
 }

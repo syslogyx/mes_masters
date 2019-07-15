@@ -209,5 +209,12 @@ public class ProcessFamilyDO {
 	public void setUpdated_by_name(String updated_by_name) {
 		this.updated_by_name = updated_by_name;
 	}
+	public int getUpdated_by_id() {
+		return updated_by_id;
+	}
+
+	public void setUpdated_by_id(int updated_by_id) {
+		this.updated_by_id = updated_by_id;
+	}
 
 }

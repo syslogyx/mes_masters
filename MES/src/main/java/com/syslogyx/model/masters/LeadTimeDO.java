@@ -260,4 +260,13 @@ public class LeadTimeDO {
 		this.handle_time_max = handle_time_max;
 	}
 
+	public int getUpdated_by_id() {
+		return updated_by_id;
+	}
+
+	public void setUpdated_by_id(int updated_by_id) {
+		this.updated_by_id = updated_by_id;
+	}
+	
+
 }

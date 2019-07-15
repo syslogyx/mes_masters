@@ -39,13 +39,13 @@ public class TrimmingDO {
 	@SequenceGenerator(name = "trim_Sequence", sequenceName = "TRIM_SEQ", allocationSize = 1)
 	@Column(name = "trim_id")
 	private int id;
-	
+
 	@Column(name = "trim_allo_min")
 	private float trim_allo_min;
-	
+
 	@Column(name = "trim_allo_max")
 	private float trim_allo_max;
-	
+
 	@Column(name = "trim_allo_aim")
 	private float trim_allo_aim;
 
@@ -71,7 +71,7 @@ public class TrimmingDO {
 
 	@Column(name = "status")
 	public int status;
-	
+
 	@Transient
 	private int updated_by_id;
 
@@ -88,8 +88,8 @@ public class TrimmingDO {
 
 	}
 
-	public TrimmingDO(int id, float trim_allo_min, float trim_allo_max, float trim_allo_aim,
-			int unit_id, String unit_name, String updated_by_name,Date updated, int status) {
+	public TrimmingDO(int id, float trim_allo_min, float trim_allo_max, float trim_allo_aim, int unit_id,
+			String unit_name, String updated_by_name, Date updated, int status) {
 
 		this.id = id;
 		this.trim_allo_min = trim_allo_min;
@@ -100,7 +100,7 @@ public class TrimmingDO {
 		this.updated_by_name = updated_by_name;
 		this.updated = updated;
 		this.status = status;
-		
+
 	}
 
 	public int getId() {
@@ -190,22 +190,29 @@ public class TrimmingDO {
 	public void setUnit_id(int unit_id) {
 		this.unit_id = unit_id;
 	}
-	
+
 	public String getUnit_name() {
 		return unit_name;
 	}
-	
+
 	public void setUnit_name(String unit_name) {
 		this.unit_name = unit_name;
 	}
-	
+
 	public String getUpdated_by_name() {
 		return updated_by_name;
 	}
-	
+
 	public void setUpdated_by_name(String updated_by_name) {
 		this.updated_by_name = updated_by_name;
 	}
-	
+
+	public int getUpdated_by_id() {
+		return updated_by_id;
+	}
+
+	public void setUpdated_by_id(int updated_by_id) {
+		this.updated_by_id = updated_by_id;
+	}
 
 }

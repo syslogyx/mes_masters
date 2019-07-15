@@ -35,8 +35,9 @@ import com.syslogyx.model.user.UserDO;
 public class CodeGroupDOActivityLog {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "codeg_Sequence")
-	@SequenceGenerator(name = "codeg_Sequence", sequenceName = "CODE_SEQ", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.AUTO)
+//	@GeneratedValue(strategy = GenerationType.AUTO, generator = "codeg_Sequence")
+//	@SequenceGenerator(name = "codeg_Sequence", sequenceName = "CODE_SEQ", allocationSize = 1)
 	@Column(name = "id")
 	private int id;
 
