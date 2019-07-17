@@ -68,25 +68,25 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		Root<CodeGroupDO> codeGroupRoot = createQuery.from(CodeGroupDO.class);
 
 		Object[] queryResults = getConditionsForCodeGroup(requestFilter, builder, codeGroupRoot, true);
-
+		
 		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
-
+			
 			List<Predicate> conditions = (List<Predicate>) queryResults[0];
-
+				
 			if (conditions != null && !conditions.isEmpty()) {
 				createQuery.where(conditions.toArray(new Predicate[] {}));
 			}
-
+			
 			Query query = entityManager
 					.createQuery(createQuery.select((Selection<? extends CodeGroupDO>) queryResults[1]));
-
+			
 			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
 				int start_index = IConstants.VALUE_ZERO;
 				if (page > 1) {
 					page -= 1;
 					start_index = page * limit;
 				}
-
+				
 				query.setFirstResult(start_index);
 				query.setMaxResults(limit);
 			}
@@ -94,52 +94,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 			return query.getResultList();
 		}
 		return null;
-
-		// CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		// CriteriaQuery<CodeGroupDO> createQuery =
-		// builder.createQuery(CodeGroupDO.class);
-		// Root<CodeGroupDO> codeGroupRoot = createQuery.from(CodeGroupDO.class);
-		// Join<CodeGroupDO, UserDO> fetch =
-		// codeGroupRoot.join(IPropertyConstant.UPDATED_BY, JoinType.LEFT);
-		// createQuery.select(codeGroupRoot).orderBy(builder.asc(codeGroupRoot.get(IPropertyConstant.GROUP_DESC)));
-		// //
-		// createQuery.select(codeGroupRoot).orderBy(builder.desc(codeGroupRoot.get("group_code")));
-		//
-		// // set the list of properties whose values are required to fetch
-		// CompoundSelection<CodeGroupDO> construct =
-		// builder.construct(CodeGroupDO.class,
-		// codeGroupRoot.get(IPropertyConstant.ID),
-		// codeGroupRoot.get(IPropertyConstant.GROUP_CODE),
-		// codeGroupRoot.get(IPropertyConstant.GROUP_DESC),
-		// codeGroupRoot.get(IPropertyConstant.INCREMENTOR),
-		// fetch.get(IPropertyConstant.USERNAME),
-		// codeGroupRoot.get(IPropertyConstant.CREATED),
-		// codeGroupRoot.get(IPropertyConstant.UPDATED),
-		// codeGroupRoot.get(IPropertyConstant.STATUS));
-		//
-		// // prepare where conditions according to provided filter
-		// List<Predicate> conditions = addCriteriaForCodeGroupFilter(requestFilter,
-		// builder, codeGroupRoot);
-		//
-		// // add the list of predicates in where clause
-		// if (conditions != null && !conditions.isEmpty()) {
-		// createQuery.where(conditions.toArray(new Predicate[] {}));
-		// }
-		//
-		// Query query = entityManager.createQuery(createQuery.select(construct));
-		//
-		// if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
-		// int start_index = IConstants.VALUE_ZERO;
-		// if (page > 1) {
-		// page -= 1;
-		// start_index = page * limit;
-		// }
-		//
-		// query.setFirstResult(start_index);
-		// query.setMaxResults(limit);
-		// }
-		//
-		// return query.getResultList();
+		
 	}
 
 	/**
@@ -194,40 +149,7 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 
 	}
 
-	/**
-	 * Prepare the Criteria for Code Groups by adding required filters
-	 * 
-	 * @param requestFilter
-	 * @param codeGroupRoot
-	 * @param builder
-	 * @return
-	 */
-	// private List<Predicate> addCriteriaForCodeGroupFilter(RequestBO
-	// requestFilter, CriteriaBuilder builder,
-	// Root<CodeGroupDO> codeGroupRoot) {
-	//
-	// if (requestFilter != null) {
-	// List<Predicate> conditions = new ArrayList<>();
-	//
-	// if (requestFilter.getQuick_finder() != null &&
-	// !requestFilter.getQuick_finder().isEmpty()) {
-	// conditions.add(builder.or(
-	// builder.like(codeGroupRoot.get(IPropertyConstant.GROUP_CODE),
-	// "%" + requestFilter.getQuick_finder() + "%"),
-	// builder.like(codeGroupRoot.get(IPropertyConstant.GROUP_DESC),
-	// "%" + requestFilter.getQuick_finder() + "%")));
-	// }
-	//
-	// // add condition to restrict rows whose status is inactive
-	// if (!requestFilter.isInclude_inactive_data()) {
-	// conditions
-	// .add(builder.notEqual(codeGroupRoot.get(IPropertyConstant.STATUS),
-	// IConstants.STATUS_INACTIVE));
-	// }
-	// return conditions;
-	// }
-	// return null;
-	// }
+	
 
 	@Override
 	public long getCodeGroupListSize(RequestBO requestFilter) {

@@ -1,4 +1,4 @@
-package com.syslogyx.model.masters;
+package com.syslogyx.model.masters.activitylog;
 
 import java.util.Date;
 
@@ -20,6 +20,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.syslogyx.model.masters.CodeGroupDO;
 import com.syslogyx.model.user.UserDO;
 
 /**
@@ -35,9 +36,8 @@ import com.syslogyx.model.user.UserDO;
 public class CodeGroupDOActivityLog {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-//	@GeneratedValue(strategy = GenerationType.AUTO, generator = "codeg_Sequence")
-//	@SequenceGenerator(name = "codeg_Sequence", sequenceName = "CODE_SEQ", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "codeg_activity_Sequence")
+	@SequenceGenerator(name = "codeg_activity_Sequence", sequenceName = "CODE_ACTIVITY_SEQ", allocationSize = 1)
 	@Column(name = "id")
 	private int id;
 
@@ -92,6 +92,19 @@ public class CodeGroupDOActivityLog {
 		this.created_by = created_by;
 		this.updated_by = updated_by;
 		this.status = status;
+	}
+
+	public CodeGroupDOActivityLog(int id,String group_code, String group_desc, int incrementor, Date created,
+			Date updated, int status, String username) {
+		
+		this.id = id;
+		this.group_code = group_code;
+		this.group_desc = group_desc;
+		this.incrementor = incrementor;
+		this.created = created;
+		this.updated = updated;
+		this.status = status;
+		this.updated_by_name = username;
 	}
 
 	public int getId() {

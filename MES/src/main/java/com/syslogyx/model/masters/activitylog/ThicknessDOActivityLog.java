@@ -1,4 +1,4 @@
-package com.syslogyx.model.masters;
+package com.syslogyx.model.masters.activitylog;
 
 import java.util.Date;
 
@@ -20,6 +20,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.syslogyx.model.masters.ThicknessDO;
 import com.syslogyx.model.user.UserDO;
 
 /**
@@ -29,20 +30,24 @@ import com.syslogyx.model.user.UserDO;
  *
  */
 @Entity
-@Table(name = "thickness")
+@Table(name = "thickness_activitylog")
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ThicknessDO {
-	
+public class ThicknessDOActivityLog {
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "thick_Sequence")
-	@SequenceGenerator(name = "thick_Sequence", sequenceName = "THICK_SEQ", allocationSize = 1)
-	@Column(name = "th_id")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "thick_activity_Sequence")
+	@SequenceGenerator(name = "thick_activity_Sequence", sequenceName = "THICK_ACTIVITY_SEQ", allocationSize = 1)
+	@Column(name = "id")
 	private int id;
+
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "t_id")
+	private ThicknessDO t_id;
 
 	@Column(name = "thickness_min")
 	private float thickness_min;
-	
+
 	@Column(name = "thickness_max")
 	private float thickness_max;
 
@@ -51,7 +56,7 @@ public class ThicknessDO {
 
 	@Column(name = "tolerance_minus")
 	private float tolerance_minus;
-	
+
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by", updatable = false)
 	private UserDO created_by;
@@ -70,30 +75,30 @@ public class ThicknessDO {
 
 	@Transient
 	private int updated_by_id;
-	
+
 	@Column(name = "status")
 	public int status;
 
 	@Transient
 	private String update_by_name;
 
-	public ThicknessDO() {
+	public ThicknessDOActivityLog() {
 
 	}
 
-	public ThicknessDO(int id, float thickness_min, float thickness_max, float tolerance_minus, float tolerance_plus,
-			String update_by_name, Date updated, int status) {
-
-		this.id = id;
+	public ThicknessDOActivityLog(ThicknessDO t_id, float thickness_min, float thickness_max, float tolerance_plus,
+			float tolerance_minus, UserDO created_by, UserDO updated_by, int status) {
+		this.t_id = t_id;
 		this.thickness_min = thickness_min;
 		this.thickness_max = thickness_max;
 		this.tolerance_plus = tolerance_plus;
 		this.tolerance_minus = tolerance_minus;
-		this.updated = updated;
+		this.created_by = created_by;
+		this.updated_by = updated_by;
 		this.status = status;
-		this.update_by_name = update_by_name;
+		
 	}
-
+	
 	public String getUpdate_by_name() {
 		return update_by_name;
 	}
@@ -189,6 +194,5 @@ public class ThicknessDO {
 	public void setUpdated_by_id(int updated_by_id) {
 		this.updated_by_id = updated_by_id;
 	}
-	
 
 }

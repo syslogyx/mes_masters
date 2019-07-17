@@ -58,6 +58,9 @@ public interface IConstants {
 		public String THICKNESS = "thickness";
 		public String MASTERS = "masters";
 		public String USER = "user";
+		
+		//Masters Activity log Constant
+		public String CODE_GROUP_ACTIVITY = "code_group_activity";
 	}
 
 	/**

@@ -1,4 +1,4 @@
-package com.syslogyx.model.masters;
+package com.syslogyx.model.masters.activitylog;
 
 import java.util.Date;
 
@@ -20,38 +20,34 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.syslogyx.model.masters.ProcessTypeDO;
 import com.syslogyx.model.user.UserDO;
 
 /**
- * This Class store Thickness Master Data
+ * This Class store Process Type Data
  * 
  * @author namrata
  *
  */
 @Entity
-@Table(name = "thickness")
+@Table(name = "process_types_activitylog")
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ThicknessDO {
-	
+public class ProcessTypeDOActivityLog {
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "thick_Sequence")
-	@SequenceGenerator(name = "thick_Sequence", sequenceName = "THICK_SEQ", allocationSize = 1)
-	@Column(name = "th_id")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "process_activity_Sequence")
+	@SequenceGenerator(name = "process_activity_Sequence", sequenceName = "PROCESST_ACTIVITY_SEQ", allocationSize = 1)
+	@Column(name = "id")
 	private int id;
-
-	@Column(name = "thickness_min")
-	private float thickness_min;
 	
-	@Column(name = "thickness_max")
-	private float thickness_max;
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "pt_id")
+	private ProcessTypeDO pt_id;
 
-	@Column(name = "tolerance_plus")
-	private float tolerance_plus;
+	@Column(name = "name")
+	private String name;
 
-	@Column(name = "tolerance_minus")
-	private float tolerance_minus;
-	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "created_by", updatable = false)
 	private UserDO created_by;
@@ -70,37 +66,9 @@ public class ThicknessDO {
 
 	@Transient
 	private int updated_by_id;
-	
+
 	@Column(name = "status")
 	public int status;
-
-	@Transient
-	private String update_by_name;
-
-	public ThicknessDO() {
-
-	}
-
-	public ThicknessDO(int id, float thickness_min, float thickness_max, float tolerance_minus, float tolerance_plus,
-			String update_by_name, Date updated, int status) {
-
-		this.id = id;
-		this.thickness_min = thickness_min;
-		this.thickness_max = thickness_max;
-		this.tolerance_plus = tolerance_plus;
-		this.tolerance_minus = tolerance_minus;
-		this.updated = updated;
-		this.status = status;
-		this.update_by_name = update_by_name;
-	}
-
-	public String getUpdate_by_name() {
-		return update_by_name;
-	}
-
-	public void setUpdate_by_name(String update_by_name) {
-		this.update_by_name = update_by_name;
-	}
 
 	public int getId() {
 		return id;
@@ -108,6 +76,14 @@ public class ThicknessDO {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public UserDO getCreated_by() {
@@ -150,38 +126,6 @@ public class ThicknessDO {
 		this.status = status;
 	}
 
-	public float getThickness_min() {
-		return thickness_min;
-	}
-
-	public void setThickness_min(float thickness_min) {
-		this.thickness_min = thickness_min;
-	}
-
-	public float getThickness_max() {
-		return thickness_max;
-	}
-
-	public void setThickness_max(float thickness_max) {
-		this.thickness_max = thickness_max;
-	}
-
-	public float getTolerance_plus() {
-		return tolerance_plus;
-	}
-
-	public void setTolerance_plus(float tolerance_plus) {
-		this.tolerance_plus = tolerance_plus;
-	}
-
-	public float getTolerance_minus() {
-		return tolerance_minus;
-	}
-
-	public void setTolerance_minus(float tolerance_minus) {
-		this.tolerance_minus = tolerance_minus;
-	}
-
 	public int getUpdated_by_id() {
 		return updated_by_id;
 	}
@@ -189,6 +133,13 @@ public class ThicknessDO {
 	public void setUpdated_by_id(int updated_by_id) {
 		this.updated_by_id = updated_by_id;
 	}
-	
 
+	public ProcessTypeDO getPt_id() {
+		return pt_id;
+	}
+
+	public void setPt_id(ProcessTypeDO pt_id) {
+		this.pt_id = pt_id;
+	}
+	
 }

@@ -208,6 +208,7 @@ public class MasterController extends BaseController {
 		try {
 
 			iMasterService.createCampaign(campaignDO);
+			
 			return getResponseModel(null, IResponseCodes.SUCCESS, IResponseMessages.DATA_STORED_SUCCESSFULLY);
 		} catch (ApplicationException e) {
 			e.printStackTrace();

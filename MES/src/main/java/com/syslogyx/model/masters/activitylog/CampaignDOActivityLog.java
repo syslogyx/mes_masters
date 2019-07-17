@@ -1,4 +1,4 @@
-package com.syslogyx.model.masters;
+package com.syslogyx.model.masters.activitylog;
 
 import java.util.Date;
 
@@ -20,6 +20,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.syslogyx.model.masters.CampaignDO;
+import com.syslogyx.model.masters.ProcessUnitDO;
 import com.syslogyx.model.user.UserDO;
 
 /**
@@ -29,16 +31,20 @@ import com.syslogyx.model.user.UserDO;
  *
  */
 @Entity
-@Table(name = "campaigns")
+@Table(name = "campaigns_activity_log")
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CampaignDO {
+public class CampaignDOActivityLog {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "campaign_Sequence")
-	@SequenceGenerator(name = "campaign_Sequence", sequenceName = "CAMPAIGN_SEQ", allocationSize = 1)
-	@Column(name = "c_id")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "campaign_activity_Sequence")
+	@SequenceGenerator(name = "campaign_activity_Sequence", sequenceName = "CAMPAIGN_ACTIVITY_SEQ", allocationSize = 1)
+	@Column(name = "id")
 	private int id;
+	
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "cam_id")
+	private CampaignDO cam_id;
 
 	@Column(name = "campaign_id")
 	private String campaign_id;
@@ -80,10 +86,9 @@ public class CampaignDO {
 
 	@Column(name = "status")
 	public int status;
-	
+
 	@Transient
 	private int updated_by_id;
-
 
 	@Transient
 	private int hold_unit_id;
@@ -94,29 +99,27 @@ public class CampaignDO {
 	@Transient
 	private String updated_by_name;
 
-	public CampaignDO() {
+	public CampaignDOActivityLog() {
 
 	}
 
-	public CampaignDO(int id, String campaign_id, String attribute, String aim, float capacity_min, float capacity_max,
-			int priority_level, Date created, Date updated, int status, String username, String unit, Integer pu_id) {
-
-		this.id = id;
+	public CampaignDOActivityLog(CampaignDO cam_id, String campaign_id, String attribute, String aim,
+			float capacity_min, float capacity_max, int priority_level, ProcessUnitDO hold_unit, UserDO created_by,
+			UserDO updated_by, int status) {
+		
+		this.cam_id = cam_id;
 		this.campaign_id = campaign_id;
 		this.attribute = attribute;
 		this.aim = aim;
 		this.capacity_min = capacity_min;
 		this.capacity_max = capacity_max;
 		this.priority_level = priority_level;
-		this.created = created;
-		this.updated = updated;
+		this.hold_unit = hold_unit;
+		this.created_by = created_by;
+		this.updated_by = updated_by;
 		this.status = status;
-		this.updated_by_name = username;
-		this.hold_unit_name = unit;
-
-		if (pu_id != null)
-			this.hold_unit_id = pu_id;
 	}
+
 
 	public int getId() {
 		return id;
@@ -125,11 +128,11 @@ public class CampaignDO {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
+
 	public String getCampaign_id() {
 		return campaign_id;
 	}
-	
+
 	public void setCampaign_id(String campaign_id) {
 		this.campaign_id = campaign_id;
 	}
@@ -253,6 +256,13 @@ public class CampaignDO {
 	public void setUpdated_by_id(int updated_by_id) {
 		this.updated_by_id = updated_by_id;
 	}
-	
-	
+
+	public CampaignDO getC_id() {
+		return cam_id;
+	}
+
+	public void setC_id(CampaignDO c_id) {
+		this.cam_id = c_id;
+	}
+
 }

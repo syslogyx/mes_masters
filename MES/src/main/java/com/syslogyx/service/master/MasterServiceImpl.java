@@ -29,7 +29,6 @@ import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.model.masters.CRGradeDO;
 import com.syslogyx.model.masters.CampaignDO;
 import com.syslogyx.model.masters.CodeGroupDO;
-import com.syslogyx.model.masters.CodeGroupDOActivityLog;
 import com.syslogyx.model.masters.DPRTargetDO;
 import com.syslogyx.model.masters.ElongationDO;
 import com.syslogyx.model.masters.LeadTimeDO;
@@ -44,6 +43,18 @@ import com.syslogyx.model.masters.ShelfLifeDO;
 import com.syslogyx.model.masters.ShrinkageDO;
 import com.syslogyx.model.masters.ThicknessDO;
 import com.syslogyx.model.masters.TrimmingDO;
+import com.syslogyx.model.masters.activitylog.CampaignDOActivityLog;
+import com.syslogyx.model.masters.activitylog.CodeGroupDOActivityLog;
+import com.syslogyx.model.masters.activitylog.DPRTargetDOActivityLog;
+import com.syslogyx.model.masters.activitylog.ElongationDOActivityLog;
+import com.syslogyx.model.masters.activitylog.LeadTimeDOActivityLog;
+import com.syslogyx.model.masters.activitylog.ProcessFamilyDOActivityLog;
+import com.syslogyx.model.masters.activitylog.ProcessUnitDOActivityLog;
+import com.syslogyx.model.masters.activitylog.ProductDefDOActivityLog;
+import com.syslogyx.model.masters.activitylog.ShelfLifeDOActivityLog;
+import com.syslogyx.model.masters.activitylog.ShrinkageDOActivityLog;
+import com.syslogyx.model.masters.activitylog.ThicknessDOActivityLog;
+import com.syslogyx.model.masters.activitylog.TrimmingDOActivityLog;
 import com.syslogyx.model.user.UserDO;
 import com.syslogyx.service.BaseService;
 import com.syslogyx.utility.Utils;
@@ -78,7 +89,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		if (existingCodeGroup != null && existingCodeGroup.getId() != code_groupId)
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.EXISTING_GROUP_CODE);
 
-		UserDO loggedInUser = getLoggedInUser();
+		// UserDO loggedInUser = getLoggedInUser();
 
 		// validate and set user id
 		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
@@ -86,8 +97,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		codeGroupDO.setCreated_by(validateUpdatedById);
 		codeGroupDO.setUpdated_by(validateUpdatedById);
 
-		// codeGroupDO.setCreated_by(validateUserId);
-		// codeGroupDO.setUpdated_by(validateUserId);
+		// codeGroupDO.setCreated_by(loggedInUser);
+		// codeGroupDO.setUpdated_by(loggedInUser);
 		codeGroupDO.setStatus(IConstants.STATUS_ACTIVE);
 		masterDAO.mergeEntity(codeGroupDO);
 
@@ -95,13 +106,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			CodeGroupDOActivityLog codeGroupDOActivityLog = new CodeGroupDOActivityLog(codeGroupDO,
 					codeGroupDO.getGroup_code(), codeGroupDO.getGroup_desc(), codeGroupDO.getIncrementor(),
 					codeGroupDO.getCreated_by(), codeGroupDO.getUpdated_by(), codeGroupDO.getStatus());
-//			codeGroupDOActivityLog.setGroup_code(codeGroupDO.getGroup_code());
-//			codeGroupDOActivityLog.setGroup_desc(codeGroupDO.getGroup_desc());
-//			codeGroupDOActivityLog.setIncrementor(codeGroupDO.getIncrementor());
-//			codeGroupDOActivityLog.setCreated_by(codeGroupDO.getCreated_by());
-//			codeGroupDOActivityLog.setUpdated_by(codeGroupDO.getUpdated_by());
-//			codeGroupDOActivityLog.setStatus(codeGroupDO.getStatus());
-//			codeGroupDOActivityLog.setCg_id(codeGroupDO);
+
 			masterDAO.mergeEntity(codeGroupDOActivityLog);
 		}
 
@@ -155,7 +160,37 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		// dprTargetDO.setUpdated_by(loggedInUser);
 		dprTargetDO.setStatus(IConstants.STATUS_ACTIVE);
 		masterDAO.mergeEntity(dprTargetDO);
+
+		if (dpr_id > 0) {
+			DPRTargetDOActivityLog dprTargetDOActivityLog = new DPRTargetDOActivityLog(dprTargetDO,
+					dprTargetDO.getBusiness_plan_target(), dprTargetDO.getInternal_target(), dprTargetDO.getYear(),
+					dprTargetDO.getUnit(), dprTargetDO.getProduct(), dprTargetDO.getCreated_by(),
+					dprTargetDO.getUpdated_by(), dprTargetDO.getStatus());
+
+			masterDAO.mergeEntity(dprTargetDOActivityLog);
+		}
+
 	}
+
+	// /**
+	// * For store dprTargetDOActivityLog data in db
+	// * @param dprTargetDOActivityLog
+	// */
+	// private void dprTargetDOActivitylog(DPRTargetDOActivityLog
+	// dprTargetDOActivityLog, DPRTargetDO dprTargetDO) {
+	//
+	//
+	// DPRTargetDOActivityLog dprTargetDOActivityLog2 = new
+	// DPRTargetDOActivityLog(dprTargetDO,
+	// dprTargetDO.getBusiness_plan_target(), dprTargetDO.getInternal_target(),
+	// dprTargetDO.getYear(),
+	// dprTargetDO.getUnit(), dprTargetDO.getProduct(), dprTargetDO.getCreated_by(),
+	// dprTargetDO.getUpdated_by(), dprTargetDO.getStatus());
+	//
+	// masterDAO.mergeEntity(dprTargetDOActivityLog2);
+	//
+	//
+	// }
 
 	@Override
 	public Object getDPRTargetList(RequestBO requestFilter, int page, int limit) {
@@ -212,6 +247,23 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		// campaignDO.setUpdated_by(loggedInUser);
 		campaignDO.setStatus(IConstants.STATUS_ACTIVE);
 		masterDAO.mergeEntity(campaignDO);
+
+		if (camp_id >= 0) {
+			// CampaignDOActivityLog campaignDOActivityLog = new
+			// CampaignDOActivityLog(campaignDO,
+			// campaignDO.getCampaign_id(), campaignDO.getAttribute(), campaignDO.getAim(),
+			// campaignDO.getCapacity_min(),campaignDO.getCapacity_max(),campaignDO.getPriority_level(),campaignDO.getHold_unit(),
+			// campaignDO.getCreated_by(), campaignDO.getUpdated_by(),
+			// campaignDO.getStatus());
+
+			CampaignDOActivityLog campaignDOActivityLog = new CampaignDOActivityLog(campaignDO,
+					campaignDO.getCampaign_id(), campaignDO.getAttribute(), campaignDO.getAim(),
+					campaignDO.getCapacity_min(), campaignDO.getCapacity_max(), campaignDO.getPriority_level(),
+					campaignDO.getHold_unit(), campaignDO.getCreated_by(), campaignDO.getUpdated_by(),
+					campaignDO.getStatus());
+
+			masterDAO.mergeEntity(campaignDOActivityLog);
+		}
 
 	}
 
@@ -1178,6 +1230,8 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return MastersDO.class;
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.USER))
 			return UserDO.class;
+		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.CODE_GROUP_ACTIVITY))
+			return CodeGroupDOActivityLog.class;
 
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
@@ -1252,6 +1306,17 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		leadTimeDO.setStatus(IConstants.STATUS_ACTIVE);
 		masterDAO.mergeEntity(leadTimeDO);
 
+		if (leadTimeId > 0) {
+
+			LeadTimeDOActivityLog leadTimeDOActivityLog = new LeadTimeDOActivityLog(leadTimeDO,
+					leadTimeDO.getAfter_process_unit(), leadTimeDO.getBefore_process_unit(),
+					leadTimeDO.getIdle_time_min(), leadTimeDO.getIdle_time_max(), leadTimeDO.getHandle_time_min(),
+					leadTimeDO.getHandle_time_max(), leadTimeDO.getCreated_by(), leadTimeDO.getUpdated_by(),
+					leadTimeDO.getStatus());
+
+			masterDAO.mergeEntity(leadTimeDOActivityLog);
+		}
+
 	}
 
 	@Override
@@ -1304,6 +1369,14 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		// elongationDO.setUpdated_by(loggedInUser);
 
 		masterDAO.mergeEntity(elongationDO);
+
+		if (elong_id > 0) {
+			ElongationDOActivityLog elongationDOActivityLog = new ElongationDOActivityLog(elongationDO,
+					elongationDO.getUnit(), elongationDO.getCr_grade(), elongationDO.getCreated_by(),
+					elongationDO.getUpdated_by(), elongationDO.getStatus());
+
+			masterDAO.mergeEntity(elongationDOActivityLog);
+		}
 	}
 
 	@Override
@@ -1352,6 +1425,15 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		// processFamilyDO.setUpdated_by(loggedInUser);
 
 		masterDAO.mergeEntity(processFamilyDO);
+
+		if (processFamily_id > 0) {
+			ProcessFamilyDOActivityLog processFamilyDOActivityLog = new ProcessFamilyDOActivityLog(processFamilyDO,
+					processFamilyDO.getProcess_family(), processFamilyDO.getProcess_type(),
+					processFamilyDO.getPriority(), processFamilyDO.getBucket(), processFamilyDO.getCreated_by(),
+					processFamilyDO.getUpdated_by(), processFamilyDO.getStatus());
+
+			masterDAO.mergeEntity(processFamilyDOActivityLog);
+		}
 	}
 
 	@Override
@@ -1395,10 +1477,11 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 				process_family_id, IResponseMessages.INVALID_PROCESS_FAMILY_ID);
 		processUnitDO.setProcess_family(processFamilyDO);
 
+		// validate and set User Id
 		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
 				IResponseMessages.INVALID_USER_ID);
-		processFamilyDO.setCreated_by(validateUpdatedById);
-		processFamilyDO.setUpdated_by(validateUpdatedById);
+		processUnitDO.setCreated_by(validateUpdatedById);
+		processUnitDO.setUpdated_by(validateUpdatedById);
 
 		// validate OSP
 		validateOSPIdentifier(osp_identifier);
@@ -1412,6 +1495,17 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		// processUnitDO.setUpdated_by(loggedInUser);
 
 		masterDAO.mergeEntity(processUnitDO);
+
+		if (process_unit_id > 0) {
+			ProcessUnitDOActivityLog processUnitDOActivityLog = new ProcessUnitDOActivityLog(processUnitDO,
+					processUnitDO.getUnit(), processUnitDO.getProcess_family(), processUnitDO.getConst_setup_time(),
+					processUnitDO.getCapacity(), processUnitDO.getConst_setup_time(), processUnitDO.getYield(),
+					processUnitDO.getOsp_identifier(), processUnitDO.getCreated_by(), processUnitDO.getUpdated_by(),
+					processUnitDO.getStatus());
+
+			masterDAO.mergeEntity(processUnitDOActivityLog);
+
+		}
 	}
 
 	/**
@@ -1482,6 +1576,14 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		masterDAO.mergeEntity(productDefDO);
 
+		if (product_id > 0) {
+			ProductDefDOActivityLog productDefDOActivityLog = new ProductDefDOActivityLog(productDefDO,
+					productDefDO.getProduct(), productDefDO.getProduct_type(), productDefDO.getProduct_form(),
+					productDefDO.getCreated_by(), productDefDO.getUpdated_by(), productDefDO.getStatus());
+
+			masterDAO.mergeEntity(productDefDOActivityLog);
+		}
+
 	}
 
 	@Override
@@ -1533,6 +1635,14 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		// shelfLifeDO.setUpdated_by(loggedInUser);
 
 		masterDAO.mergeEntity(shelfLifeDO);
+
+		if (shelfLife_id > 0) {
+			ShelfLifeDOActivityLog shelfLifeDOActivityLog = new ShelfLifeDOActivityLog(shelfLifeDO,
+					shelfLifeDO.getProduct(), shelfLifeDO.getCr_grade(), shelfLifeDO.getShelf_life(),
+					shelfLifeDO.getCreated_by(), shelfLifeDO.getUpdated_by(), shelfLifeDO.getStatus());
+
+			masterDAO.mergeEntity(shelfLifeDOActivityLog);
+		}
 	}
 
 	@Override
@@ -1577,6 +1687,14 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		// shrinkageDO.setUpdated_by(loggedInUser);
 
 		masterDAO.mergeEntity(shrinkageDO);
+
+		if (shrinkage_id > 0) {
+			ShrinkageDOActivityLog shrinkageDOActivityLog = new ShrinkageDOActivityLog(shrinkageDO,
+					shrinkageDO.getCr_grade(), shrinkageDO.getCreated_by(), shrinkageDO.getUpdated_by(),
+					shrinkageDO.getStatus());
+
+			masterDAO.mergeEntity(shrinkageDOActivityLog);
+		}
 	}
 
 	@Override
@@ -1622,21 +1740,29 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 
 		masterDAO.mergeEntity(trimmingDO);
 
+		if (trimming_id > 0) {
+			TrimmingDOActivityLog trimmingDOActivityLog = new TrimmingDOActivityLog(trimmingDO,
+					trimmingDO.getTrim_allo_min(), trimmingDO.getTrim_allo_max(), trimmingDO.getTrim_allo_aim(),
+					trimmingDO.getUnit(), trimmingDO.getCreated_by(), trimmingDO.getUpdated_by(),
+					trimmingDO.getStatus());
+
+			masterDAO.mergeEntity(trimmingDOActivityLog);
+		}
+
 	}
 
 	@Override
 	public void createThickness(ThicknessDO thicknessDO) throws ApplicationException, Exception {
 
 		int thickness_id = thicknessDO.getId();
-		// int updated_by_id = thicknessDO.getUpdated_by_id();
+		int updated_by_id = thicknessDO.getUpdated_by_id();
 
 		masterDAO.validateEntityById(ThicknessDO.class, thickness_id, IResponseMessages.INVALID_THICKNESS_ID);
 
-		// UserDO validateUpdatedById = (UserDO)
-		// masterDAO.validateEntityById(UserDO.class, updated_by_id,
-		// IResponseMessages.INVALID_USER_ID);
-		// thicknessDO.setCreated_by(validateUpdatedById);
-		// thicknessDO.setUpdated_by(validateUpdatedById);
+		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
+				IResponseMessages.INVALID_USER_ID);
+		thicknessDO.setCreated_by(validateUpdatedById);
+		thicknessDO.setUpdated_by(validateUpdatedById);
 
 		UserDO loggedInUser = getLoggedInUser();
 		thicknessDO.setStatus(IConstants.STATUS_ACTIVE);
@@ -1644,6 +1770,15 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		// thicknessDO.setUpdated_by(loggedInUser);
 
 		masterDAO.mergeEntity(thicknessDO);
+
+		if (thickness_id > 0) {
+			ThicknessDOActivityLog thicknessDOActivityLog = new ThicknessDOActivityLog(thicknessDO,
+					thicknessDO.getThickness_min(), thicknessDO.getThickness_max(), thicknessDO.getTolerance_plus(),
+					thicknessDO.getTolerance_minus(), thicknessDO.getCreated_by(), thicknessDO.getUpdated_by(),
+					thicknessDO.getStatus());
+
+			masterDAO.mergeEntity(thicknessDOActivityLog);
+		}
 
 	}
 

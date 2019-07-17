@@ -44,6 +44,11 @@ public interface INetworkConstants {
 		public String TRIMMING = "/trimming";
 		public String THICKNESS = "/thickness";
 		public String USERS = "/user";
+		
+		// Master Activity Log URL Constants
+		
+		public String ACTIVITY = "/activity";
+		public String CODE_GROUP_ACTIVITY = "/code_group_activity";
 	}
 
 	/**
