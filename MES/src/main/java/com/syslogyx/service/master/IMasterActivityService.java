@@ -1,6 +1,6 @@
 package com.syslogyx.service.master;
 
-import com.syslogyx.bo.RequestBO;
+import com.syslogyx.exception.ApplicationException;
 
 /**
  * For Fetch the MasterActivityLog data in db
@@ -10,14 +10,6 @@ import com.syslogyx.bo.RequestBO;
  */
 public interface IMasterActivityService {
 
-	/**
-	 * Fetch the CodeGroupActivityLog data in db
-	 * 
-	 * @param requestFilter
-	 * @param page
-	 * @param limit
-	 * @return
-	 */
-	Object listCodeGroupActivity(RequestBO requestFilter, int page, int limit);
+	Object getMasterById(int master_id, int page, int limit) throws ApplicationException;
 
 }

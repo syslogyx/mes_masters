@@ -45,7 +45,7 @@ public class BaseDAOImpl implements IBaseDAO {
 				if (status == IConstants.STATUS_INACTIVE)
 					throw new ApplicationException(IResponseCodes.INVALID_ENTITY, error_msg);
 			}
-
+			
 			return entity;
 		}
 		return null;

@@ -41,7 +41,7 @@ public class CampaignDOActivityLog {
 	@SequenceGenerator(name = "campaign_activity_Sequence", sequenceName = "CAMPAIGN_ACTIVITY_SEQ", allocationSize = 1)
 	@Column(name = "id")
 	private int id;
-	
+
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "cam_id")
 	private CampaignDO cam_id;
@@ -106,7 +106,7 @@ public class CampaignDOActivityLog {
 	public CampaignDOActivityLog(CampaignDO cam_id, String campaign_id, String attribute, String aim,
 			float capacity_min, float capacity_max, int priority_level, ProcessUnitDO hold_unit, UserDO created_by,
 			UserDO updated_by, int status) {
-		
+
 		this.cam_id = cam_id;
 		this.campaign_id = campaign_id;
 		this.attribute = attribute;
@@ -120,6 +120,26 @@ public class CampaignDOActivityLog {
 		this.status = status;
 	}
 
+	public CampaignDOActivityLog(int id, String campaign_id, String attribute, String aim, float capacity_min,
+			float capacity_max, int priority_level, Date created, Date updated, int status, Integer hold_unit_id,
+			String hold_unit_name, String updated_by_name) {
+		this.id = id;
+		this.campaign_id = campaign_id;
+		this.attribute = attribute;
+		this.aim = aim;
+		this.capacity_min = capacity_min;
+		this.capacity_max = capacity_max;
+		this.priority_level = priority_level;
+		this.created = created;
+		this.updated = updated;
+		this.status = status;
+		
+		if (hold_unit_id != null)
+			this.hold_unit_id = hold_unit_id;
+		
+		this.hold_unit_name = hold_unit_name;
+		this.updated_by_name = updated_by_name;
+	}
 
 	public int getId() {
 		return id;

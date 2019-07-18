@@ -44,11 +44,15 @@ public interface INetworkConstants {
 		public String TRIMMING = "/trimming";
 		public String THICKNESS = "/thickness";
 		public String USERS = "/user";
-		
+
 		// Master Activity Log URL Constants
-		
+
 		public String ACTIVITY = "/activity";
-		public String CODE_GROUP_ACTIVITY = "/code_group_activity";
+		public String MASTER_ACTIVITY_LOG = "/master_activity_log";
+		public String CAMPAIGN_ACTIVITY = "/campaign_activity";
+		public String DPR_TARGET_ACTIVITY_LOG = "/dprTarget_activity_log";
+		public String ELONGATION_ACTIVITY_LOG = null;
+		
 	}
 
 	/**
@@ -58,7 +62,7 @@ public interface INetworkConstants {
 	 *
 	 */
 	public interface IHeaderConstants {
-
+		
 		String X_AUTH_TOKEN = "X-AUTH-TOKEN";
 
 	}
@@ -92,8 +96,7 @@ public interface INetworkConstants {
 		String MASTER_ID = "master_id";
 
 	}
-	
-	
+
 	public interface ITables {
 
 		String USER_ROLES = "user_roles";

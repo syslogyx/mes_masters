@@ -55,7 +55,7 @@ public class BaseService {
 	 * @param limit
 	 * @return
 	 */
-	public ResponseBO generatePaginationResponse(@SuppressWarnings("rawtypes") List list, long listSize, int current_page, int limit) {
+	public ResponseBO generatePaginationResponse( List list, long listSize, int current_page, int limit) {
 		ResponseBO responseBO = new ResponseBO();
 		responseBO.setList(list);
 		responseBO.setPagination(Utils.getPagination(current_page, listSize, limit));

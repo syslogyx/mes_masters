@@ -2,9 +2,6 @@ package com.syslogyx.dao.master;
 
 import java.util.List;
 
-import com.syslogyx.bo.RequestBO;
-import com.syslogyx.model.masters.activitylog.CodeGroupDOActivityLog;
-
 /**
  * Fetch Data from CodeGroupActivityList in DB
  * 
@@ -14,21 +11,22 @@ import com.syslogyx.model.masters.activitylog.CodeGroupDOActivityLog;
 public interface IMasterActivityDAO {
 
 	/**
-	 * Fetch the CodeGroupActivityList data in table
+	 * For Count the Total number of data in Masters Activity Log Table
 	 * 
-	 * @param requestFilter
-	 * @param page
-	 * @param limit
 	 * @return
 	 */
-	List<CodeGroupDOActivityLog> getCodeGroupActivityList(RequestBO requestFilter, int page, int limit);
+	long getMastersSize(int master_id);
 
 	/**
-	 * Count CodeGroupActivityList data
+	 * Validate Master Id and Fetch the Respected Master Activity Log list with
+	 * pagination
 	 * 
-	 * @param requestFilter
+	 * @param master_id
+	 * @param page
+	 * @param limit
+	 * @param invalidMasterId
 	 * @return
 	 */
-	long getCodeGroupActivityListSize(RequestBO requestFilter);
+	List<?> getMastersActivitylogList(int master_id, int page, int limit, String invalidMasterId);
 
 }

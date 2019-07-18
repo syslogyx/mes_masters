@@ -60,7 +60,7 @@ public interface IConstants {
 		public String USER = "user";
 		
 		//Masters Activity log Constant
-		public String CODE_GROUP_ACTIVITY = "code_group_activity";
+		public String CODE_GROUP_ACTIVITY_LOG = "code_group_activity_log";
 	}
 
 	/**

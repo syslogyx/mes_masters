@@ -2,19 +2,21 @@ package com.syslogyx.service.master;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.syslogyx.bo.RequestBO;
 import com.syslogyx.constants.IConstants;
 import com.syslogyx.dao.master.IMasterActivityDAO;
 import com.syslogyx.exception.ApplicationException;
-import com.syslogyx.model.masters.activitylog.CodeGroupDOActivityLog;
+import com.syslogyx.message.IResponseMessages;
 import com.syslogyx.service.BaseService;
 
 /**
- * This class is used for implementing business logic related to MasterActivity Module
+ * This class is used for implementing business logic related to MasterActivity
+ * Module
  * 
  * @author palash
  *
@@ -24,24 +26,26 @@ import com.syslogyx.service.BaseService;
 public class MasterActivityServiceImpl extends BaseService implements IMasterActivityService {
 
 	@Autowired
-	private IMasterActivityDAO iMasterActivityDAO;
-	
+	private IMasterActivityDAO imasterActivityDAO;
+
+	@Autowired
+	private EntityManager entityManager;
+
 	@Override
-	public Object listCodeGroupActivity(RequestBO requestFilter, int page, int limit) {
-		
-		List<CodeGroupDOActivityLog> codeGroupsActivity = iMasterActivityDAO.getCodeGroupActivityList(requestFilter, page, limit);
+	public Object getMasterById(int master_id, int page, int limit) throws ApplicationException {
 
-		if (codeGroupsActivity != null && !codeGroupsActivity.isEmpty()) {
+		List<?> mastersActivitylogList = imasterActivityDAO.getMastersActivitylogList((master_id), page, limit,
+				IResponseMessages.INVALID_MASTER_ID);
+		if (mastersActivitylogList != null && !mastersActivitylogList.isEmpty()) {
 			if (page != IConstants.DEFAULT && limit != IConstants.DEFAULT) {
-				long listSize = iMasterActivityDAO.getCodeGroupActivityListSize(requestFilter);
+				long listSize = imasterActivityDAO.getMastersSize(master_id);
 
-				return generatePaginationResponse(codeGroupsActivity, listSize, page, limit);
+				return generatePaginationResponse(mastersActivitylogList, listSize, page, limit);
 			}
-			return codeGroupsActivity;
+			return mastersActivitylogList;
 		}
-
 		return null;
-		
+
 	}
 
 }

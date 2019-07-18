@@ -1230,9 +1230,7 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 			return MastersDO.class;
 		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.USER))
 			return UserDO.class;
-		else if (master_name.equalsIgnoreCase(IConstants.MASTERS_NAME.CODE_GROUP_ACTIVITY))
-			return CodeGroupDOActivityLog.class;
-
+		
 		else
 			throw new ApplicationException(IResponseCodes.SERVER_ERROR, IResponseMessages.INVALID_MASTER_NAME);
 	}

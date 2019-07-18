@@ -1524,13 +1524,13 @@ public class MasterDAOImpl extends BaseDAOImpl implements IMasterDAO {
 		Object[] queryResults = getConditionForMasters(requestFilter, builder, mastersRoot, true);
 
 		if (queryResults != null && queryResults.length > IConstants.VALUE_ZERO) {
-
+			
 			List<Predicate> conditions = (List<Predicate>) queryResults[0];
-
+				
 			if (conditions != null && !conditions.isEmpty()) {
 				createQuery.where(conditions.toArray(new Predicate[] {}));
 			}
-
+			
 			Query query = entityManager
 					.createQuery(createQuery.select((Selection<? extends MastersDO>) queryResults[1]));
 
