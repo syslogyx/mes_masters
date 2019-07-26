@@ -1,6 +1,7 @@
 package com.syslogyx;
 
 
+import javax.servlet.FilterRegistration;
 //import javax.servlet.FilterRegistration;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContext;
@@ -13,6 +14,7 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import com.syslogyx.config.CORSFilter;
 //import com.syslogyx.config.CORSFilter;
 import com.syslogyx.config.JPAConfiguration;
 
@@ -45,10 +47,10 @@ public class MesInitializer implements WebApplicationInitializer {
 		servlet.setMultipartConfig(
 				new MultipartConfigElement("/", 1024 * 1024 * 1024, 1024 * 1024 * 1024, 1024 * 1024 * 1024));
 
-//		FilterRegistration.Dynamic fr1 = container.addFilter("corsFilter", new CORSFilter());
-//		fr1.setInitParameter("encoding", "UTF-8");
-//		fr1.setInitParameter("forceEncoding", "true");
-//		fr1.addMappingForUrlPatterns(null, false, "/*");
+		FilterRegistration.Dynamic fr1 = container.addFilter("corsFilter", new CORSFilter());
+		fr1.setInitParameter("encoding", "UTF-8");
+		fr1.setInitParameter("forceEncoding", "true");
+		fr1.addMappingForUrlPatterns(null, false, "/*");
 		ctx.close();
 
 	}

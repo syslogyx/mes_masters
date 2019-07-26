@@ -89,13 +89,15 @@ public class MasterServiceImpl extends BaseService implements IMasterService {
 		if (existingCodeGroup != null && existingCodeGroup.getId() != code_groupId)
 			throw new ApplicationException(IResponseCodes.INVALID_ENTITY, IResponseMessages.EXISTING_GROUP_CODE);
 
-		// UserDO loggedInUser = getLoggedInUser();
+		
 
 		// validate and set user id
 		UserDO validateUpdatedById = (UserDO) masterDAO.validateEntityById(UserDO.class, updated_by_id,
 				IResponseMessages.INVALID_USER_ID);
 		codeGroupDO.setCreated_by(validateUpdatedById);
 		codeGroupDO.setUpdated_by(validateUpdatedById);
+		
+		// UserDO loggedInUser = getLoggedInUser();
 
 		// codeGroupDO.setCreated_by(loggedInUser);
 		// codeGroupDO.setUpdated_by(loggedInUser);

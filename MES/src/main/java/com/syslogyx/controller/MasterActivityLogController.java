@@ -20,7 +20,7 @@ import com.syslogyx.service.master.IMasterActivityService;
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping(value = INetworkConstants.IURLConstants.API + INetworkConstants.IURLConstants.MASTER_ACTIVITY_LOG)
-public class MasterActivityListController extends BaseController {
+public class MasterActivityLogController extends BaseController {
 
 	@Autowired
 	private IMasterActivityService iMasterActivityService;

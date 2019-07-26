@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,6 +16,7 @@ import com.syslogyx.constants.IConstants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+
 //
 /**
  * Configuration Class Which contains the Methods for Creating the Token
@@ -26,14 +26,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
  */
 @Component
 public class TokenProvider implements Serializable {
-	
 
 	private static final long serialVersionUID = -4823849617406223625L;
-	
 
-	 public String getUsernameFromToken(String token) {
-	 return getClaimFromToken(token, Claims::getSubject);
-	 }
+	public String getUsernameFromToken(String token) {
+		return getClaimFromToken(token, Claims::getSubject);
+	}
 
 	public Date getExpirationDateFromToken(String token) {
 		return getClaimFromToken(token, Claims::getExpiration);
@@ -52,10 +50,8 @@ public class TokenProvider implements Serializable {
 		final Date expiration = getExpirationDateFromToken(token);
 		return expiration.before(new Date());
 	}
-	
 
 	public String generateToken(Authentication userDetails) {
-		
 
 		final String authorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 				.collect(Collectors.joining(","));

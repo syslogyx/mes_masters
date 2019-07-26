@@ -1,5 +1,7 @@
 package com.syslogyx.controller;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.syslogyx.bo.AuthToken;
+import com.syslogyx.bo.BaseResponseBO;
 import com.syslogyx.bo.LoginUser;
 import com.syslogyx.config.TokenProvider;
 import com.syslogyx.constants.INetworkConstants;
@@ -37,6 +40,7 @@ public class ApplicationController extends BaseController {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
+	
 
 	@Autowired
 	private TokenProvider jwtTokenUtil;
@@ -70,4 +74,7 @@ public class ApplicationController extends BaseController {
 			return getResponseModel(null, IResponseCodes.UNAUTHORIZED, IResponseMessages.UNAUTHORIZED_USER);
 		}
 	}
+	
+	
+
 }

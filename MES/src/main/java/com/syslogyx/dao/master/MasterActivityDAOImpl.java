@@ -14,8 +14,18 @@ import org.springframework.stereotype.Repository;
 
 import com.syslogyx.constants.IConstants;
 import com.syslogyx.exception.ApplicationException;
-import com.syslogyx.model.masters.MastersDO;
+import com.syslogyx.model.masters.activitylog.CampaignDOActivityLog;
 import com.syslogyx.model.masters.activitylog.CodeGroupDOActivityLog;
+import com.syslogyx.model.masters.activitylog.DPRTargetDOActivityLog;
+import com.syslogyx.model.masters.activitylog.ElongationDOActivityLog;
+import com.syslogyx.model.masters.activitylog.LeadTimeDOActivityLog;
+import com.syslogyx.model.masters.activitylog.ProcessFamilyDOActivityLog;
+import com.syslogyx.model.masters.activitylog.ProcessUnitDOActivityLog;
+import com.syslogyx.model.masters.activitylog.ProductDefDOActivityLog;
+import com.syslogyx.model.masters.activitylog.ShelfLifeDOActivityLog;
+import com.syslogyx.model.masters.activitylog.ShrinkageDOActivityLog;
+import com.syslogyx.model.masters.activitylog.ThicknessDOActivityLog;
+import com.syslogyx.model.masters.activitylog.TrimmingDOActivityLog;
 
 /**
  * This class is used to fetch data from CodeGroupActivityLog table in db
@@ -32,16 +42,49 @@ public class MasterActivityDAOImpl implements IMasterActivityDAO {
 
 	@Override
 	public long getMastersSize(int master_id) {
-		return master_id;
-//		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-//		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
-//		Root<?> mastersRoot = createQuery.from(getMasterName(master_id));
-//		
-//		createQuery.select(builder.count(mastersRoot));
-//		
-//		Query query = entityManager.createQuery(createQuery);
-//		return (long) query.getSingleResult();
-//
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> createQuery = builder.createQuery(Long.class);
+
+		if (master_id == 2) {
+			Root<CodeGroupDOActivityLog> codeGroupLogRoot = createQuery.from(CodeGroupDOActivityLog.class);
+			createQuery.select(builder.count(codeGroupLogRoot));
+		} else if (master_id == 3) {
+			Root<CampaignDOActivityLog> campaignLogRoot = createQuery.from(CampaignDOActivityLog.class);
+			createQuery.select(builder.count(campaignLogRoot));
+		} else if (master_id == 4) {
+			Root<DPRTargetDOActivityLog> dprTargetLogRoot = createQuery.from(DPRTargetDOActivityLog.class);
+			createQuery.select(builder.count(dprTargetLogRoot));
+		} else if (master_id == 5) {
+			Root<ElongationDOActivityLog> elongationLogRoot = createQuery.from(ElongationDOActivityLog.class);
+			createQuery.select(builder.count(elongationLogRoot));
+		} else if (master_id == 6) {
+			Root<LeadTimeDOActivityLog> leadTimeLogRoot = createQuery.from(LeadTimeDOActivityLog.class);
+			createQuery.select(builder.count(leadTimeLogRoot));
+		} else if (master_id == 7) {
+			Root<ProcessFamilyDOActivityLog> processFamilyLogRoot = createQuery.from(ProcessFamilyDOActivityLog.class);
+			createQuery.select(builder.count(processFamilyLogRoot));
+		} else if (master_id == 8) {
+			Root<ProcessUnitDOActivityLog> processUnitLogRoot = createQuery.from(ProcessUnitDOActivityLog.class);
+			createQuery.select(builder.count(processUnitLogRoot));
+		} else if (master_id == 9) {
+			Root<ProductDefDOActivityLog> productDefLogRoot = createQuery.from(ProductDefDOActivityLog.class);
+			createQuery.select(builder.count(productDefLogRoot));
+		} else if (master_id == 10) {
+			Root<ShelfLifeDOActivityLog> shelfLifeLogRoot = createQuery.from(ShelfLifeDOActivityLog.class);
+			createQuery.select(builder.count(shelfLifeLogRoot));
+		} else if (master_id == 11) {
+			Root<ShrinkageDOActivityLog> shrinkageLogRoot = createQuery.from(ShrinkageDOActivityLog.class);
+			createQuery.select(builder.count(shrinkageLogRoot));
+		} else if (master_id == 12) {
+			Root<TrimmingDOActivityLog> trimmingLogRoot = createQuery.from(TrimmingDOActivityLog.class);
+			createQuery.select(builder.count(trimmingLogRoot));
+		} else if (master_id == 13) {
+			Root<ThicknessDOActivityLog> thicknessLogRoot = createQuery.from(ThicknessDOActivityLog.class);
+			createQuery.select(builder.count(thicknessLogRoot));
+		}
+
+		Query query = entityManager.createQuery(createQuery);
+		return (long) query.getSingleResult();
 	}
 
 	@Override
@@ -120,15 +163,6 @@ public class MasterActivityDAOImpl implements IMasterActivityDAO {
 		query.setMaxResults(limit);
 		return query;
 
-	}
-
-	// return master Activity name
-	private Class<?> getMasterName(int master_id) {
-
-		if (master_id == 2)
-			return CodeGroupDOActivityLog.class;
-
-		return null;
 	}
 
 }
